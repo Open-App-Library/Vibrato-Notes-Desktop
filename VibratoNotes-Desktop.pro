@@ -27,7 +27,8 @@ SOURCES += \
         notes.cpp
 
 HEADERS += \
-        notes.h
+        notes.h \
+    appinfo.h
 
 FORMS += \
         notes.ui

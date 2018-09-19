@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>794</width>
-    <height>434</height>
+    <width>1280</width>
+    <height>769</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -85,7 +85,8 @@
             <string>New Note</string>
            </property>
            <property name="icon">
-            <iconset theme="document-new"/>
+            <iconset theme="document-new">
+             <normaloff>.</normaloff>.</iconset>
            </property>
            <property name="toolButtonStyle">
             <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -126,7 +127,8 @@
             <string>Sign In</string>
            </property>
            <property name="icon">
-            <iconset theme="user-info"/>
+            <iconset theme="user-info">
+             <normaloff>.</normaloff>.</iconset>
            </property>
           </widget>
          </item>
