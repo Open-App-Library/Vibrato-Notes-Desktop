@@ -24,16 +24,23 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        notes.cpp
+    treeitem.cpp \
+    treemodel.cpp \
+    mainwindow.cpp
 
 HEADERS += \
-        notes.h \
-    appinfo.h
+    appinfo.h \
+    treeitem.h \
+    treemodel.h \
+    mainwindow.h
 
 FORMS += \
-        notes.ui
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resource.qrc

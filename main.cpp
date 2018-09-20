@@ -3,13 +3,13 @@
 #include <QDebug>
 #include <string>
 
-#include "notes.h"
+#include "mainwindow.h"
 #include "appinfo.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Notes w;
+    MainWindow w;
     w.show();
 
     QSettings config(COMPANY, CONFIG);
