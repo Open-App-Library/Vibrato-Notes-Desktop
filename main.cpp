@@ -19,8 +19,8 @@ int main(int argc, char *argv[])
         w.restoreGeometry(meta_config.value("last_opened_window_size").toByteArray());
     }
 
-    qDebug("Welcome to Vibrato Notes! v." + (QByteArray) VERSION);
-    qDebug() << "User Config Location" << config.fileName();
+    qDebug().nospace() << "Welcome to Vibrato Notes! v." << qPrintable( VERSION );
+    qDebug()           << "User Config Location:" << config.fileName();
 
     return a.exec();
 }

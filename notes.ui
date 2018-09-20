@@ -255,6 +255,15 @@
            <number>0</number>
           </property>
           <item>
+           <widget class="QLineEdit" name="title">
+            <property name="font">
+             <font>
+              <pointsize>25</pointsize>
+             </font>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QTextEdit" name="textEdit"/>
           </item>
          </layout>
