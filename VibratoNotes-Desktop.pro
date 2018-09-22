@@ -42,5 +42,26 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+# Mac-specific things
+macx {
+
+}
+
+# Mac & Linux
+unix {
+    RESOURCES += elementary-icons.qrc # Add Elementary icons as fallback icons
+}
+
+# Linux / BSD (NOT Mac) specfic things
+unix:!macx {
+
+}
+
+# Windows-Specific things
+win32 {
+    # TODO: Add Colibre icon theme as fallback
+}
+
+
 RESOURCES += \
     resource.qrc
