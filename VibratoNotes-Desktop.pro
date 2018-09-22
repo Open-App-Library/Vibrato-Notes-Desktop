@@ -27,17 +27,20 @@ SOURCES += \
          main.cpp \
      treeitem.cpp \
     treemodel.cpp \
-   mainwindow.cpp
+   mainwindow.cpp \
+    userwindow.cpp
 
 HEADERS += \
     appconfig.h \
       appinfo.h \
      treeitem.h \
     treemodel.h \
-   mainwindow.h
+   mainwindow.h \
+    userwindow.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    userwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

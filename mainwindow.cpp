@@ -1,6 +1,7 @@
 #include <QSettings>
 #include <QFile>
 #include <QtDebug>
+
 #include "appinfo.h"
 #include "appconfig.h"
 #include "mainwindow.h"
@@ -20,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_notebooks = new TreeModel(notebook_column_headers, file.readAll());
     file.close();
 
-    ui->notebookTreeView->setModel(m_notebooks);
+    //ui->notebookTreeView->setModel(m_notebooks);
 
     if ( meta_config_key_exists(LAST_OPENED_WINDOW_SIZE) ) {
         this->restoreGeometry( meta_config_value(LAST_OPENED_WINDOW_SIZE).toByteArray() );
@@ -37,6 +38,9 @@ MainWindow::MainWindow(QWidget *parent) :
         splitterSizes[2] = window_width / 6 * 4; // Last split occupies 4/6 of the screen
         ui->mainSplitter->setSizes(splitterSizes);
     }
+
+    connect(ui->userButton, &QPushButton::clicked,
+            this, &MainWindow::userButtonClicked);
 }
 
 MainWindow::~MainWindow()
@@ -47,4 +51,15 @@ MainWindow::~MainWindow()
 
     delete m_notebooks;
     delete ui;
+}
+
+void MainWindow::closeEvent (QCloseEvent *event)
+{
+    m_user_window.close();
+    event->accept();
+}
+
+void MainWindow::userButtonClicked()
+{
+    m_user_window.show();
 }
