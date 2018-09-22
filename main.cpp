@@ -5,6 +5,7 @@
 
 #include "mainwindow.h"
 #include "appinfo.h"
+#include "appconfig.h"
 
 int main(int argc, char *argv[])
 {
@@ -12,15 +13,8 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    QSettings config(COMPANY, CONFIG);
-    QSettings meta_config(COMPANY, CONFIG_META);
-
-    if (meta_config.contains("last_opened_window_size")) {
-        w.restoreGeometry(meta_config.value("last_opened_window_size").toByteArray());
-    }
-
     qDebug().nospace() << "Welcome to Vibrato Notes! v." << qPrintable( VERSION );
-    qDebug()           << "User Config Location:" << config.fileName();
+    qDebug()           << "User Config Location:" << config()->fileName();
 
     return a.exec();
 }

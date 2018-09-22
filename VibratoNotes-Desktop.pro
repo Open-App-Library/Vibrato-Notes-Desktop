@@ -23,16 +23,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        main.cpp \
-    treeitem.cpp \
+    appconfig.cpp \
+         main.cpp \
+     treeitem.cpp \
     treemodel.cpp \
-    mainwindow.cpp
+   mainwindow.cpp
 
 HEADERS += \
-    appinfo.h \
-    treeitem.h \
+    appconfig.h \
+      appinfo.h \
+     treeitem.h \
     treemodel.h \
-    mainwindow.h
+   mainwindow.h
 
 FORMS += \
     mainwindow.ui
