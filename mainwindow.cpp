@@ -39,6 +39,11 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->mainSplitter->setSizes(splitterSizes);
     }
 
+    // Remove margin on toolbar on Mac OS X
+#ifdef Q_OS_MAC
+    ui->customToolbar->layout()->setContentsMargins(0,0,0,0);
+#endif
+
     connect(ui->userButton, &QPushButton::clicked,
             this, &MainWindow::userButtonClicked);
 }
