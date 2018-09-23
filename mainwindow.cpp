@@ -6,6 +6,7 @@
 #include "appinfo.h"
 #include "appconfig.h"
 #include "mainwindow.h"
+#include "notelistmanager.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -13,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    m_note_list_manager = new NoteListManager(ui->noteList);
 
     if ( meta_config_key_exists(LAST_OPENED_WINDOW_SIZE) ) {
         this->restoreGeometry( meta_config_value(LAST_OPENED_WINDOW_SIZE).toByteArray() );
@@ -28,6 +30,11 @@ MainWindow::MainWindow(QWidget *parent) :
         splitterSizes[1] = window_width / 6;     // Second split is 1/6 of the screen
         splitterSizes[2] = window_width / 6 * 4; // Last split occupies 4/6 of the screen
         ui->mainSplitter->setSizes(splitterSizes);
+    }
+
+    for (int i = 0; i < 10; i++) {
+        Note *note1 = new Note();
+        m_note_list_manager->add_note(note1);
     }
 
     // Remove margin on toolbar on Mac OS X

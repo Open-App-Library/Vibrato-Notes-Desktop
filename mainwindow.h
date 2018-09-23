@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "userwindow.h"
+#include "notelistmanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -20,6 +21,7 @@ public:
 private:
     Ui::MainWindow *ui;
     UserWindow m_user_window;
+    NoteListManager *m_note_list_manager;
 
 public slots:
     void userButtonClicked();

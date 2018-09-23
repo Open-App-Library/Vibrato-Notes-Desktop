@@ -117,9 +117,7 @@
             <enum>Qt::ClickFocus</enum>
            </property>
            <property name="styleSheet">
-            <string notr="true">border-radius: 3;
-height: 20px;
-padding: 5px;</string>
+            <string notr="true"/>
            </property>
            <property name="placeholderText">
             <string>Search notes, notebooks, and tags</string>
@@ -308,7 +306,7 @@ QListWidget::item {
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
