@@ -26,13 +26,19 @@ SOURCES += \
     appconfig.cpp \
          main.cpp \
    mainwindow.cpp \
-    userwindow.cpp
+    userwindow.cpp \
+    notelistmanager.cpp \
+    notelistitem.cpp \
+    note.cpp
 
 HEADERS += \
     appconfig.h \
       appinfo.h \
    mainwindow.h \
-    userwindow.h
+    userwindow.h \
+    notelistmanager.h \
+    notelistitem.h \
+    note.h
 
 FORMS += \
     mainwindow.ui \

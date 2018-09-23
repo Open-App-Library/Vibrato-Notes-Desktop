@@ -37,15 +37,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // Hide the header of the notebook tree widget
     ui->notebookTreeWidget->header()->hide();
 
-    QListWidget *list = ui->noteList;
-    QListWidgetItem *myitem = new QListWidgetItem(list);
-
-    myitem->setText("Hello");
-
-    QPushButton *mybutton =  new QPushButton("Push me", this);
-    myitem->setSizeHint(QSize(myitem->sizeHint().width(), 100));
-    list->setItemWidget(myitem, mybutton);
-
     connect(ui->userButton, &QPushButton::clicked,
             this, &MainWindow::userButtonClicked);
 }
