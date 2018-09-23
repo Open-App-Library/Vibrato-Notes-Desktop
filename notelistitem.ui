@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>473</width>
-    <height>100</height>
+    <width>443</width>
+    <height>72</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -54,7 +54,7 @@
         <widget class="QLabel" name="title">
          <property name="font">
           <font>
-           <pointsize>14</pointsize>
+           <pointsize>12</pointsize>
           </font>
          </property>
          <property name="text">
@@ -66,11 +66,11 @@
         <widget class="QLabel" name="label">
          <property name="font">
           <font>
-           <pointsize>11</pointsize>
+           <pointsize>9</pointsize>
           </font>
          </property>
          <property name="text">
-          <string>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam</string>
+          <string>Sed ut perspiciatis unde omnis iste natus error sit siempre todo.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
