@@ -1,11 +1,11 @@
 #include <QSettings>
 #include <QFile>
 #include <QtDebug>
+#include <QCloseEvent>
 
 #include "appinfo.h"
 #include "appconfig.h"
 #include "mainwindow.h"
-#include "treemodel.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -13,15 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    QFile file(":/dummy-content.txt");
-    file.open(QIODevice::ReadOnly);
-    QStringList notebook_column_headers;
-    notebook_column_headers << tr("Notebooks");
-    m_notebooks = new TreeModel(notebook_column_headers, file.readAll());
-    file.close();
-
-    //ui->notebookTreeView->setModel(m_notebooks);
 
     if ( meta_config_key_exists(LAST_OPENED_WINDOW_SIZE) ) {
         this->restoreGeometry( meta_config_value(LAST_OPENED_WINDOW_SIZE).toByteArray() );
@@ -43,6 +34,17 @@ MainWindow::MainWindow(QWidget *parent) :
 #ifdef Q_OS_MAC
     ui->customToolbar->layout()->setContentsMargins(0,0,0,0);
 #endif
+    // Hide the header of the notebook tree widget
+    ui->notebookTreeWidget->header()->hide();
+
+    QListWidget *list = ui->noteList;
+    QListWidgetItem *myitem = new QListWidgetItem(list);
+
+    myitem->setText("Hello");
+
+    QPushButton *mybutton =  new QPushButton("Push me", this);
+    myitem->setSizeHint(QSize(myitem->sizeHint().width(), 100));
+    list->setItemWidget(myitem, mybutton);
 
     connect(ui->userButton, &QPushButton::clicked,
             this, &MainWindow::userButtonClicked);
@@ -54,7 +56,6 @@ MainWindow::~MainWindow()
     set_meta_config_value( LAST_OPENED_WINDOW_SIZE, this->saveGeometry() );
     set_meta_config_value( MAIN_SCREEN_LAYOUT, ui->mainSplitter->saveState() );
 
-    delete m_notebooks;
     delete ui;
 }
 

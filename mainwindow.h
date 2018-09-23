@@ -2,7 +2,6 @@
 #define NOTES_H
 
 #include <QMainWindow>
-#include "treemodel.h"
 #include "userwindow.h"
 
 namespace Ui {
@@ -21,7 +20,6 @@ public:
 private:
     Ui::MainWindow *ui;
     UserWindow m_user_window;
-    TreeModel *m_notebooks;
 
 public slots:
     void userButtonClicked();

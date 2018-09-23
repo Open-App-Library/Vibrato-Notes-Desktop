@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file alias="document-new">icons/elementary/actions/16/document-new.svg</file>
-        <file alias="user-info">icons/elementary/apps/64/system-users.svg</file>
-    </qresource>
-</RCC>

@@ -25,22 +25,19 @@ CONFIG += c++11
 SOURCES += \
     appconfig.cpp \
          main.cpp \
-     treeitem.cpp \
-    treemodel.cpp \
    mainwindow.cpp \
     userwindow.cpp
 
 HEADERS += \
     appconfig.h \
       appinfo.h \
-     treeitem.h \
-    treemodel.h \
    mainwindow.h \
     userwindow.h
 
 FORMS += \
     mainwindow.ui \
-    userwindow.ui
+    userwindow.ui \
+    notelistitem.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -54,7 +51,7 @@ macx {
 
 # Mac & Linux
 unix {
-    RESOURCES += elementary-icons.qrc # Add Elementary icons as fallback icons
+    #RESOURCES += # elementary-icons.qrc # Add Elementary icons as fallback icons
 }
 
 # Linux / BSD (NOT Mac) specfic things
@@ -69,4 +66,5 @@ win32 {
 
 
 RESOURCES += \
-    resource.qrc
+    resource.qrc \
+    breeze-icons.qrc

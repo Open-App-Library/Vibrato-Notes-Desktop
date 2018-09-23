@@ -110,7 +110,7 @@
           <widget class="QLineEdit" name="lineEdit">
            <property name="font">
             <font>
-             <pointsize>13</pointsize>
+             <pointsize>12</pointsize>
             </font>
            </property>
            <property name="focusPolicy">
@@ -132,11 +132,11 @@ padding: 5px;</string>
             <string/>
            </property>
            <property name="icon">
-            <iconset resource="elementary-icons.qrc">
+            <iconset theme="user-info" resource="breeze-icons.qrc">
              <normaloff>:/user-info</normaloff>:/user-info</iconset>
            </property>
            <property name="checkable">
-            <bool>true</bool>
+            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -252,26 +252,12 @@ QSplitter::handle:vertical {
          </widget>
          <widget class="QListWidget" name="noteList">
           <property name="styleSheet">
-           <string notr="true">QListWidget::item {
+           <string notr="true">/*
+QListWidget::item {
     padding: 6 0;
-}</string>
+}
+*/</string>
           </property>
-          <item>
-           <property name="text">
-            <string>My First Note</string>
-           </property>
-           <property name="font">
-            <font>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Tips for getting the most out of Vibrato</string>
-           </property>
-          </item>
          </widget>
          <widget class="QFrame" name="noteEditingArea">
           <property name="styleSheet">
@@ -322,7 +308,7 @@ QSplitter::handle:vertical {
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -407,7 +393,7 @@ QSplitter::handle:vertical {
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="elementary-icons.qrc"/>
+  <include location="breeze-icons.qrc"/>
  </resources>
  <connections/>
 </ui>
