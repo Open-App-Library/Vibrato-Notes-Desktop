@@ -11,6 +11,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
+
+    w.setWindowTitle("Vibrato Notes");
     w.show();
 
     qDebug().nospace() << "Welcome to Vibrato Notes! v." << qPrintable( VERSION );

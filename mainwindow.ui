@@ -14,14 +14,13 @@
    <string>Notes</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">.QFrame {
-	border: 0;
-	background-color: white;
-}
-
-#notebooksLabel {
+   <string notr="true">#notebooksLabel {
 	padding: 5px;
 	padding-bottom: 5px;
+}
+
+QSplitter::handle {
+/*	border-width: 100px;*/
 }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
@@ -174,9 +173,37 @@
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
-         <widget class="QWidget" name="">
+         <widget class="QFrame" name="theSidebar">
+          <property name="styleSheet">
+           <string notr="true">.QFrame {
+	border: 0;
+}
+QTreeView, QListView, QToolButton {
+	background-color: palette(light);
+}
+QToolButton {
+	border: 0;
+	padding: 6px;
+	transition: 100ms ease-in;
+}
+QToolButton:hover {
+	background-color: #6D6D6D;
+}</string>
+          </property>
           <layout class="QVBoxLayout" name="sidebar">
            <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
@@ -194,8 +221,7 @@
               </font>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: white;
-</string>
+              <string notr="true"/>
              </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
@@ -235,15 +261,7 @@
                  <cursorShape>ArrowCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QToolButton {
-	border: 0;
-	padding: 6px;
-	transition: 100ms ease-in;
-}
-QToolButton:hover {
-	background-color: #f9f9f9;
-	cursor: pointer;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>All Notes</string>
@@ -310,15 +328,7 @@ QToolButton:hover {
                   <cursorShape>ArrowCursor</cursorShape>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">QToolButton {
-	border: 0;
-	padding: 6px;
-	transition: 100ms ease-in;
-}
-QToolButton:hover {
-	background-color: #f9f9f9;
-	cursor: pointer;
-}</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>Notebooks</string>
@@ -430,15 +440,7 @@ QTreeWidget {
                   <cursorShape>ArrowCursor</cursorShape>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">QToolButton {
-	border: 0;
-	padding: 6px;
-	transition: 100ms ease-in;
-}
-QToolButton:hover {
-	background-color: #f9f9f9;
-	cursor: pointer;
-}</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>Tags</string>

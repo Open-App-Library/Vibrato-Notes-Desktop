@@ -57,7 +57,8 @@ QToolButton {
         <widget class="QLabel" name="title">
          <property name="font">
           <font>
-           <pointsize>13</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
           </font>
          </property>
          <property name="text">
@@ -67,11 +68,6 @@ QToolButton {
        </item>
        <item>
         <widget class="QLabel" name="label">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
          <property name="text">
           <string>Sed ut perspiciatis unde omnis iste natus error sit siempre todo.</string>
          </property>
