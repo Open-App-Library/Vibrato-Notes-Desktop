@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->customToolbar->layout()->setContentsMargins(0,0,0,0);
 #endif
     // Hide the header of the notebook tree widget
-    ui->notebookTreeWidget->header()->hide();
+    ui->TheTree->header()->hide();
 
     connect(ui->userButton, &QPushButton::clicked,
             this, &MainWindow::userButtonClicked);

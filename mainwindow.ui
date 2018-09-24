@@ -178,7 +178,7 @@ QSplitter::handle {
            <string notr="true">.QFrame {
 	border: 0;
 }
-QTreeView, QListView, QToolButton {
+QTreeView, QListView, QToolButton, #notebookFrame, #tagFrame {
 	background-color: palette(light);
 }
 QToolButton {
@@ -189,7 +189,14 @@ QToolButton:hover {
 	background-color: #6D6D6D;
 }
 #notebookFrame, #tagFrame {
-	border-left: 10px solid palette(midlight) !important;
+}
+
+QTreeWidget::item {
+    padding: 6 0;
+}
+QTreeWidget {
+	border: 0 !important;
+	margin: 0;
 }</string>
           </property>
           <layout class="QVBoxLayout" name="sidebar">
@@ -209,284 +216,89 @@ QToolButton:hover {
             <number>0</number>
            </property>
            <item>
-            <widget class="QFrame" name="topSidebarFrame">
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
+            <widget class="QTreeWidget" name="TheTree">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <property name="font">
-              <font>
-               <weight>50</weight>
-               <bold>false</bold>
-              </font>
+             <property name="cursor" stdset="0">
+              <cursorShape>ArrowCursor</cursorShape>
              </property>
              <property name="styleSheet">
               <string notr="true"/>
              </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_6">
-              <property name="leftMargin">
-               <number>0</number>
+             <column>
+              <property name="text">
+               <string>User Data</string>
               </property>
-              <property name="topMargin">
-               <number>0</number>
+             </column>
+             <item>
+              <property name="text">
+               <string>All Notes</string>
               </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>0</number>
+             </item>
+             <item>
+              <property name="text">
+               <string>Notebooks</string>
               </property>
               <item>
-               <widget class="QToolButton" name="allNotesButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="cursor">
-                 <cursorShape>ArrowCursor</cursorShape>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">padding-left: 10px;</string>
-                </property>
-                <property name="text">
-                 <string>All Notes</string>
-                </property>
-                <property name="icon">
-                 <iconset theme="folder-symbolic" resource="breeze-icons.qrc">
-                  <normaloff>:/folder-symbolic</normaloff>:/folder-symbolic</iconset>
-                </property>
-                <property name="toolButtonStyle">
-                 <enum>Qt::ToolButtonTextBesideIcon</enum>
-                </property>
-                <property name="arrowType">
-                 <enum>Qt::NoArrow</enum>
-                </property>
-               </widget>
+               <property name="text">
+                <string>Journaling</string>
+               </property>
               </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSplitter" name="sidebarSplitter">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <widget class="QFrame" name="notebookFrame">
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_3">
-               <property name="spacing">
-                <number>0</number>
+              <item>
+               <property name="text">
+                <string>Recipes</string>
                </property>
-               <property name="leftMargin">
-                <number>0</number>
+              </item>
+              <item>
+               <property name="text">
+                <string>New Subitem</string>
                </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
+              </item>
+              <item>
+               <property name="text">
+                <string>Science</string>
                </property>
                <item>
-                <widget class="QToolButton" name="notebooksButton">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>ArrowCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
+                <property name="text">
+                 <string>Solar research</string>
+                </property>
+                <item>
                  <property name="text">
-                  <string>Notebooks</string>
+                  <string>Solar panel pricing over time</string>
                  </property>
-                 <property name="icon">
-                  <iconset theme="folder-symbolic" resource="breeze-icons.qrc">
-                   <normaloff>:/folder-symbolic</normaloff>:/folder-symbolic</iconset>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="arrowType">
-                  <enum>Qt::NoArrow</enum>
-                 </property>
-                </widget>
+                </item>
                </item>
-               <item>
-                <widget class="QTreeWidget" name="notebookTreeWidget">
-                 <property name="cursor" stdset="0">
-                  <cursorShape>ArrowCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QTreeWidget::item {
-    padding: 6 0;
-}
-QTreeWidget {
-	border: 0 !important;
-	margin: 0;
-}
-
-</string>
-                 </property>
-                 <column>
-                  <property name="text">
-                   <string>Notebooks</string>
-                  </property>
-                 </column>
-                 <item>
-                  <property name="text">
-                   <string>Journaling</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Science</string>
-                  </property>
-                  <item>
-                   <property name="text">
-                    <string>Solar research</string>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>Solar panel pricing over time</string>
-                    </property>
-                   </item>
-                  </item>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Recipes</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QFrame" name="tagFrame">
-              <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+              </item>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tags</string>
               </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_4">
-               <property name="spacing">
-                <number>0</number>
+              <item>
+               <property name="text">
+                <string>2015</string>
                </property>
-               <property name="leftMargin">
-                <number>0</number>
+              </item>
+              <item>
+               <property name="text">
+                <string>2016</string>
                </property>
-               <property name="topMargin">
-                <number>0</number>
+              </item>
+              <item>
+               <property name="text">
+                <string>2017</string>
                </property>
-               <property name="rightMargin">
-                <number>0</number>
+              </item>
+              <item>
+               <property name="text">
+                <string>2018</string>
                </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QToolButton" name="notebooksButton_2">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>ArrowCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>Tags</string>
-                 </property>
-                 <property name="icon">
-                  <iconset theme="folder-symbolic" resource="breeze-icons.qrc">
-                   <normaloff>:/folder-symbolic</normaloff>:/folder-symbolic</iconset>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonTextBesideIcon</enum>
-                 </property>
-                 <property name="arrowType">
-                  <enum>Qt::NoArrow</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QListWidget" name="testTree">
-                 <property name="styleSheet">
-                  <string notr="true">QListWidget::item {
-    padding: 6 0;
-}
-QListWidget {
-	border: 0px !important;
-}</string>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>App Ideas</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Recipes</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Summer</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>2015</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>2016</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>2017</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>2018</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-              </layout>
-             </widget>
+              </item>
+             </item>
             </widget>
            </item>
           </layout>
