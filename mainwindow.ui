@@ -306,7 +306,7 @@ QListWidget::item {
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -320,7 +320,15 @@ QListWidget::item {
      <addaction name="actionPDF"/>
      <addaction name="actionHTML"/>
     </widget>
-    <addaction name="actionNew_Note"/>
+    <widget class="QMenu" name="menuNew">
+     <property name="title">
+      <string>New</string>
+     </property>
+     <addaction name="actionNote"/>
+     <addaction name="actionNotebook"/>
+     <addaction name="actionTag"/>
+    </widget>
+    <addaction name="menuNew"/>
     <addaction name="actionImport_Notes"/>
     <addaction name="menuExport"/>
    </widget>
@@ -343,11 +351,6 @@ QListWidget::item {
    <addaction name="menuEdit"/>
    <addaction name="menuAccount"/>
   </widget>
-  <action name="actionNew_Note">
-   <property name="text">
-    <string>New Note</string>
-   </property>
-  </action>
   <action name="actionImport_Notes">
    <property name="text">
     <string>Import</string>
@@ -386,6 +389,21 @@ QListWidget::item {
   <action name="actionSyncronise">
    <property name="text">
     <string>Synchronize</string>
+   </property>
+  </action>
+  <action name="actionNote">
+   <property name="text">
+    <string>Note</string>
+   </property>
+  </action>
+  <action name="actionNotebook">
+   <property name="text">
+    <string>Notebook</string>
+   </property>
+  </action>
+  <action name="actionTag">
+   <property name="text">
+    <string>Tag</string>
    </property>
   </action>
  </widget>
