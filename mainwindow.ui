@@ -250,13 +250,6 @@ QToolButton:hover {
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="font">
-                 <font>
-                  <pointsize>12</pointsize>
-                  <weight>75</weight>
-                  <bold>true</bold>
-                 </font>
-                </property>
                 <property name="cursor">
                  <cursorShape>ArrowCursor</cursorShape>
                 </property>
@@ -317,13 +310,6 @@ QToolButton:hover {
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
-                 </property>
                  <property name="cursor">
                   <cursorShape>ArrowCursor</cursorShape>
                  </property>
@@ -347,11 +333,6 @@ QToolButton:hover {
                </item>
                <item>
                 <widget class="QTreeWidget" name="notebookTreeWidget">
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                  </font>
-                 </property>
                  <property name="cursor" stdset="0">
                   <cursorShape>ArrowCursor</cursorShape>
                  </property>
@@ -428,13 +409,6 @@ QTreeWidget {
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>12</pointsize>
-                   <weight>75</weight>
-                   <bold>true</bold>
-                  </font>
                  </property>
                  <property name="cursor">
                   <cursorShape>ArrowCursor</cursorShape>
