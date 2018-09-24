@@ -183,11 +183,13 @@ QTreeView, QListView, QToolButton {
 }
 QToolButton {
 	border: 0;
-	padding: 6px;
-	transition: 100ms ease-in;
+	padding: 6 0;
 }
 QToolButton:hover {
 	background-color: #6D6D6D;
+}
+#notebookFrame, #tagFrame {
+	border-left: 10px solid palette(midlight) !important;
 }</string>
           </property>
           <layout class="QVBoxLayout" name="sidebar">
@@ -254,7 +256,7 @@ QToolButton:hover {
                  <cursorShape>ArrowCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true"/>
+                 <string notr="true">padding-left: 10px;</string>
                 </property>
                 <property name="text">
                  <string>All Notes</string>
@@ -280,6 +282,9 @@ QToolButton:hover {
               <enum>Qt::Vertical</enum>
              </property>
              <widget class="QFrame" name="notebookFrame">
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
               <property name="frameShape">
                <enum>QFrame::StyledPanel</enum>
               </property>
@@ -343,7 +348,9 @@ QToolButton:hover {
 QTreeWidget {
 	border: 0 !important;
 	margin: 0;
-}</string>
+}
+
+</string>
                  </property>
                  <column>
                   <property name="text">
@@ -439,22 +446,41 @@ QTreeWidget {
 }
 QListWidget {
 	border: 0px !important;
-	margin-left: 5px;
 }</string>
                  </property>
                  <item>
                   <property name="text">
-                   <string>#app-ideas</string>
+                   <string>App Ideas</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>#recipes</string>
+                   <string>Recipes</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>#summer</string>
+                   <string>Summer</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>2015</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>2016</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>2017</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>2018</string>
                   </property>
                  </item>
                 </widget>
@@ -564,9 +590,24 @@ QListWidget::item {
     <addaction name="actionLog_in"/>
     <addaction name="actionSyncronise"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <widget class="QMenu" name="menuTheme">
+     <property name="title">
+      <string>Theme</string>
+     </property>
+     <addaction name="actionDefault"/>
+     <addaction name="actionBreeze_Dark"/>
+    </widget>
+    <addaction name="actionGeneral"/>
+    <addaction name="menuTheme"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuAccount"/>
+   <addaction name="menuSettings"/>
   </widget>
   <action name="actionImport_Notes">
    <property name="text">
@@ -621,6 +662,35 @@ QListWidget::item {
   <action name="actionTag">
    <property name="text">
     <string>Tag</string>
+   </property>
+  </action>
+  <action name="actionGeneral">
+   <property name="text">
+    <string>General</string>
+   </property>
+  </action>
+  <action name="actionDefault">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Default</string>
+   </property>
+  </action>
+  <action name="actionBreeze">
+   <property name="text">
+    <string>Breeze</string>
+   </property>
+  </action>
+  <action name="actionBreeze_Dark">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dark</string>
    </property>
   </action>
  </widget>
