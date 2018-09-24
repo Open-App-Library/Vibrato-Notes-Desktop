@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file alias="user-info">icons/breeze-icons/icons/actions/24/user-identity.svg</file>
         <file alias="draw-star">icons/breeze-icons/icons/actions/16/draw-star.svg</file>
+        <file alias="folder-symbolic">icons/breeze-icons/icons/places/16/folder-black.svg</file>
     </qresource>
 </RCC>
