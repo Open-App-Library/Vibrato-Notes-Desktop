@@ -13,6 +13,9 @@ TreeManager::TreeManager(QTreeWidget *treeWidget)
     m_notebooks->setText(0, QObject::tr("Notebooks"));
     m_tags     ->setText(0, QObject::tr("Tags"));
 
+    add_no_notebooks_placeholder();
+    add_no_tags_placeholder();
+
     // Expand the tree by default
     for ( int i = 0; i < m_tree_widget->topLevelItemCount(); i++ ) {
         m_tree_widget->topLevelItem( i )->setExpanded(true);
@@ -34,6 +37,7 @@ QTreeWidgetItem *TreeManager::addNotebook(QString label, QTreeWidgetItem *parent
     QTreeWidgetItem *item = new QTreeWidgetItem(parent);
     item->setText(0, label);
     m_notebook_list.append(item);
+    remove_no_notebooks_placeholder();
     return item;
 }
 
@@ -58,6 +62,10 @@ void TreeManager::removeNotebook(int index)
         m_notebook_list.removeAt(indexDeleteList[i]);
         delete itemDeleteList[i];
     }
+
+    if (m_notebook_list.length() <= 0) {
+        add_no_notebooks_placeholder();
+    }
 }
 
 void TreeManager::removeNotebook(int index, QTreeWidgetItem *fosterParent)
@@ -80,4 +88,40 @@ void TreeManager::clearNotebooks()
         delete m_notebook_list[i];
         m_notebook_list.removeAt(i);
     }
+    add_no_notebooks_placeholder();
 }
+
+void TreeManager::add_no_notebooks_placeholder()
+{
+    if (m_no_notebooks_placedholder == nullptr) {
+        m_no_notebooks_placedholder = new QTreeWidgetItem(m_notebooks);
+        m_no_notebooks_placedholder->setText(0, "No Notebooks");
+        m_no_notebooks_placedholder->setDisabled(true);
+    }
+}
+
+void TreeManager::add_no_tags_placeholder()
+{
+    if (m_no_tags_placedholder == nullptr) {
+        m_no_tags_placedholder = new QTreeWidgetItem(m_tags);
+        m_no_tags_placedholder->setText(0, "No Tags");
+        m_no_tags_placedholder->setDisabled(true);
+    }
+}
+
+void TreeManager::remove_no_notebooks_placeholder()
+{
+    if (m_no_notebooks_placedholder != nullptr) {
+        delete m_no_notebooks_placedholder;
+        m_no_notebooks_placedholder = nullptr;
+    }
+}
+
+void TreeManager::remove_no_tags_placeholder()
+{
+    if (m_no_tags_placedholder != nullptr) {
+        delete m_no_tags_placedholder;
+        m_no_tags_placedholder = nullptr;
+    }
+}
+

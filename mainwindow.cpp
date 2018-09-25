@@ -22,6 +22,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_note_list_manager = new NoteListManager(ui->noteList);
     m_tree_manager      = new TreeManager(ui->TheTree);
 
+    m_tree_manager->addNotebook("My notebook");
+    m_tree_manager->clearNotebooks();
+    m_tree_manager->clearNotebooks();
+    m_tree_manager->addNotebook("Epic sty;e", m_tree_manager->addNotebook("Cool notebook"));
+    m_tree_manager->addNotebook("Good Recipes");
+
+
     if ( meta_config_key_exists(LAST_OPENED_WINDOW_SIZE) ) {
         this->restoreGeometry( meta_config_value(LAST_OPENED_WINDOW_SIZE).toByteArray() );
     }

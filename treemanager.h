@@ -4,7 +4,6 @@
  * The purpose
  */
 
-
 #ifndef TREEMANAGER_H
 #define TREEMANAGER_H
 #include <QTreeWidget>
@@ -37,6 +36,15 @@ private:
     QTreeWidgetItem *m_tags;
     QList<QTreeWidgetItem*> m_notebook_list;
     QList<QTreeWidgetItem*> m_tag_list;
+
+    QTreeWidgetItem *m_no_notebooks_placedholder = nullptr;
+    QTreeWidgetItem *m_no_tags_placedholder = nullptr;
+
+    void add_no_notebooks_placeholder();
+    void add_no_tags_placeholder();
+    void remove_no_notebooks_placeholder();
+    void remove_no_tags_placeholder();
+
 };
 
 #endif // TREEMANAGER_H
