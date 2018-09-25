@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     m_note_list_manager = new NoteListManager(ui->noteList);
+    m_tree_manager      = new TreeManager(ui->TheTree);
 
     if ( meta_config_key_exists(LAST_OPENED_WINDOW_SIZE) ) {
         this->restoreGeometry( meta_config_value(LAST_OPENED_WINDOW_SIZE).toByteArray() );
@@ -36,13 +37,6 @@ MainWindow::MainWindow(QWidget *parent) :
         splitterSizes[2] = window_width / 6 * 4; // Last split occupies 4/6 of the screen
         ui->mainSplitter->setSizes(splitterSizes);
     }
-
-    // Adding notes to note list
-    TreeManager *treeManager = new TreeManager(ui->TheTree);
-    treeManager->addNotebook("My Notebook");
-    treeManager->addNotebook("Cool Notebook");
-    QTreeWidgetItem *recipes = treeManager->addNotebook("Recipes");
-    treeManager->addNotebook("Tasty Dinners", recipes);
 
     loadDummyData();
     for (int i = 0; i < m_notes.length(); i++) {

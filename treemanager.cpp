@@ -26,32 +26,58 @@ QList<QTreeWidgetItem *> TreeManager::notebooks()
 
 QTreeWidgetItem *TreeManager::addNotebook(QString label)
 {
-    QTreeWidgetItem *item = new QTreeWidgetItem(m_notebooks);
-    item->setText(0, label);
-    return item;
+    return addNotebook(label, m_notebooks); // Uses the function below
 }
 
 QTreeWidgetItem *TreeManager::addNotebook(QString label, QTreeWidgetItem *parent)
 {
     QTreeWidgetItem *item = new QTreeWidgetItem(parent);
     item->setText(0, label);
+    m_notebook_list.append(item);
     return item;
 }
 
 void TreeManager::removeNotebook(int index)
 {
-    qDebug() << "The length of the notebook tree is" << m_notebook_list.length();
     QTreeWidgetItem *item = m_notebook_list[index];
-    delete item;
-    qDebug() << "The length of the notebook tree is NOW" << m_notebook_list.length();
-    //m_notebook_list.removeAt(index);
+    int childCount = item->childCount();
+    int deleteCount = 1; // Amount of items we are deleting (Including children)
+
+    QList<int> indexDeleteList = {index};
+    QList<QTreeWidgetItem*> itemDeleteList = {item};
+
+    for (int i = 0; i < childCount; i++) {
+        QTreeWidgetItem *child = item->child(i);
+        int childIndex = m_notebook_list.indexOf(child);
+        indexDeleteList.append(childIndex);
+        itemDeleteList.append(child);
+        deleteCount++; // We are deleting a child. Increment the delete count.
+    }
+
+    for (int i = deleteCount-1; i >= 0; i--) { // See? We are using the deleteCount here to do the deletions.
+        m_notebook_list.removeAt(indexDeleteList[i]);
+        delete itemDeleteList[i];
+    }
+}
+
+void TreeManager::removeNotebook(int index, QTreeWidgetItem *fosterParent)
+{
+    QTreeWidgetItem *item = m_notebook_list[index];
+    int childCount = item->childCount();
+
+    for (int i = 0; i < childCount; i++) {
+        QTreeWidgetItem *child = item->child(i);
+        QTreeWidgetItem *newChild = new QTreeWidgetItem(fosterParent);
+        newChild->setText(0, child->text(0));
+    }
+
+    removeNotebook(index);
 }
 
 void TreeManager::clearNotebooks()
 {
-    qDebug() << "CLEARING: The length of the notebook tree is" << m_notebook_list.length();
     for (int i = m_notebook_list.length()-1; i >= 0; i--) {
         delete m_notebook_list[i];
+        m_notebook_list.removeAt(i);
     }
-    qDebug() << "CLEARING: The length of the notebook tree is NOW" << m_notebook_list.length();
 }

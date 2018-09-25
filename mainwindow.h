@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "userwindow.h"
 #include "notelistmanager.h"
+#include "treemanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -24,6 +25,7 @@ private:
     Ui::MainWindow *ui;
     UserWindow m_user_window;
     NoteListManager *m_note_list_manager;
+    TreeManager     *m_tree_manager;
     // List of user's notes
     QList<Note*> m_notes;
 

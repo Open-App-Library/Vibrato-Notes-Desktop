@@ -20,6 +20,8 @@ public:
     QTreeWidgetItem *addNotebook(QString label);
     QTreeWidgetItem *addNotebook(QString label, QTreeWidgetItem *parent);
     void removeNotebook(int index);
+    // This function will delete a notebook. If there are children, it will assign them a new parent
+    void removeNotebook(int index, QTreeWidgetItem *fosterParent);
     void clearNotebooks();
 
     // Tag functions
