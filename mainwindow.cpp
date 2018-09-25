@@ -11,6 +11,7 @@
 #include "appconfig.h"
 #include "mainwindow.h"
 #include "notelistmanager.h"
+#include "treemanager.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -37,6 +38,12 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     // Adding notes to note list
+    TreeManager *treeManager = new TreeManager(ui->TheTree);
+    treeManager->addNotebook("My Notebook");
+    treeManager->addNotebook("Cool Notebook");
+    QTreeWidgetItem *recipes = treeManager->addNotebook("Recipes");
+    treeManager->addNotebook("Tasty Dinners", recipes);
+
     loadDummyData();
     for (int i = 0; i < m_notes.length(); i++) {
         m_note_list_manager->add_note(m_notes[i]);
@@ -48,10 +55,6 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
     // Hide the header of the notebook tree widget
     ui->TheTree->header()->hide();
-    // Expand the tree by default
-    for ( int i = 0; i < ui->TheTree->topLevelItemCount(); i++ ) {
-        ui->TheTree->topLevelItem( i )->setExpanded(true);
-    }
 
     connect(ui->userButton, &QPushButton::clicked,
             this, &MainWindow::userButtonClicked);

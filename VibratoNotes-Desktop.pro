@@ -29,7 +29,8 @@ SOURCES += \
     userwindow.cpp \
     notelistmanager.cpp \
     notelistitem.cpp \
-    note.cpp
+    note.cpp \
+    treemanager.cpp
 
 HEADERS += \
     appconfig.h \
@@ -39,7 +40,8 @@ HEADERS += \
     notelistmanager.h \
     notelistitem.h \
     note.h \
-    helper-io.h
+    helper-io.h \
+    treemanager.h
 
 FORMS += \
     mainwindow.ui \
