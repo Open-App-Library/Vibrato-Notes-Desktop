@@ -150,7 +150,13 @@ QSplitter::handle {
     </item>
     <item>
      <widget class="QWidget" name="contentArea" native="true">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <layout class="QVBoxLayout" name="verticalLayout_5">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -244,11 +250,7 @@ QTreeWidget {
          </widget>
          <widget class="QListWidget" name="noteList">
           <property name="styleSheet">
-           <string notr="true">/*
-QListWidget::item {
-    padding: 6 0;
-}
-*/</string>
+           <string notr="true"/>
           </property>
          </widget>
          <widget class="QFrame" name="noteEditingArea">

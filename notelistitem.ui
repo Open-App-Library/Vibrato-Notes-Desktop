@@ -25,8 +25,7 @@
 }
 QToolButton {
   border-radius: 2; 
-}
-width: 100%;</string>
+}</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="spacing">
@@ -62,6 +61,9 @@ width: 100%;</string>
          <width>16777215</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <property name="spacing">
