@@ -118,11 +118,6 @@ QSplitter::handle {
          </item>
          <item>
           <widget class="QLineEdit" name="lineEdit">
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-            </font>
-           </property>
            <property name="focusPolicy">
             <enum>Qt::ClickFocus</enum>
            </property>
@@ -228,6 +223,15 @@ QTreeWidget {
              </property>
              <property name="styleSheet">
               <string notr="true"/>
+             </property>
+             <property name="indentation">
+              <number>10</number>
+             </property>
+             <property name="animated">
+              <bool>true</bool>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
              <column>
               <property name="text">

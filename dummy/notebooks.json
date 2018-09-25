@@ -1,0 +1,20 @@
+[
+	{"title": "Million-Dollar Business Ideas", "is_public": false, "id": 0, "parent": null},
+	{"title": "Drawings", "is_public": true, "id": 1, "parent": null},
+	{"title": "Book Notes", "is_public": false, "id": 2, "parent": null},
+	{
+		"title": "Recipes", "is_public": true, "id": 3, "parent": null,
+		"children": [
+			{"title": "Summer Recipes", "is_public": false, "id": 4, "parent": 3},
+			{"title": "Winter Recipes", "is_public": false, "id": 5, "parent": 3},
+			{
+				"title": "Easy Recipes", "is_public": false, "id": 6, "parent": 3,
+				"children": [
+					{"title": "Breakfast", "is_public": false, "id": 7, "parent": 6},
+					{"title": "Lunch", "is_public": false, "id": 8, "parent": 6},
+					{"title": "Dinner", "is_public": false, "id": 9, "parent": 6}
+				]
+			}
+		]
+	}
+]

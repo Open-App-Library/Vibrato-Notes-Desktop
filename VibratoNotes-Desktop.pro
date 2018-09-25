@@ -38,7 +38,8 @@ HEADERS += \
     userwindow.h \
     notelistmanager.h \
     notelistitem.h \
-    note.h
+    note.h \
+    helper-io.h
 
 FORMS += \
     mainwindow.ui \
@@ -72,5 +73,5 @@ win32 {
 
 
 RESOURCES += \
-    resource.qrc \
-    breeze-icons.qrc
+    breeze-icons.qrc \
+    dummy-data.qrc

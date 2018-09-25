@@ -18,10 +18,14 @@ public:
     ~MainWindow();
     void closeEvent (QCloseEvent *event);
 
+    void loadDummyData();
+
 private:
     Ui::MainWindow *ui;
     UserWindow m_user_window;
     NoteListManager *m_note_list_manager;
+    // List of user's notes
+    QList<Note*> m_notes;
 
 public slots:
     void userButtonClicked();

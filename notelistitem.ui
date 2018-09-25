@@ -54,7 +54,7 @@ QToolButton {
         <number>0</number>
        </property>
        <item>
-        <widget class="QLabel" name="title">
+        <widget class="QLabel" name="titleLabel">
          <property name="font">
           <font>
            <weight>75</weight>
@@ -62,14 +62,14 @@ QToolButton {
           </font>
          </property>
          <property name="text">
-          <string>Lorem Ipsum</string>
+          <string>Untitled Note</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="excerptLabel">
          <property name="text">
-          <string>Sed ut perspiciatis unde omnis iste natus error sit siempre todo.</string>
+          <string>This note is a blank canvas for your mind.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>

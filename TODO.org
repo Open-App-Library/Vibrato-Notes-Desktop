@@ -1,2 +1,10 @@
 #+title: Todo List
 
+* TODO Load a JSON file of notes
+
+* TODO Create an easy C++ API for managing Notebooks and Tags
+
+* TODO Load JSON file of notebooks
+
+* TODO Load JSON of tags
+

@@ -2,7 +2,11 @@
 #include <QFile>
 #include <QtDebug>
 #include <QCloseEvent>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 
+#include "helper-io.h"
 #include "appinfo.h"
 #include "appconfig.h"
 #include "mainwindow.h"
@@ -32,9 +36,10 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->mainSplitter->setSizes(splitterSizes);
     }
 
-    for (int i = 0; i < 10; i++) {
-        Note *note1 = new Note();
-        m_note_list_manager->add_note(note1);
+    // Adding notes to note list
+    loadDummyData();
+    for (int i = 0; i < m_notes.length(); i++) {
+        m_note_list_manager->add_note(m_notes[i]);
     }
 
     // Remove margin on toolbar on Mac OS X
@@ -43,6 +48,10 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
     // Hide the header of the notebook tree widget
     ui->TheTree->header()->hide();
+    // Expand the tree by default
+    for ( int i = 0; i < ui->TheTree->topLevelItemCount(); i++ ) {
+        ui->TheTree->topLevelItem( i )->setExpanded(true);
+    }
 
     connect(ui->userButton, &QPushButton::clicked,
             this, &MainWindow::userButtonClicked);
@@ -61,6 +70,20 @@ void MainWindow::closeEvent (QCloseEvent *event)
 {
     m_user_window.close();
     event->accept();
+}
+
+void MainWindow::loadDummyData()
+{
+    QJsonDocument notes = fileToQJsonDocument(":/dummy/notes.json");
+    QJsonArray noteArray = notes.array();
+    for (int i = 0; i < noteArray.size(); i++) {
+        QJsonObject val = noteArray[i].toObject();
+        Note *note = new Note();
+        note->setTitle(val["title"].toString());
+        note->setText(val["text"].toString());
+        m_notes.append(note);
+    }
+
 }
 
 void MainWindow::userButtonClicked()

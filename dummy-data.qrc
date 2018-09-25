@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/dummy">
+        <file alias="notes.json">dummy/notes.json</file>
+        <file alias="notebooks.json">dummy/notebooks.json</file>
+        <file alias="tags.json">dummy/tags.json</file>
+        <file alias="example.json">dummy/jsonexample.json</file>
+    </qresource>
+</RCC>
