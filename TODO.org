@@ -1,10 +1,16 @@
 #+title: Todo List
 
-* TODO Load a JSON file of notes
+* TODO Add all of the fields to the Note class
 
-* TODO Create an easy C++ API for managing Notebooks and Tags
+* TODO Create a Notebook and Tag object class
 
-* TODO Load JSON file of notebooks
+* TODO Filter the note list based on notebooks and tags you click
 
-* TODO Load JSON of tags
+* DONE Load a JSON file of notes
+
+* DONE Create an easy C++ API for managing Notebooks and Tags
+
+* DONE Load JSON file of notebooks
+
+* DONE Load JSON of tags
 

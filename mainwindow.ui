@@ -357,8 +357,23 @@ QTreeWidget {
     <addaction name="actionGeneral"/>
     <addaction name="menuTheme"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuLayout">
+     <property name="title">
+      <string>Layout</string>
+     </property>
+     <addaction name="actionDefault_2"/>
+     <addaction name="actionFocus"/>
+     <addaction name="actionMinimal"/>
+    </widget>
+    <addaction name="menuLayout"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
    <addaction name="menuAccount"/>
    <addaction name="menuSettings"/>
   </widget>
@@ -444,6 +459,21 @@ QTreeWidget {
    </property>
    <property name="text">
     <string>Dark</string>
+   </property>
+  </action>
+  <action name="actionDefault_2">
+   <property name="text">
+    <string>Default</string>
+   </property>
+  </action>
+  <action name="actionFocus">
+   <property name="text">
+    <string>Focus</string>
+   </property>
+  </action>
+  <action name="actionMinimal">
+   <property name="text">
+    <string>Minimal</string>
    </property>
   </action>
  </widget>
