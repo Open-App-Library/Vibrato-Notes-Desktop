@@ -7,7 +7,7 @@ Note::Note()
     m_id = -1;
     m_title = "";
     m_text  = "";
-    m_notebook = nullptr;
+    m_notebook = -1;
     m_tags = {};
     // TODO: Implement custom timezones other than UTC
     m_date_created = QDateTime(QDate::currentDate(), QTime::currentTime(), QTimeZone::utc());
@@ -65,22 +65,22 @@ void Note::setDate_modified(const QDateTime &date_modified)
     m_date_modified = date_modified;
 }
 
-Notebook *Note::notebook() const
+int Note::notebook() const
 {
     return m_notebook;
 }
 
-void Note::setNotebook(Notebook *notebook)
+void Note::setNotebook(int id)
 {
-    m_notebook = notebook;
+    m_notebook = id;
 }
 
-QList<Tag *> Note::tags() const
+QList<int> Note::tags() const
 {
     return m_tags;
 }
 
-void Note::setTags(const QList<Tag *> &tags)
+void Note::setTags(const QList<int> &tags)
 {
     m_tags = tags;
 }

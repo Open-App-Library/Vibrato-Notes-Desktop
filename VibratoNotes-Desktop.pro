@@ -33,7 +33,9 @@ SOURCES += \
     src/treemanager.cpp \
     src/meta/notebook.cpp \
     src/meta/tag.cpp \
-    src/meta/db/notedatabase.cpp
+    src/meta/db/notedatabase.cpp \
+    src/meta/db/notebookdatabase.cpp \
+    src/meta/db/tagdatabase.cpp
 
 HEADERS += \
     src/appconfig.h \
@@ -47,7 +49,9 @@ HEADERS += \
     src/treemanager.h \
     src/meta/notebook.h \
     src/meta/tag.h \
-    src/meta/db/notedatabase.h
+    src/meta/db/notedatabase.h \
+    src/meta/db/notebookdatabase.h \
+    src/meta/db/tagdatabase.h
 
 FORMS += \
     ui/mainwindow.ui \

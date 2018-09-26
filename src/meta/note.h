@@ -25,20 +25,20 @@ public:
     QDateTime date_modified() const;
     void setDate_modified(const QDateTime &date_modified);
 
-    Notebook *notebook() const;
-    void setNotebook(Notebook *value);
+    int  notebook() const;
+    void setNotebook(int id);
 
-    QList<Tag *> tags() const;
-    void setTags(const QList<Tag *> &value);
+    QList<int> tags() const;
+    void setTags(const QList<int> &value);
 
 private:
-    int         m_id;
-    QString     m_title;
-    QString     m_text;
-    QDateTime       m_date_created;
-    QDateTime       m_date_modified;
-    Notebook    *m_notebook;
-    QList<Tag*> m_tags;
+    int        m_id;
+    QString    m_title;
+    QString    m_text;
+    QDateTime  m_date_created;
+    QDateTime  m_date_modified;
+    int        m_notebook;
+    QList<int> m_tags;
     // TODO: Implement user (shows ID of note owner)
     // TODO: Implement shared_with
     // TODO: Implement is_public

@@ -5,13 +5,12 @@
  * It is essentially a header-only library.
  */
 
-#ifndef HELPERIO_H
-#define HELPERIO_H
+#pragma once
 #include <QString>
 #include <QFile>
 #include <QJsonDocument>
 
-QString fileToQString(QString filename)
+static QString fileToQString(QString filename)
 {
     QString val;
     QFile file;
@@ -22,9 +21,7 @@ QString fileToQString(QString filename)
     return val;
 }
 
-QJsonDocument fileToQJsonDocument(QString filename)
+static QJsonDocument fileToQJsonDocument(QString filename)
 {
     return QJsonDocument::fromJson(fileToQString(filename).toUtf8());
 }
-
-#endif // HELPERIO_H

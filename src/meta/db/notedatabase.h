@@ -20,6 +20,13 @@ public:
     Note *addNote(Note *note);
     Note *addNote(Note note);
 
+    void removeNote(int index);
+    void removeNote(Note *note);
+    void clearNotes();
+
+    void loadJSON(QJsonDocument jsonDocument);
+
+    void loadDummyNotes();
 
 private:
     QList<Note*> m_list;

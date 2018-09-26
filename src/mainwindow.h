@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "userwindow.h"
+#include "meta/db/notedatabase.h"
 #include "notelistmanager.h"
 #include "treemanager.h"
 
@@ -28,7 +29,7 @@ private:
     NoteListManager *m_note_list_manager;
     TreeManager     *m_tree_manager;
     // List of user's notes
-    QList<Note*> m_notes;
+    NoteDatabase m_notes;
 
 public slots:
     void userButtonClicked();

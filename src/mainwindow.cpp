@@ -38,9 +38,10 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->mainSplitter->setSizes(splitterSizes);
     }
 
-    loadDummyData();
-    for (int i = 0; i < m_notes.length(); i++) {
-        m_note_list_manager->add_note(m_notes[i]);
+    m_notes.loadDummyNotes();
+
+    for (int i = 0; i < m_notes.list().length(); i++) {
+        m_note_list_manager->add_note(m_notes.list()[i]);
     }
 
     // Remove margin on toolbar on Mac OS X
@@ -48,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->customToolbar->layout()->setContentsMargins(0,0,0,0);
 #endif
     // Hide the header of the notebook tree widget
+
     ui->TheTree->header()->hide();
 
     connect(ui->userButton, &QPushButton::clicked,
@@ -86,16 +88,6 @@ void MainWindow::loadNotebookAndChildren(QJsonObject notebookObj, QTreeWidgetIte
 
 void MainWindow::loadDummyData()
 {
-    QJsonDocument notes = fileToQJsonDocument(":/dummy/notes.json");
-    QJsonArray noteArray = notes.array();
-    for (int i = 0; i < noteArray.size(); i++) {
-        QJsonObject val = noteArray[i].toObject();
-        Note *note = new Note();
-        note->setTitle(val["title"].toString());
-        note->setText(val["text"].toString());
-        m_notes.append(note);
-    }
-
     QJsonDocument notebooks = fileToQJsonDocument(":/dummy/notebooks.json");
     QJsonArray notebookArray = notebooks.array();
     for (int i = 0; i < notebookArray.size(); i++) {
