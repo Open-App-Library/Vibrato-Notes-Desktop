@@ -22,13 +22,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_note_list_manager = new NoteListManager(ui->noteList);
     m_tree_manager      = new TreeManager(ui->TheTree);
 
-    m_tree_manager->addNotebook("My notebook");
-    m_tree_manager->clearNotebooks();
-    m_tree_manager->clearNotebooks();
-    m_tree_manager->addNotebook("Epic sty;e", m_tree_manager->addNotebook("Cool notebook"));
-    m_tree_manager->addNotebook("Good Recipes");
-
-
     if ( meta_config_key_exists(LAST_OPENED_WINDOW_SIZE) ) {
         this->restoreGeometry( meta_config_value(LAST_OPENED_WINDOW_SIZE).toByteArray() );
     }
@@ -76,6 +69,21 @@ void MainWindow::closeEvent (QCloseEvent *event)
     event->accept();
 }
 
+void MainWindow::loadNotebookAndChildren(QJsonObject notebookObj, QTreeWidgetItem *parent)
+{
+    QString notebook_title = notebookObj.value("title").toString();
+    QJsonArray children = notebookObj["children"].toArray();
+    QTreeWidgetItem *newitem;
+    if (parent == nullptr) {
+        newitem = m_tree_manager->addNotebook(notebook_title);
+    } else {
+        newitem = m_tree_manager->addNotebook(notebook_title, parent);
+    }
+    for (int i = 0; i < children.size(); i++) {
+        loadNotebookAndChildren(children[i].toObject(), newitem);
+    }
+}
+
 void MainWindow::loadDummyData()
 {
     QJsonDocument notes = fileToQJsonDocument(":/dummy/notes.json");
@@ -88,6 +96,19 @@ void MainWindow::loadDummyData()
         m_notes.append(note);
     }
 
+    QJsonDocument notebooks = fileToQJsonDocument(":/dummy/notebooks.json");
+    QJsonArray notebookArray = notebooks.array();
+    for (int i = 0; i < notebookArray.size(); i++) {
+        QJsonObject val = notebookArray[i].toObject();
+        loadNotebookAndChildren(val);
+    }
+
+   QJsonDocument tags = fileToQJsonDocument(":/dummy/tags.json");
+   QJsonArray tagArray = tags.array();
+   for (int i = 0; i < tagArray.size(); i++) {
+       QJsonObject val = tagArray[i].toObject();
+       m_tree_manager->addTag(val["title"].toString());
+   }
 }
 
 void MainWindow::userButtonClicked()

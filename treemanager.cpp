@@ -91,6 +91,41 @@ void TreeManager::clearNotebooks()
     add_no_notebooks_placeholder();
 }
 
+QList<QTreeWidgetItem *> TreeManager::tags()
+{
+    return m_tag_list;
+}
+
+QTreeWidgetItem *TreeManager::addTag(QString label)
+{
+    QTreeWidgetItem *item = new QTreeWidgetItem(m_tags);
+    item->setText(0, label);
+    m_tag_list.append(item);
+    remove_no_tags_placeholder();
+    return item;
+}
+
+void TreeManager::removeTag(int index)
+{
+    QTreeWidgetItem *item = m_tag_list[index];
+
+    m_tag_list.removeAt(index);
+    delete item;
+
+    if (m_tag_list.length() <= 0) {
+        add_no_tags_placeholder();
+    }
+}
+
+void TreeManager::clearTags()
+{
+    for (int i = m_tag_list.length()-1; i >= 0; i--) {
+        delete m_tag_list[i];
+        m_tag_list.removeAt(i);
+    }
+    add_no_tags_placeholder();
+}
+
 void TreeManager::add_no_notebooks_placeholder()
 {
     if (m_no_notebooks_placedholder == nullptr) {

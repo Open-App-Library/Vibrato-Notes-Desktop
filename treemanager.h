@@ -1,7 +1,9 @@
 /*
  * "I speak for the trees" - The Lorax
  *
- * The purpose
+ * The purpose of this file is to control the tree view
+ * and provide a flexible API for managing notebooks
+ * and tags.
  */
 
 #ifndef TREEMANAGER_H
@@ -25,9 +27,9 @@ public:
 
     // Tag functions
     QList<QTreeWidgetItem*> tags();
-    void add_tag(QString label);
-    void remove_tag(int index);
-    void clear_tags();
+    QTreeWidgetItem *addTag(QString label);
+    void removeTag(int index);
+    void clearTags();
 
 private:
     QTreeWidget     *m_tree_widget;
