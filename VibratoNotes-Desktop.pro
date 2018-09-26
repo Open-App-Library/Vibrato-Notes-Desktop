@@ -29,7 +29,7 @@ SOURCES += \
   src/userwindow.cpp \
   src/notelistmanager.cpp \
   src/notelistitem.cpp \
-  src/note.cpp \
+  src/meta/note.cpp \
   src/treemanager.cpp
 
 HEADERS += \
@@ -39,7 +39,7 @@ HEADERS += \
   src/userwindow.h \
   src/notelistmanager.h \
   src/notelistitem.h \
-  src/note.h \
+  src/meta/note.h \
   src/helper-io.h \
   src/treemanager.h
 
