@@ -23,30 +23,30 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-    appconfig.cpp \
-         main.cpp \
-   mainwindow.cpp \
-    userwindow.cpp \
-    notelistmanager.cpp \
-    notelistitem.cpp \
-    note.cpp \
-    treemanager.cpp
+  src/appconfig.cpp \
+  src/main.cpp \
+  src/mainwindow.cpp \
+  src/userwindow.cpp \
+  src/notelistmanager.cpp \
+  src/notelistitem.cpp \
+  src/note.cpp \
+  src/treemanager.cpp
 
 HEADERS += \
-    appconfig.h \
-      appinfo.h \
-   mainwindow.h \
-    userwindow.h \
-    notelistmanager.h \
-    notelistitem.h \
-    note.h \
-    helper-io.h \
-    treemanager.h
+  src/appconfig.h \
+  src/appinfo.h \
+  src/mainwindow.h \
+  src/userwindow.h \
+  src/notelistmanager.h \
+  src/notelistitem.h \
+  src/note.h \
+  src/helper-io.h \
+  src/treemanager.h
 
 FORMS += \
-    mainwindow.ui \
-    userwindow.ui \
-    notelistitem.ui
+    ui/mainwindow.ui \
+    ui/userwindow.ui \
+    ui/notelistitem.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -75,5 +75,5 @@ win32 {
 
 
 RESOURCES += \
-    breeze-icons.qrc \
-    dummy-data.qrc
+    resources/breeze-icons.qrc \
+    resources/dummy-data.qrc
