@@ -3,7 +3,7 @@
 #include <QList>
 #include <QListWidget>
 #include "notelistitem.h"
-#include "note.h"
+#include "meta/note.h"
 
 class NoteListManager
 {
