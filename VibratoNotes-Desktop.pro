@@ -23,29 +23,31 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-  src/appconfig.cpp \
-  src/main.cpp \
-  src/mainwindow.cpp \
-  src/userwindow.cpp \
-  src/notelistmanager.cpp \
-  src/notelistitem.cpp \
-  src/meta/note.cpp \
-  src/treemanager.cpp \
+    src/appconfig.cpp \
+    src/main.cpp \
+    src/mainwindow.cpp \
+    src/userwindow.cpp \
+    src/notelistmanager.cpp \
+    src/notelistitem.cpp \
+    src/meta/note.cpp \
+    src/treemanager.cpp \
     src/meta/notebook.cpp \
-    src/meta/tag.cpp
+    src/meta/tag.cpp \
+    src/meta/db/notedatabase.cpp
 
 HEADERS += \
-  src/appconfig.h \
-  src/appinfo.h \
-  src/mainwindow.h \
-  src/userwindow.h \
-  src/notelistmanager.h \
-  src/notelistitem.h \
-  src/meta/note.h \
-  src/helper-io.h \
-  src/treemanager.h \
+    src/appconfig.h \
+    src/appinfo.h \
+    src/mainwindow.h \
+    src/userwindow.h \
+    src/notelistmanager.h \
+    src/notelistitem.h \
+    src/meta/note.h \
+    src/helper-io.h \
+    src/treemanager.h \
     src/meta/notebook.h \
-    src/meta/tag.h
+    src/meta/tag.h \
+    src/meta/db/notedatabase.h
 
 FORMS += \
     ui/mainwindow.ui \

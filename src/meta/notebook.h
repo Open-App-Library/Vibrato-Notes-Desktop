@@ -17,14 +17,10 @@ public:
     Notebook *parent() const;
     void setParent(Notebook *parent);
 
-    QList<Notebook *> children() const;
-    void setChildren(const QList<Notebook *> &children);
-
 private:
     int m_id;
     QString m_title;
     Notebook *m_parent;
-    QList<Notebook*> m_children;
     // TODO: Implement user
     // TODO: implement shared_with
     // TODO: implement is_public

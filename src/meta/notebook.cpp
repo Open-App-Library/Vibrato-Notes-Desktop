@@ -36,13 +36,3 @@ void Notebook::setParent(Notebook *parent)
 {
     m_parent = parent;
 }
-
-QList<Notebook *> Notebook::children() const
-{
-    return m_children;
-}
-
-void Notebook::setChildren(const QList<Notebook *> &children)
-{
-    m_children = children;
-}
