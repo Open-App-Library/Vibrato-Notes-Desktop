@@ -30,7 +30,9 @@ SOURCES += \
   src/notelistmanager.cpp \
   src/notelistitem.cpp \
   src/meta/note.cpp \
-  src/treemanager.cpp
+  src/treemanager.cpp \
+    src/meta/notebook.cpp \
+    src/meta/tag.cpp
 
 HEADERS += \
   src/appconfig.h \
@@ -41,7 +43,9 @@ HEADERS += \
   src/notelistitem.h \
   src/meta/note.h \
   src/helper-io.h \
-  src/treemanager.h
+  src/treemanager.h \
+    src/meta/notebook.h \
+    src/meta/tag.h
 
 FORMS += \
     ui/mainwindow.ui \
