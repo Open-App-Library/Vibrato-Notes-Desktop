@@ -4,8 +4,8 @@
 #include <string>
 
 #include "mainwindow.h"
-#include "appinfo.h"
-#include "appconfig.h"
+#include "meta/info/appinfo.h"
+#include "meta/info/appconfig.h"
 
 int main(int argc, char *argv[])
 {

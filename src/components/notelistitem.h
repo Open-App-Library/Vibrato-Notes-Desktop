@@ -1,7 +1,7 @@
 #ifndef NOTELISTITEM_H
 #define NOTELISTITEM_H
 #include <QListWidgetItem>
-#include "meta/note.h"
+#include "../meta/note.h"
 #include "ui_notelistitem.h"
 
 #define NOTE_LIST_ITEM_HEIGHT 75

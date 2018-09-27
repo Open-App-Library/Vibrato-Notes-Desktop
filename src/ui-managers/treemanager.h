@@ -10,7 +10,7 @@
 #define TREEMANAGER_H
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
-#include "meta/db/notebookdatabase.h"
+#include "../meta/db/notebookdatabase.h"
 
 class TreeManager
 {

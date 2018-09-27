@@ -5,8 +5,8 @@
 #include "userwindow.h"
 #include "meta/db/notedatabase.h"
 #include "meta/db/notebookdatabase.h"
-#include "notelistmanager.h"
-#include "treemanager.h"
+#include "ui-managers/notelistmanager.h"
+#include "ui-managers/treemanager.h"
 
 namespace Ui {
 class MainWindow;

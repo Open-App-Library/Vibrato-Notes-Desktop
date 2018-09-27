@@ -4,7 +4,7 @@
 #include <QJsonArray>
 #include "notedatabase.h"
 
-#include "../../helper-io.h"
+#include <helper-io.hpp>
 
 NoteDatabase::NoteDatabase()
 {

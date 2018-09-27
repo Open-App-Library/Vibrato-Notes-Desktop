@@ -6,12 +6,12 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-#include "helper-io.h"
-#include "appinfo.h"
-#include "appconfig.h"
+#include <helper-io.hpp>
+#include "meta/info/appinfo.h"
+#include "meta/info/appconfig.h"
 #include "mainwindow.h"
-#include "notelistmanager.h"
-#include "treemanager.h"
+#include "ui-managers/notelistmanager.h"
+#include "ui-managers/treemanager.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :

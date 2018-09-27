@@ -2,8 +2,8 @@
 #define NOTELISTMANAGER_H
 #include <QList>
 #include <QListWidget>
-#include "notelistitem.h"
-#include "meta/note.h"
+#include "../components/notelistitem.h"
+#include "../meta/note.h"
 
 class NoteListManager
 {

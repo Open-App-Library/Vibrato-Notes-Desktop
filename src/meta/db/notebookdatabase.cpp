@@ -3,7 +3,7 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include "notebookdatabase.h"
-#include "../../helper-io.h"
+#include <helper-io.hpp>
 
 NotebookDatabase::NotebookDatabase()
 {

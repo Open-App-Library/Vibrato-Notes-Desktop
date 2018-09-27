@@ -23,14 +23,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-    src/appconfig.cpp \
+    src/meta/info/appconfig.cpp \
     src/main.cpp \
     src/mainwindow.cpp \
     src/userwindow.cpp \
-    src/notelistmanager.cpp \
-    src/notelistitem.cpp \
+    src/ui-managers/notelistmanager.cpp \
+    src/components/notelistitem.cpp \
     src/meta/note.cpp \
-    src/treemanager.cpp \
+    src/ui-managers/treemanager.cpp \
     src/meta/notebook.cpp \
     src/meta/tag.cpp \
     src/meta/db/notedatabase.cpp \
@@ -38,20 +38,22 @@ SOURCES += \
     src/meta/db/tagdatabase.cpp
 
 HEADERS += \
-    src/appconfig.h \
-    src/appinfo.h \
+    src/meta/info/appconfig.h \
+    src/meta/info/appinfo.h \
     src/mainwindow.h \
     src/userwindow.h \
-    src/notelistmanager.h \
-    src/notelistitem.h \
+    src/ui-managers/notelistmanager.h \
+    src/components/notelistitem.h \
     src/meta/note.h \
-    src/helper-io.h \
-    src/treemanager.h \
+    src/ui-managers/treemanager.h \
     src/meta/notebook.h \
     src/meta/tag.h \
     src/meta/db/notedatabase.h \
     src/meta/db/notebookdatabase.h \
-    src/meta/db/tagdatabase.h
+    src/meta/db/tagdatabase.h \
+    includes/helper-io.hpp
+
+INCLUDEPATH += $$PWD/include
 
 FORMS += \
     ui/mainwindow.ui \
