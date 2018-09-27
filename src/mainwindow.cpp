@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     m_note_list_manager = new NoteListManager(ui->noteList);
     m_tree_manager      = new TreeManager(ui->TheTree);
+    m_notes = new NoteDatabase;
+    m_notebooks = new NotebookDatabase;
 
     if ( meta_config_key_exists(LAST_OPENED_WINDOW_SIZE) ) {
         this->restoreGeometry( meta_config_value(LAST_OPENED_WINDOW_SIZE).toByteArray() );
@@ -38,11 +40,9 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->mainSplitter->setSizes(splitterSizes);
     }
 
-    m_notes.loadDummyNotes();
-
-    for (int i = 0; i < m_notes.list().length(); i++) {
-        m_note_list_manager->add_note(m_notes.list()[i]);
-    }
+    m_notes->loadDummyNotes();
+    m_notebooks->loadDummyNotebooks();
+    m_tree_manager->loadNotebooksFromNotebookDatabase(m_notebooks);
 
     // Remove margin on toolbar on Mac OS X
 #ifdef Q_OS_MAC
@@ -62,6 +62,10 @@ MainWindow::~MainWindow()
     set_meta_config_value( LAST_OPENED_WINDOW_SIZE, this->saveGeometry() );
     set_meta_config_value( MAIN_SCREEN_LAYOUT, ui->mainSplitter->saveState() );
 
+    delete m_note_list_manager;
+    delete m_tree_manager;
+    delete m_notes;
+    delete m_notebooks;
     delete ui;
 }
 
@@ -71,29 +75,8 @@ void MainWindow::closeEvent (QCloseEvent *event)
     event->accept();
 }
 
-void MainWindow::loadNotebookAndChildren(QJsonObject notebookObj, QTreeWidgetItem *parent)
-{
-    QString notebook_title = notebookObj.value("title").toString();
-    QJsonArray children = notebookObj["children"].toArray();
-    QTreeWidgetItem *newitem;
-    if (parent == nullptr) {
-        newitem = m_tree_manager->addNotebook(notebook_title);
-    } else {
-        newitem = m_tree_manager->addNotebook(notebook_title, parent);
-    }
-    for (int i = 0; i < children.size(); i++) {
-        loadNotebookAndChildren(children[i].toObject(), newitem);
-    }
-}
-
 void MainWindow::loadDummyData()
 {
-    QJsonDocument notebooks = fileToQJsonDocument(":/dummy/notebooks.json");
-    QJsonArray notebookArray = notebooks.array();
-    for (int i = 0; i < notebookArray.size(); i++) {
-        QJsonObject val = notebookArray[i].toObject();
-        loadNotebookAndChildren(val);
-    }
 
    QJsonDocument tags = fileToQJsonDocument(":/dummy/tags.json");
    QJsonArray tagArray = tags.array();

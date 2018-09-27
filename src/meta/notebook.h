@@ -20,6 +20,9 @@ public:
     QList<Notebook *> children() const;
     void setChildren(const QList<Notebook *> &children);
 
+    void addChild(Notebook *child);
+    void removeChild(Notebook *child);
+
 private:
     int m_id;
     QString m_title;

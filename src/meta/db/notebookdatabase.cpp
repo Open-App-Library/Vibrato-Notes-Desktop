@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -14,16 +15,26 @@ QList<Notebook *> NotebookDatabase::list() const
     return m_list;
 }
 
-QList<Notebook*> NotebookDatabase::list_recursively(const Notebook *notebook) const
+int NotebookDatabase::size() const
+{
+    return m_list.size();
+}
+
+
+QList<Notebook *> NotebookDatabase::list_recursively() const
+{
+    return list_recursively(m_list);
+}
+
+QList<Notebook*> NotebookDatabase::list_recursively(const QList<Notebook*> notebookList) const
 {
     QList<Notebook*> the_list;
-    if (notebook == nullptr) {
-        for (int i = 0; i < m_list.size(); i ++) {
-            the_list.append(m_list[i]);
+    for (int i = 0; i < notebookList.size(); i++) {
+        the_list.append(notebookList[i]);
+        QList<Notebook*> the_children = list_recursively(notebookList[i]->children());
+        for (int j = 0; j < the_children.size(); j++) {
+            the_list.append(the_children[j]);
         }
-
-    } else {
-
     }
     return the_list;
 }
@@ -46,16 +57,36 @@ void NotebookDatabase::clearNotebooks()
     }
 }
 
+void NotebookDatabase::jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent)
+{
+    int     notebook_id    = notebookObj.value("id").toInt();
+    QString notebook_title = notebookObj.value("title").toString();
+    QJsonArray children = notebookObj["children"].toArray();
+    Notebook *newNotebook;
+    newNotebook = new Notebook;
+    newNotebook->setId(notebook_id);
+    newNotebook->setTitle(notebook_title);
+
+    if (parent == nullptr) {           // No parent? Add to main database list
+        m_list.append(newNotebook);
+    } else {                           // else, Add to the children list of parent
+        parent->addChild(newNotebook); // Do note that addChild also modifies newNotebook's parent object automatically.
+    }
+    for (int i = 0; i < children.size(); i++) {
+        jsonObjectToNotebookList(children[i].toObject(), newNotebook);
+    }
+}
+
 void NotebookDatabase::loadJSON(QJsonDocument jsonDocument)
 {
     QJsonArray notebookArray = jsonDocument.array();
     for (int i = 0; i < notebookArray.size(); i++) {
-        //QJsonObject val = notebookArray[i].toObject();
-        //loadNotebookAndChildren(val);
+        jsonObjectToNotebookList( notebookArray[i].toObject() );
     }
 }
 
 void NotebookDatabase::loadDummyNotebooks()
 {
-    //QJsonDocument notebooks = fileToQJsonDocument(":/dummy/notebooks.json");
+    QJsonDocument notebooks = fileToQJsonDocument(":/dummy/notebooks.json");
+    loadJSON(notebooks);
 }

@@ -29,6 +29,7 @@ QList<QTreeWidgetItem *> TreeManager::notebooks()
 
 QTreeWidgetItem *TreeManager::addNotebook(QString label)
 {
+    // This calls the addNotebook function directly below
     return addNotebook(label, m_notebooks); // Uses the function below
 }
 
@@ -36,6 +37,20 @@ QTreeWidgetItem *TreeManager::addNotebook(QString label, QTreeWidgetItem *parent
 {
     QTreeWidgetItem *item = new QTreeWidgetItem(parent);
     item->setText(0, label);
+
+    // This calls addNotebook(QTreeWidgetItem *item, QTreeWidgetItem *parent)
+    return addNotebook(item, parent);
+}
+
+QTreeWidgetItem *TreeManager::addNotebook(QTreeWidgetItem *item)
+{
+    // This calls the addNotebook function directly below
+    return addNotebook(item, m_notebooks);
+}
+
+QTreeWidgetItem *TreeManager::addNotebook(QTreeWidgetItem *item, QTreeWidgetItem *parent)
+{
+    parent->addChild(item);
     m_notebook_list.append(item);
     remove_no_notebooks_placeholder();
     return item;
@@ -89,6 +104,27 @@ void TreeManager::clearNotebooks()
         m_notebook_list.removeAt(i);
     }
     add_no_notebooks_placeholder();
+}
+
+void TreeManager::loadNotebookObjectAndChildren(Notebook *notebook, QTreeWidgetItem *parent)
+{
+    QTreeWidgetItem *treeitem = new QTreeWidgetItem;
+    treeitem->setText(0, notebook->title());
+    if (parent == nullptr) {
+        addNotebook(treeitem);
+    } else {
+        addNotebook(treeitem, parent);
+    }
+    for (int i = 0; i < notebook->children().size(); i++) {
+        loadNotebookObjectAndChildren(notebook->children()[i], treeitem);
+    }
+}
+
+void TreeManager::loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase)
+{
+    for (int i = 0; i < notebookDatabase->size(); i++) {
+        loadNotebookObjectAndChildren(notebookDatabase->list()[i]);
+    }
 }
 
 QList<QTreeWidgetItem *> TreeManager::tags()

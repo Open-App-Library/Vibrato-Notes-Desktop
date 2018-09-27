@@ -10,6 +10,7 @@
 #define TREEMANAGER_H
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
+#include "meta/db/notebookdatabase.h"
 
 class TreeManager
 {
@@ -18,18 +19,21 @@ public:
 
     // Notebook functions
     QList<QTreeWidgetItem*> notebooks();
-    QTreeWidgetItem *addNotebook(QString label);
-    QTreeWidgetItem *addNotebook(QString label, QTreeWidgetItem *parent);
-    void removeNotebook(int index);
-    // This function will delete a notebook. If there are children, it will assign them a new parent
-    void removeNotebook(int index, QTreeWidgetItem *fosterParent);
-    void clearNotebooks();
+    QTreeWidgetItem        *addNotebook(QString label);
+    QTreeWidgetItem        *addNotebook(QString label, QTreeWidgetItem *parent);
+    QTreeWidgetItem        *addNotebook(QTreeWidgetItem *item);
+    QTreeWidgetItem        *addNotebook(QTreeWidgetItem *item, QTreeWidgetItem *parent);
+    void                    removeNotebook(int index);
+    void                    removeNotebook(int index, QTreeWidgetItem *fosterParent);
+    void                    clearNotebooks();
+    void                    loadNotebookObjectAndChildren(Notebook *notebook, QTreeWidgetItem *parent=nullptr);
+    void                    loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase);
 
     // Tag functions
     QList<QTreeWidgetItem*> tags();
-    QTreeWidgetItem *addTag(QString label);
-    void removeTag(int index);
-    void clearTags();
+    QTreeWidgetItem        *addTag(QString label);
+    void                    removeTag(int index);
+    void                    clearTags();
 
 private:
     QTreeWidget     *m_tree_widget;

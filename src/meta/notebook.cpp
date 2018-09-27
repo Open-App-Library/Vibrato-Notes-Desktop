@@ -46,3 +46,16 @@ void Notebook::setChildren(const QList<Notebook *> &children)
 {
     m_children = children;
 }
+
+void Notebook::addChild(Notebook *child)
+{
+    m_children.append(child);
+    child->setParent(this);
+}
+
+void Notebook::removeChild(Notebook *child)
+{
+    int index = m_children.indexOf(child);
+    child->setParent(nullptr);
+    m_children.removeAt(index);
+}

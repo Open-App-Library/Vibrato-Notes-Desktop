@@ -8,7 +8,9 @@ class NotebookDatabase
 public:
     NotebookDatabase();
     QList<Notebook *> list() const;
-    QList<Notebook *> list_recursively(const Notebook *notebook=nullptr) const;
+    int               size() const;
+    QList<Notebook *> list_recursively() const;
+    QList<Notebook *> list_recursively(const QList<Notebook*> notebookList) const;
 
     void addNotebook(Notebook *notebook);
     void addNotebook(Notebook *notebook, Notebook *parent);
@@ -19,6 +21,8 @@ public:
     void loadJSON(QJsonDocument jsonDocument);
 
     void loadDummyNotebooks();
+
+    void jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent=nullptr);
 
 private:
     QList<Notebook*> m_list;
