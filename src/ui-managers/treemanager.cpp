@@ -1,10 +1,9 @@
 #include "treemanager.h"
 #include <QDebug>
 
-TreeManager::TreeManager(QTreeWidget *treeWidget)
+TreeManager::TreeManager(QTreeWidget *treeWidget) :
+    m_tree_widget(treeWidget)
 {
-    m_tree_widget = treeWidget;
-
     m_all_notes = new QTreeWidgetItem(m_tree_widget);
     m_notebooks = new QTreeWidgetItem(m_tree_widget);
     m_tags      = new QTreeWidgetItem(m_tree_widget);
@@ -20,6 +19,8 @@ TreeManager::TreeManager(QTreeWidget *treeWidget)
     for ( int i = 0; i < m_tree_widget->topLevelItemCount(); i++ ) {
         m_tree_widget->topLevelItem( i )->setExpanded(true);
     }
+    m_tree_widget->setCurrentItem(m_all_notes);
+    //treeWidget->header()->hide();
 }
 
 QList<QTreeWidgetItem *> TreeManager::notebooks()
@@ -125,6 +126,7 @@ void TreeManager::loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDa
     for (int i = 0; i < notebookDatabase->size(); i++) {
         loadNotebookObjectAndChildren(notebookDatabase->list()[i]);
     }
+    m_tree_widget->expandAll();
 }
 
 QList<QTreeWidgetItem *> TreeManager::tags()

@@ -4,6 +4,7 @@
 #include <QListWidget>
 #include "../components/notelistitem.h"
 #include "../meta/note.h"
+#include "../meta/db/notedatabase.h"
 
 class NoteListManager
 {
@@ -14,6 +15,7 @@ public:
     NoteListItem *add_note(Note *note);
     void remove_note(int index);
     void clear();
+    void loadNotesFromNoteDatabase(NoteDatabase *noteDatabase);
 private:
     QListWidget *m_listWidget;
     QList<NoteListItem*> m_noteList;

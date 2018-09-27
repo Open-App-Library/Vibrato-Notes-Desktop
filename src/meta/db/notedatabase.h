@@ -16,6 +16,7 @@ public:
 
     // Lists out the notes in the in-memory database
     QList<Note*> list() const;
+    int          size() const;
 
     Note *addNote(Note *note);
     Note *addNote(Note note);

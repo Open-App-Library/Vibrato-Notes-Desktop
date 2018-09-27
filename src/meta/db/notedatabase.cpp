@@ -16,6 +16,11 @@ QList<Note *> NoteDatabase::list() const
     return m_list;
 }
 
+int NoteDatabase::size() const
+{
+    return m_list.size();
+}
+
 Note *NoteDatabase::addNote(Note *note)
 {
     m_list.append(note);

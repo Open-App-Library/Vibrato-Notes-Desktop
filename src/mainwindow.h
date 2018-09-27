@@ -24,6 +24,7 @@ public:
     void loadNotebookAndChildren(QJsonObject notebookObj, QTreeWidgetItem *parent=nullptr);
     void loadDummyData();
 
+    void treeItemChanged();
 private:
     Ui::MainWindow *ui;
     UserWindow m_user_window;

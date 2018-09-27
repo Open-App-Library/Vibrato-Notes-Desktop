@@ -21,7 +21,7 @@ NoteListItem *NoteListManager::add_note(Note *note)
 
 void NoteListManager::remove_note(int index)
 {
-
+    // TODO: Implement remove_note
 }
 
 void NoteListManager::clear()
@@ -30,4 +30,12 @@ void NoteListManager::clear()
         m_noteList[i]->trash();
     }
     m_noteList.clear();
+}
+
+void NoteListManager::loadNotesFromNoteDatabase(NoteDatabase *noteDatabase)
+{
+    clear();
+    for (int i = 0; i < noteDatabase->size(); i++) {
+        add_note(noteDatabase->list()[i]);
+    }
 }

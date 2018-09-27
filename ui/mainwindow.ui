@@ -135,7 +135,7 @@ QSplitter::handle {
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="user-info" resource="breeze-icons.qrc">
+            <iconset theme="user-info" resource="../resources/breeze-icons.qrc">
              <normaloff>:/user-info</normaloff>:/user-info</iconset>
            </property>
            <property name="checkable">
@@ -171,6 +171,11 @@ QSplitter::handle {
        </property>
        <item>
         <widget class="QSplitter" name="mainSplitter">
+         <property name="styleSheet">
+          <string notr="true">QSplitter::handle {
+	background: palette(light);
+}</string>
+         </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -479,7 +484,7 @@ QTreeWidget {
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="breeze-icons.qrc"/>
+  <include location="../resources/breeze-icons.qrc"/>
  </resources>
  <connections/>
 </ui>
