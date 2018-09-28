@@ -81,12 +81,8 @@ void BasicTreeItem::setParent(BasicTreeItem *parent)
 
 int BasicTreeItem::row() const
 {
-    qDebug() << "hello";
-    qDebug() << m_label;
     if (m_parentItem) {
-        qDebug() << "Made it this far";
         return m_parentItem->m_childItems.indexOf(const_cast<BasicTreeItem*>(this));
     }
-    qDebug() << "Made it even this far";
     return 0;
 }

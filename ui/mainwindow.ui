@@ -302,7 +302,7 @@ QTreeView {
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>19</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -366,10 +366,11 @@ QTreeView {
       <string>Layout</string>
      </property>
      <addaction name="actionDefault_2"/>
-     <addaction name="actionFocus"/>
      <addaction name="actionMinimal"/>
+     <addaction name="actionFocus"/>
     </widget>
     <addaction name="menuLayout"/>
+    <addaction name="actionShow_Menubar"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -474,6 +475,17 @@ QTreeView {
   <action name="actionMinimal">
    <property name="text">
     <string>Minimal</string>
+   </property>
+  </action>
+  <action name="actionShow_Menubar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show Menubar</string>
    </property>
   </action>
  </widget>

@@ -53,7 +53,7 @@ HEADERS += \
     src/meta/db/notedatabase.h \
     src/meta/db/notebookdatabase.h \
     src/meta/db/tagdatabase.h \
-    includes/helper-io.hpp \
+    include/helper-io.hpp \
     src/models/treemodel.h \
     src/models/items/basictreeitem.h \
     src/ui-managers/old-treemanager.h \
