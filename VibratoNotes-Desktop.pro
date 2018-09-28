@@ -35,7 +35,9 @@ SOURCES += \
     src/meta/tag.cpp \
     src/meta/db/notedatabase.cpp \
     src/meta/db/notebookdatabase.cpp \
-    src/meta/db/tagdatabase.cpp
+    src/meta/db/tagdatabase.cpp \
+    src/models/treemodel.cpp \
+    src/models/items/basictreeitem.cpp
 
 HEADERS += \
     src/meta/info/appconfig.h \
@@ -51,7 +53,9 @@ HEADERS += \
     src/meta/db/notedatabase.h \
     src/meta/db/notebookdatabase.h \
     src/meta/db/tagdatabase.h \
-    includes/helper-io.hpp
+    includes/helper-io.hpp \
+    src/models/treemodel.h \
+    src/models/items/basictreeitem.h
 
 INCLUDEPATH += $$PWD/include
 
