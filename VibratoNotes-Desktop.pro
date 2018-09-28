@@ -30,14 +30,15 @@ SOURCES += \
     src/ui-managers/notelistmanager.cpp \
     src/components/notelistitem.cpp \
     src/meta/note.cpp \
-    src/ui-managers/treemanager.cpp \
     src/meta/notebook.cpp \
     src/meta/tag.cpp \
     src/meta/db/notedatabase.cpp \
     src/meta/db/notebookdatabase.cpp \
     src/meta/db/tagdatabase.cpp \
     src/models/treemodel.cpp \
-    src/models/items/basictreeitem.cpp
+    src/models/items/basictreeitem.cpp \
+    src/ui-managers/old-treemanager.cpp \
+    src/ui-managers/treemanager.cpp
 
 HEADERS += \
     src/meta/info/appconfig.h \
@@ -47,7 +48,6 @@ HEADERS += \
     src/ui-managers/notelistmanager.h \
     src/components/notelistitem.h \
     src/meta/note.h \
-    src/ui-managers/treemanager.h \
     src/meta/notebook.h \
     src/meta/tag.h \
     src/meta/db/notedatabase.h \
@@ -55,7 +55,9 @@ HEADERS += \
     src/meta/db/tagdatabase.h \
     includes/helper-io.hpp \
     src/models/treemodel.h \
-    src/models/items/basictreeitem.h
+    src/models/items/basictreeitem.h \
+    src/ui-managers/old-treemanager.h \
+    src/ui-managers/treemanager.h
 
 INCLUDEPATH += $$PWD/include
 

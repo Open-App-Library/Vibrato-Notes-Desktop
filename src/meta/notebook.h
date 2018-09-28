@@ -2,6 +2,7 @@
 #define NOTEBOOK_H
 #include <QString>
 #include <QList>
+#include <QObject>
 
 class Notebook
 {

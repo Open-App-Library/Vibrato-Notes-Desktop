@@ -8,12 +8,17 @@ TreeModel::TreeModel(QObject *parent) :
     QAbstractItemModel(parent),
     m_rootItem( new BasicTreeItem("User Data") )
 {
-    setupModelData();
+    // TreeModel Constructor
 }
 
 TreeModel::~TreeModel()
 {
     delete m_rootItem;
+}
+
+BasicTreeItem *TreeModel::root() const
+{
+    return m_rootItem;
 }
 
 int TreeModel::columnCount(const QModelIndex &parent) const
@@ -30,7 +35,7 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
 
     BasicTreeItem *item = static_cast<BasicTreeItem*>(index.internalPointer());
 
-    return item->data(index.column());
+    return item->label();
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
@@ -44,10 +49,8 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-        return m_rootItem->data(section);
-
-    return QVariant();
+    (void) section; (void) orientation; (void) role; // This line stops 'unused variable' compiler warnings
+    return QVariant(tr("User Data"));
 }
 
 QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
@@ -61,9 +64,9 @@ QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
     if (!parent.isValid())
         parentItem = m_rootItem;
     else
-        parentItem = static_cast<TreeItem*>(parent.internalPointer());
+        parentItem = static_cast<BasicTreeItem*>(parent.internalPointer());
 
-    BasicTreeItem *childItem = parentItem->child(row);
+    BasicTreeItem *childItem = parentItem->getChild(row);
     if (childItem)
         return createIndex(row, column, childItem);
     else
@@ -96,9 +99,4 @@ int TreeModel::rowCount(const QModelIndex &parent) const
         parentItem = static_cast<BasicTreeItem*>(parent.internalPointer());
 
     return parentItem->childCount();
-}
-
-void TreeModel::setupModelData()
-{
-    m_rootItem->appendChild( new BasicTreeItem({"Hello", "A greeting"}, m_rootItem));
 }

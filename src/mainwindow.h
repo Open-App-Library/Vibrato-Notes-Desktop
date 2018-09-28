@@ -21,7 +21,6 @@ public:
     ~MainWindow();
     void closeEvent (QCloseEvent *event);
 
-    void loadNotebookAndChildren(QJsonObject notebookObj, QTreeWidgetItem *parent=nullptr);
     void loadDummyData();
 
     void treeItemChanged();

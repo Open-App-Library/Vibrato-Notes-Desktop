@@ -197,10 +197,10 @@ QToolButton:hover {
 #notebookFrame, #tagFrame {
 }
 
-QTreeWidget::item {
+QTreeView::item {
     padding: 6 0;
 }
-QTreeWidget {
+QTreeView {
 	border: 0 !important;
 	margin: 0;
 }</string>
@@ -222,7 +222,7 @@ QTreeWidget {
             <number>0</number>
            </property>
            <item>
-            <widget class="QTreeWidget" name="TheTree">
+            <widget class="QTreeView" name="TheTree">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
@@ -244,11 +244,6 @@ QTreeWidget {
              <property name="wordWrap">
               <bool>true</bool>
              </property>
-             <column>
-              <property name="text">
-               <string>User Data</string>
-              </property>
-             </column>
             </widget>
            </item>
           </layout>
@@ -307,7 +302,7 @@ QTreeWidget {
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

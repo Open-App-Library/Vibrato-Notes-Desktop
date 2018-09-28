@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_notes->loadDummyNotes();
     m_notebooks->loadDummyNotebooks();
-    m_tree_manager->loadNotebooksFromNotebookDatabase(m_notebooks);
+    //m_tree_manager->loadNotebooksFromNotebookDatabase(m_notebooks);
     m_note_list_manager->loadNotesFromNoteDatabase(m_notes);
 
     // ------------------------------------------------------
@@ -64,8 +64,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->userButton, &QPushButton::clicked,
             this, &MainWindow::userButtonClicked);
     //* Tree Widget
-    connect(ui->TheTree, &QTreeWidget::currentItemChanged,
-           this, &MainWindow::treeItemChanged);
+    //connect(ui->TheTree, &QTreeView::currentItemChanged,
+    //       this, &MainWindow::treeItemChanged);
 }
 
 MainWindow::~MainWindow()
@@ -105,7 +105,7 @@ void MainWindow::userButtonClicked()
 
 void MainWindow::treeItemChanged()
 {
-    if (ui->TheTree->selectedItems().size() > 0) {
-        qDebug() << "item changed dude" << ui->TheTree->selectedItems();
-    }
+//    if (ui->TheTree->selectedItems().size() > 0) {
+//        qDebug() << "item changed dude" << ui->TheTree->selectedItems();
+//    }
 }

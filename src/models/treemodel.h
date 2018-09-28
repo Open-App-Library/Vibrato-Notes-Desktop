@@ -15,6 +15,8 @@ public:
     explicit TreeModel(QObject *parent = nullptr);
     ~TreeModel();
 
+    BasicTreeItem *root() const;
+
     QVariant data(const QModelIndex &index, int role) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     QVariant headerData(int section, Qt::Orientation orientation,
@@ -26,8 +28,6 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
 private:
-    void setupModelData();
-
     BasicTreeItem *m_rootItem;
 };
 
