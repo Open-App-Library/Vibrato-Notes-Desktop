@@ -89,13 +89,12 @@ void MainWindow::closeEvent (QCloseEvent *event)
 
 void MainWindow::loadDummyData()
 {
-
-   QJsonDocument tags = fileToQJsonDocument(":/dummy/tags.json");
-   QJsonArray tagArray = tags.array();
-   for (int i = 0; i < tagArray.size(); i++) {
-       QJsonObject val = tagArray[i].toObject();
-       m_tree_manager->addTag(val["title"].toString());
-   }
+//   QJsonDocument tags = fileToQJsonDocument(":/dummy/tags.json");
+//   QJsonArray tagArray = tags.array();
+//   for (int i = 0; i < tagArray.size(); i++) {
+//       QJsonObject val = tagArray[i].toObject();
+//       m_tree_manager->addTag(val["title"].toString());
+//   }
 }
 
 void MainWindow::userButtonClicked()

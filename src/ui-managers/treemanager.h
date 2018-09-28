@@ -20,13 +20,17 @@ public:
 
     // Notebook functions
     QVector<BasicTreeItem*> notebooks();
-    BasicTreeItem        *addNotebook(QString label);
-    BasicTreeItem        *addNotebook(QString label, BasicTreeItem *parent);
-    BasicTreeItem        *addNotebook(BasicTreeItem *item);
-    BasicTreeItem        *addNotebook(BasicTreeItem *item, BasicTreeItem *parent);
-    void                    removeNotebook(int index);
-    void                    removeNotebook(int index, BasicTreeItem *fosterParent);
+    BasicTreeItem          *addNotebook(QString label);
+    BasicTreeItem          *addNotebook(QString label, BasicTreeItem *parent);
+    BasicTreeItem          *addNotebook(BasicTreeItem *item);
+    BasicTreeItem          *addNotebook(BasicTreeItem *item, BasicTreeItem *parent);
+
+    void                    removeNotebook(BasicTreeItem *item);
+    void                    removeNotebook(BasicTreeItem *item, BasicTreeItem *fosterParent);
+
+    void                    clearChildren(BasicTreeItem *item);
     void                    clearNotebooks();
+
     void                    loadNotebookObjectAndChildren(Notebook *notebook, BasicTreeItem *parent=nullptr);
     void                    loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase);
 
@@ -43,9 +47,6 @@ private:
     BasicTreeItem *m_all_notes;
     BasicTreeItem *m_notebooks;
     BasicTreeItem *m_tags;
-
-    QVector<BasicTreeItem*> m_notebook_list;
-    QVector<BasicTreeItem*> m_tag_list;
 
     // TODO: https://forum.qt.io/topic/45262/disable-certain-rows-in-qtreeview
     BasicTreeItem *m_no_notebooks_placedholder = nullptr;

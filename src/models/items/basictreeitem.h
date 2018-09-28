@@ -23,8 +23,9 @@ public:
     void setObjectNotebook(Notebook *notebook);
     void setObjectTag(Tag *tag);
 
-    BasicTreeItem *getChild(int index);
+    BasicTreeItem *getChild(int index) const;
     BasicTreeItem *appendChild(BasicTreeItem *child);
+    QVector<BasicTreeItem*> recurseChildren() const;
     int childCount() const;
 
     BasicTreeItem *parentItem();

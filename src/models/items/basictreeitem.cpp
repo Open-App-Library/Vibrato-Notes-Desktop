@@ -42,7 +42,7 @@ void BasicTreeItem::setObjectTag(Tag *tag)
     m_object.tag = tag;
 }
 
-BasicTreeItem *BasicTreeItem::getChild(int row)
+BasicTreeItem *BasicTreeItem::getChild(int row) const
 {
     return m_childItems.value(row);
 }
@@ -52,6 +52,16 @@ BasicTreeItem *BasicTreeItem::appendChild(BasicTreeItem *child)
     m_childItems.append(child);
     child->setParent(this);
     return child;
+}
+
+QVector<BasicTreeItem*> BasicTreeItem::recurseChildren() const
+{
+    QVector<BasicTreeItem*> childList;
+    for (int i = 0; i < this->childCount(); i++) {
+        childList.append(this->getChild(i));
+        childList.append(this->getChild(i)->recurseChildren());
+    }
+    return childList;
 }
 
 int BasicTreeItem::childCount() const

@@ -12,10 +12,10 @@
 #include <QTreeWidgetItem>
 #include "../meta/db/notebookdatabase.h"
 
-class TreeManager
+class OldTreeManager
 {
 public:
-    TreeManager(QTreeWidget *treeWidget);
+    OldTreeManager(QTreeWidget *treeWidget);
 
     // Notebook functions
     QList<QTreeWidgetItem*> notebooks();

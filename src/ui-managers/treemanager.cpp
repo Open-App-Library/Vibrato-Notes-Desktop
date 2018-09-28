@@ -12,6 +12,10 @@ TreeManager::TreeManager(QTreeView *treeView)
     m_tree_model->root()->appendChild(m_all_notes);
     m_tree_model->root()->appendChild(m_notebooks);
     m_tree_model->root()->appendChild(m_tags);
+
+    addNotebook("child", addNotebook("My Notebook"));
+
+    treeView->expandAll();
 }
 
 BasicTreeItem *TreeManager::addNotebook(QString label)
@@ -34,4 +38,27 @@ BasicTreeItem *TreeManager::addNotebook(BasicTreeItem *item, BasicTreeItem *pare
 {
     parent->appendChild(item);
     return item;
+}
+
+void TreeManager::removeNotebook(BasicTreeItem *item)
+{
+    clearChildren(item);
+    delete item;
+}
+
+void TreeManager::removeNotebook(BasicTreeItem *item, BasicTreeItem *fosterParent)
+{
+    QVector<BasicTreeItem*> children = item->recurseChildren();
+    for (int i = 0; i < children.size(); i++) {
+        fosterParent->appendChild( children[i] );
+    }
+    delete item;
+}
+
+void TreeManager::clearChildren(BasicTreeItem *item)
+{
+    QVector<BasicTreeItem*> children = item->recurseChildren();
+    for (int i = 0; i < children.size(); i++) {
+        delete children[i];
+    }
 }

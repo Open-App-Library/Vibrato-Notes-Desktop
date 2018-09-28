@@ -1,7 +1,7 @@
 #include "old-treemanager.h"
 #include <QDebug>
 
-TreeManager::TreeManager(QTreeWidget *treeWidget) :
+OldTreeManager::OldTreeManager(QTreeWidget *treeWidget) :
     m_tree_widget(treeWidget)
 {
     m_all_notes = new QTreeWidgetItem(m_tree_widget);
@@ -23,18 +23,18 @@ TreeManager::TreeManager(QTreeWidget *treeWidget) :
     //treeWidget->header()->hide();
 }
 
-QList<QTreeWidgetItem *> TreeManager::notebooks()
+QList<QTreeWidgetItem *> OldTreeManager::notebooks()
 {
     return m_notebook_list;
 }
 
-QTreeWidgetItem *TreeManager::addNotebook(QString label)
+QTreeWidgetItem *OldTreeManager::addNotebook(QString label)
 {
     // This calls the addNotebook function directly below
     return addNotebook(label, m_notebooks); // Uses the function below
 }
 
-QTreeWidgetItem *TreeManager::addNotebook(QString label, QTreeWidgetItem *parent)
+QTreeWidgetItem *OldTreeManager::addNotebook(QString label, QTreeWidgetItem *parent)
 {
     QTreeWidgetItem *item = new QTreeWidgetItem(parent);
     item->setText(0, label);
@@ -43,13 +43,13 @@ QTreeWidgetItem *TreeManager::addNotebook(QString label, QTreeWidgetItem *parent
     return addNotebook(item, parent);
 }
 
-QTreeWidgetItem *TreeManager::addNotebook(QTreeWidgetItem *item)
+QTreeWidgetItem *OldTreeManager::addNotebook(QTreeWidgetItem *item)
 {
     // This calls the addNotebook function directly below
     return addNotebook(item, m_notebooks);
 }
 
-QTreeWidgetItem *TreeManager::addNotebook(QTreeWidgetItem *item, QTreeWidgetItem *parent)
+QTreeWidgetItem *OldTreeManager::addNotebook(QTreeWidgetItem *item, QTreeWidgetItem *parent)
 {
     parent->addChild(item);
     m_notebook_list.append(item);
@@ -57,7 +57,7 @@ QTreeWidgetItem *TreeManager::addNotebook(QTreeWidgetItem *item, QTreeWidgetItem
     return item;
 }
 
-void TreeManager::removeNotebook(int index)
+void OldTreeManager::removeNotebook(int index)
 {
     QTreeWidgetItem *item = m_notebook_list[index];
     int childCount = item->childCount();
@@ -84,7 +84,7 @@ void TreeManager::removeNotebook(int index)
     }
 }
 
-void TreeManager::removeNotebook(int index, QTreeWidgetItem *fosterParent)
+void OldTreeManager::removeNotebook(int index, QTreeWidgetItem *fosterParent)
 {
     QTreeWidgetItem *item = m_notebook_list[index];
     int childCount = item->childCount();
@@ -98,7 +98,7 @@ void TreeManager::removeNotebook(int index, QTreeWidgetItem *fosterParent)
     removeNotebook(index);
 }
 
-void TreeManager::clearNotebooks()
+void OldTreeManager::clearNotebooks()
 {
     for (int i = m_notebook_list.length()-1; i >= 0; i--) {
         delete m_notebook_list[i];
@@ -107,7 +107,7 @@ void TreeManager::clearNotebooks()
     add_no_notebooks_placeholder();
 }
 
-void TreeManager::loadNotebookObjectAndChildren(Notebook *notebook, QTreeWidgetItem *parent)
+void OldTreeManager::loadNotebookObjectAndChildren(Notebook *notebook, QTreeWidgetItem *parent)
 {
     QTreeWidgetItem *treeitem = new QTreeWidgetItem;
     treeitem->setText(0, notebook->title());
@@ -121,7 +121,7 @@ void TreeManager::loadNotebookObjectAndChildren(Notebook *notebook, QTreeWidgetI
     }
 }
 
-void TreeManager::loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase)
+void OldTreeManager::loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase)
 {
     for (int i = 0; i < notebookDatabase->size(); i++) {
         loadNotebookObjectAndChildren(notebookDatabase->list()[i]);
@@ -129,12 +129,12 @@ void TreeManager::loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDa
     m_tree_widget->expandAll();
 }
 
-QList<QTreeWidgetItem *> TreeManager::tags()
+QList<QTreeWidgetItem *> OldTreeManager::tags()
 {
     return m_tag_list;
 }
 
-QTreeWidgetItem *TreeManager::addTag(QString label)
+QTreeWidgetItem *OldTreeManager::addTag(QString label)
 {
     QTreeWidgetItem *item = new QTreeWidgetItem(m_tags);
     item->setText(0, label);
@@ -143,7 +143,7 @@ QTreeWidgetItem *TreeManager::addTag(QString label)
     return item;
 }
 
-void TreeManager::removeTag(int index)
+void OldTreeManager::removeTag(int index)
 {
     QTreeWidgetItem *item = m_tag_list[index];
 
@@ -155,7 +155,7 @@ void TreeManager::removeTag(int index)
     }
 }
 
-void TreeManager::clearTags()
+void OldTreeManager::clearTags()
 {
     for (int i = m_tag_list.length()-1; i >= 0; i--) {
         delete m_tag_list[i];
@@ -164,7 +164,7 @@ void TreeManager::clearTags()
     add_no_tags_placeholder();
 }
 
-void TreeManager::add_no_notebooks_placeholder()
+void OldTreeManager::add_no_notebooks_placeholder()
 {
     if (m_no_notebooks_placedholder == nullptr) {
         m_no_notebooks_placedholder = new QTreeWidgetItem(m_notebooks);
@@ -173,7 +173,7 @@ void TreeManager::add_no_notebooks_placeholder()
     }
 }
 
-void TreeManager::add_no_tags_placeholder()
+void OldTreeManager::add_no_tags_placeholder()
 {
     if (m_no_tags_placedholder == nullptr) {
         m_no_tags_placedholder = new QTreeWidgetItem(m_tags);
@@ -182,7 +182,7 @@ void TreeManager::add_no_tags_placeholder()
     }
 }
 
-void TreeManager::remove_no_notebooks_placeholder()
+void OldTreeManager::remove_no_notebooks_placeholder()
 {
     if (m_no_notebooks_placedholder != nullptr) {
         delete m_no_notebooks_placedholder;
@@ -190,7 +190,7 @@ void TreeManager::remove_no_notebooks_placeholder()
     }
 }
 
-void TreeManager::remove_no_tags_placeholder()
+void OldTreeManager::remove_no_tags_placeholder()
 {
     if (m_no_tags_placedholder != nullptr) {
         delete m_no_tags_placedholder;
