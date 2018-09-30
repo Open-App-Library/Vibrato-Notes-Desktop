@@ -12,18 +12,19 @@
 #include "../models/items/basictreeitem.h"
 #include "../models/treemodel.h"
 #include "../meta/db/notebookdatabase.h"
+#include "../meta/db/tagdatabase.h"
 
 class TreeManager
 {
 public:
     TreeManager(QTreeView *treeView);
 
+    void update(); // Refreshes GUI
+
     // Notebook functions
-    QVector<BasicTreeItem*> notebooks();
-    BasicTreeItem          *addNotebook(QString label);
-    BasicTreeItem          *addNotebook(QString label, BasicTreeItem *parent);
-    BasicTreeItem          *addNotebook(BasicTreeItem *item);
-    BasicTreeItem          *addNotebook(BasicTreeItem *item, BasicTreeItem *parent);
+    QVector<BasicTreeItem*> notebooks() const;
+    BasicTreeItem          *addNotebook(Notebook *notebook);
+    BasicTreeItem          *addNotebook(Notebook *notebook, BasicTreeItem *parent);
 
     void                    removeNotebook(BasicTreeItem *item);
     void                    removeNotebook(BasicTreeItem *item, BasicTreeItem *fosterParent);
@@ -35,10 +36,12 @@ public:
     void                    loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase);
 
     // Tag functions
-    QVector<BasicTreeItem*> tags();
-    BasicTreeItem          *addTag(QString label);
-    void                    removeTag(int index);
+    QVector<BasicTreeItem*> tags() const;
+    BasicTreeItem          *addTag(Tag *tag);
+    void                    removeTag(BasicTreeItem *item);
     void                    clearTags();
+
+    void loadTagsFromTagDatabase(TagDatabase *tagDatabase);
 
 private:
     TreeModel     *m_tree_model;

@@ -5,6 +5,7 @@
 #include "userwindow.h"
 #include "meta/db/notedatabase.h"
 #include "meta/db/notebookdatabase.h"
+#include "meta/db/tagdatabase.h"
 #include "ui-managers/notelistmanager.h"
 #include "ui-managers/treemanager.h"
 
@@ -31,8 +32,9 @@ private:
     TreeManager     *m_tree_manager;
 
     // Where we store user data
-    NoteDatabase *m_notes;
+    NoteDatabase     *m_notes;
     NotebookDatabase *m_notebooks;
+    TagDatabase      *m_tags;
 
 public slots:
     void userButtonClicked();

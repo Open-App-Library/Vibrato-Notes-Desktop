@@ -3,6 +3,7 @@
 
 #include <QStringList>
 #include <QDebug>
+#include <QIcon>
 
 TreeModel::TreeModel(QObject *parent) :
     QAbstractItemModel(parent),
@@ -30,10 +31,17 @@ int TreeModel::columnCount(const QModelIndex &parent) const
 QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
     // Safety check
-    if (!index.isValid() || role != Qt::DisplayRole)
+    if ( !index.isValid() )
+        return QVariant();
+    if ( role != Qt::DisplayRole && role != Qt::DecorationRole ) // Fallback
         return QVariant();
 
+    // Get the BasicTreeItem object from the index
     BasicTreeItem *item = static_cast<BasicTreeItem*>(index.internalPointer());
+
+    // If requesting icon, return icon if exists
+    if ( role == Qt::DecorationRole ) // Set Icon
+        return item->icon();
 
     return item->label();
 }

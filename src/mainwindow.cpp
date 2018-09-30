@@ -21,12 +21,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     m_note_list_manager = new NoteListManager(ui->noteList);
     m_tree_manager      = new TreeManager(ui->TheTree);
-    m_notes = new NoteDatabase;
+
+    m_notes     = new NoteDatabase;
     m_notebooks = new NotebookDatabase;
+    m_tags      = new TagDatabase;
 
     m_notes->loadDummyNotes();
     m_notebooks->loadDummyNotebooks();
-    //m_tree_manager->loadNotebooksFromNotebookDatabase(m_notebooks);
+    m_tags->loadDummyTags();
+
+    m_tree_manager->loadNotebooksFromNotebookDatabase(m_notebooks);
+    m_tree_manager->loadTagsFromTagDatabase(m_tags);
     m_note_list_manager->loadNotesFromNoteDatabase(m_notes);
 
     // ------------------------------------------------------
