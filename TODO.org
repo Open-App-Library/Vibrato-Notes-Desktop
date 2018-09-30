@@ -2,6 +2,8 @@
 
 * TODO Filter the note list based on notebooks and tags you click
 
+* TODO Set fallback icons
+
 * Archive
 
 ** DONE Add all of the fields to the Note class
