@@ -24,7 +24,7 @@ public:
 
     void loadDummyData();
 
-    void treeItemChanged();
+    void treeItemChanged(const QModelIndex &current, const QModelIndex &previous);
 private:
     Ui::MainWindow *ui;
     UserWindow m_user_window;
