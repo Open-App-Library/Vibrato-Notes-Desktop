@@ -76,6 +76,7 @@ MainWindow::~MainWindow()
     set_meta_config_value( LAST_OPENED_WINDOW_SIZE, this->saveGeometry() );
     set_meta_config_value( MAIN_SCREEN_LAYOUT, ui->mainSplitter->saveState() );
 
+
     delete m_note_list_manager;
     delete m_tree_manager;
     delete m_notes;

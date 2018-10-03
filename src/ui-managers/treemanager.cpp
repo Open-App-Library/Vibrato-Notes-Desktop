@@ -27,7 +27,7 @@ TreeManager::TreeManager(QTreeView *treeView, QObject *parent) :
 
 TreeManager::~TreeManager()
 {
-    delete m_tree_view;
+    delete m_tree_model;
 }
 
 void TreeManager::update()
