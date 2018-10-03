@@ -93,5 +93,5 @@ win32 {
 
 
 RESOURCES += \
-    resources/breeze-icons.qrc \
-    resources/dummy-data.qrc
+    resources/dummy-data.qrc \
+    resources/icons.qrc

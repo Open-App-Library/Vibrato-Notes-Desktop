@@ -18,5 +18,10 @@ int main(int argc, char *argv[])
     qDebug().nospace() << "Welcome to Vibrato Notes! v." << qPrintable( VERSION );
     qDebug()           << "User Config Location:" << config()->fileName();
 
+    QStringList fallback_icon_search_paths;
+    fallback_icon_search_paths << ":icons/breeze-qownnotes/16x16";
+    QIcon::setFallbackSearchPaths( fallback_icon_search_paths );
+
+    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     return a.exec();
 }
