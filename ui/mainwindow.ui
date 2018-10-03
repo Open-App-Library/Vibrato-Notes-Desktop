@@ -117,15 +117,12 @@ QSplitter::handle {
           </spacer>
          </item>
          <item>
-          <widget class="QLineEdit" name="lineEdit">
-           <property name="focusPolicy">
-            <enum>Qt::ClickFocus</enum>
-           </property>
+          <widget class="QLineEdit" name="searchBar">
            <property name="styleSheet">
-            <string notr="true"/>
+            <string notr="true">padding: 0 2px;</string>
            </property>
            <property name="placeholderText">
-            <string>Search notes, notebooks, and tags</string>
+            <string>Search...</string>
            </property>
           </widget>
          </item>
@@ -135,8 +132,7 @@ QSplitter::handle {
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="user-info" resource="../resources/breeze-icons.qrc">
-             <normaloff>:/user-info</normaloff>:/user-info</iconset>
+            <iconset theme="im-user"/>
            </property>
            <property name="checkable">
             <bool>false</bool>
@@ -250,7 +246,8 @@ QTreeView {
          </widget>
          <widget class="QListWidget" name="noteList">
           <property name="styleSheet">
-           <string notr="true"/>
+           <string notr="true">border-top: 0;
+border-bottom: 0;</string>
           </property>
          </widget>
          <widget class="QFrame" name="noteEditingArea">
@@ -285,6 +282,10 @@ QTreeView {
                <pointsize>16</pointsize>
               </font>
              </property>
+             <property name="styleSheet">
+              <string notr="true">border-top: 0;
+border-bottom: 0;</string>
+             </property>
             </widget>
            </item>
           </layout>
@@ -302,7 +303,7 @@ QTreeView {
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -490,8 +491,6 @@ QTreeView {
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="../resources/breeze-icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
