@@ -1,7 +1,7 @@
-#include <QDebug>
 #include "treemanager.h"
 
-TreeManager::TreeManager(QTreeView *treeView)
+TreeManager::TreeManager(QTreeView *treeView, QObject *parent) :
+    QObject(parent)
 {
     m_tree_view = treeView;
     m_tree_model = new TreeModel;
@@ -19,6 +19,15 @@ TreeManager::TreeManager(QTreeView *treeView)
     m_tree_model->root()->appendChild(m_all_notes);
     m_tree_model->root()->appendChild(m_notebooks);
     m_tree_model->root()->appendChild(m_tags);
+
+    // Signal Connections
+    connect(m_tree_view->selectionModel(), &QItemSelectionModel::currentChanged,
+            this, &TreeManager::treeItemChanged);
+}
+
+TreeManager::~TreeManager()
+{
+    delete m_tree_view;
 }
 
 void TreeManager::update()
@@ -136,4 +145,10 @@ void TreeManager::loadTagsFromTagDatabase(TagDatabase *tagDatabase)
         addTag(tagDatabase->list()[i]);
     }
     update();
+}
+
+void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex &previous)
+{
+    BasicTreeItem *item = static_cast<BasicTreeItem*>(current.internalPointer());
+    qDebug() << "Hello, Hoss. The item name is" << item->isNotebook();
 }

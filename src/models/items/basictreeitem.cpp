@@ -1,5 +1,6 @@
 #include <QStringList>
 #include <QDebug>
+#include <QFile>
 #include "basictreeitem.h"
 #include "../../meta/notebook.h"
 #include "../../meta/info/appinfo.h"
@@ -50,9 +51,8 @@ bool BasicTreeItem::isOther() const
     return m_type != TYPE_NOTEBOOK && m_type != TYPE_TAG;
 }
 
-QString BasicTreeItem::label()
+QString BasicTreeItem::label() const
 {
-    updateLabel();
     return m_label;
 }
 
@@ -63,10 +63,11 @@ void BasicTreeItem::setLabel(QString label)
 
 void BasicTreeItem::updateLabel()
 {
-    if ( isNotebook() )
+    if ( isNotebook() ) {
         m_label = m_object.notebook->title();
-    if ( isTag() )
+    } else if ( isTag() ) {
         m_label = m_object.tag->title();
+    }
 }
 
 QIcon BasicTreeItem::icon() const

@@ -118,6 +118,9 @@ QSplitter::handle {
          </item>
          <item>
           <widget class="QLineEdit" name="searchBar">
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
            <property name="styleSheet">
             <string notr="true">padding: 0 2px;</string>
            </property>

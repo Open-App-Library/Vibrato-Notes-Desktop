@@ -68,9 +68,6 @@ MainWindow::MainWindow(QWidget *parent) :
     //* User Button clicked - the button to sign into account or access account/sync info.
     connect(ui->userButton, &QPushButton::clicked,
             this, &MainWindow::userButtonClicked);
-    //* Tree Widget
-    connect(ui->TheTree->selectionModel(), &QItemSelectionModel::currentChanged,
-           this, &MainWindow::treeItemChanged);
 }
 
 MainWindow::~MainWindow()
@@ -105,10 +102,4 @@ void MainWindow::loadDummyData()
 void MainWindow::userButtonClicked()
 {
     m_user_window.show();
-}
-
-void MainWindow::treeItemChanged(const QModelIndex &current, const QModelIndex &previous)
-{
-    BasicTreeItem *item = static_cast<BasicTreeItem*>(current.internalPointer());
-    qDebug() << "Hello, Hoss. The item name is" << item->isNotebook();
 }

@@ -23,7 +23,7 @@ public:
     bool isTag() const;
     bool isOther() const;
 
-    QString   label();
+    QString   label() const;
     void      setLabel(QString label);
     void      updateLabel();
 

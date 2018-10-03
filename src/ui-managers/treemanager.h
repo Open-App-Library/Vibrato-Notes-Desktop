@@ -8,16 +8,20 @@
 
 #ifndef TREEMANAGER_H
 #define TREEMANAGER_H
+#include <QObject>
 #include <QTreeView>
+#include <QDebug>
 #include "../models/items/basictreeitem.h"
 #include "../models/treemodel.h"
 #include "../meta/db/notebookdatabase.h"
 #include "../meta/db/tagdatabase.h"
 
-class TreeManager
+class TreeManager : public QObject
 {
+    Q_OBJECT
 public:
-    TreeManager(QTreeView *treeView);
+    explicit TreeManager(QTreeView *treeView, QObject *parent=nullptr);
+    ~TreeManager();
 
     void update(); // Refreshes GUI
 
@@ -43,6 +47,9 @@ public:
 
     void loadTagsFromTagDatabase(TagDatabase *tagDatabase);
 
+    // Signal Callbacks
+    void treeItemChanged(const QModelIndex &current, const QModelIndex &previous);
+
 private:
     TreeModel     *m_tree_model;
     QTreeView     *m_tree_view;
@@ -59,7 +66,6 @@ private:
     void add_no_tags_placeholder();
     void remove_no_notebooks_placeholder();
     void remove_no_tags_placeholder();
-
 };
 
 #endif // TREEMANAGER_H
