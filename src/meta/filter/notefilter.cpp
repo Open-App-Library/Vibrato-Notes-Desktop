@@ -23,8 +23,9 @@ noteFilterList NoteFilter::notebook_filter(int notebook_id)
     noteFilterList list;
     for (int i = 0; i < m_database->list().size(); i++) {
         Note *curNote = m_database->list()[i];
-        if (curNote->id() == notebook_id)
+        if (curNote->notebook() == notebook_id) {
             list << curNote;
+        }
     }
     return list;
 }

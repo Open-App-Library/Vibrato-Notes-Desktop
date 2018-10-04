@@ -150,10 +150,13 @@ void TreeManager::loadTagsFromTagDatabase(TagDatabase *tagDatabase)
 
 void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex &previous)
 {
+    (void) previous; // Avoid 'unused parameter' compiler warning. Ignore.
     BasicTreeItem *item = static_cast<BasicTreeItem*>(current.internalPointer());
     if ( item->isNotebook() ) {
         Notebook *notebook = item->object().notebook;
+        // Filter the notes by ID of the selected notebook ID
+        // TODO: filter by child notebook IDs
         noteFilterList list = m_note_list_manager->filter()->filter(FILTER_NOTEBOOK_ID, notebook->id());
-        m_note_list_manager->loadNotesFromNoteFilter(list);
+        m_note_list_manager->loadNotesFromNoteFilter( list );
     }
 }

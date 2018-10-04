@@ -9,6 +9,8 @@
 #include <QList>
 #include "../note.h"
 
+#define NULL_INT -1
+
 class NoteDatabase
 {
 public:
@@ -31,6 +33,8 @@ public:
 
 private:
     QList<Note*> m_list;
+
+    int getInt(QJsonObject obj, QString key);
 };
 
 #endif // NOTELIST_H

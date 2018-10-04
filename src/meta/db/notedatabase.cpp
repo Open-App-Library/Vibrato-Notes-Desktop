@@ -61,10 +61,10 @@ void NoteDatabase::loadJSON(QJsonDocument jsonDocument)
     for (int i = 0; i < noteArray.size(); i++) {
         QJsonObject val = noteArray[i].toObject();
         Note *note = new Note();
-        note->setId(val["id"].toInt());
+        note->setId( getInt(val, "id") );
+        note->setNotebook(getInt(val, "notebook"));
         note->setTitle(val["title"].toString());
         note->setText(val["text"].toString());
-        note->setNotebook(val["id"].toInt());
         QJsonArray raw_tag_array = val["tags"].toArray();
         QList<int>     tag_array = {};
         for (int i = 0; i < raw_tag_array.size(); i++) {
@@ -80,4 +80,12 @@ void NoteDatabase::loadDummyNotes()
 {
     QJsonDocument dummy_notes = fileToQJsonDocument(":/dummy/notes.json");
     loadJSON(dummy_notes);
+}
+
+int NoteDatabase::getInt(QJsonObject obj, QString key)
+{
+    if ( obj.contains(key) )
+        if ( obj[key].type() != QJsonValue::Null )
+            return obj[key].toInt();
+    return NULL_INT;
 }

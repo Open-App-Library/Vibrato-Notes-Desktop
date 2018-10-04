@@ -2,6 +2,7 @@
 #define NOTEFILTER_H
 #include <QVector>
 #include <QDate>
+#include <QDebug>
 #include "../note.h"
 #include "../db/notedatabase.h"
 
@@ -15,7 +16,7 @@ class NoteFilter
 public:
     NoteFilter(NoteDatabase *database);
 
-    noteFilterList filter(int filterType, QVariant value, noteFilterList additionalFilter=NULL);
+    noteFilterList filter(int filterType, QVariant value, noteFilterList additionalFilter={});
 
     // TODO: Advanced Filters
     // filterList filterByDateRange(QDate start, QDate end);
