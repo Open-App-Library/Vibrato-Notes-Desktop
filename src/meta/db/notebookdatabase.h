@@ -1,16 +1,16 @@
 #ifndef NOTEBOOKDATABASE_H
 #define NOTEBOOKDATABASE_H
-#include <QList>
+#include <QVector>
 #include "../notebook.h"
 
 class NotebookDatabase
 {
 public:
     NotebookDatabase();
-    QList<Notebook *> list() const;
+    QVector<Notebook *> list() const;
     int               size() const;
-    QList<Notebook *> list_recursively() const;
-    QList<Notebook *> list_recursively(const QList<Notebook*> notebookList) const;
+    QVector<Notebook *> list_recursively() const;
+    QVector<Notebook *> list_recursively(const QVector<Notebook*> notebookList) const;
 
     void addNotebook(Notebook *notebook);
     void addNotebook(Notebook *notebook, Notebook *parent);
@@ -25,7 +25,7 @@ public:
     void jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent=nullptr);
 
 private:
-    QList<Notebook*> m_list;
+    QVector<Notebook*> m_list;
 
 };
 

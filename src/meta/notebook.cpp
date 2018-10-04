@@ -37,12 +37,26 @@ void Notebook::setParent(Notebook *parent)
     m_parent = parent;
 }
 
-QList<Notebook *> Notebook::children() const
+QVector<Notebook *> Notebook::children() const
 {
     return m_children;
 }
 
-void Notebook::setChildren(const QList<Notebook *> &children)
+QVector<Notebook *> Notebook::recurseChildren(Notebook* parent) const
+{
+    Notebook *curNotebook = parent;
+    QVector<Notebook*> notebooks;
+    if (curNotebook == nullptr)
+        curNotebook = const_cast<Notebook*>(this);
+
+    notebooks.append( curNotebook->children() );
+    for ( int i = 0; i < curNotebook->children().size(); i++ ) {
+        notebooks.append( recurseChildren( curNotebook->children()[i] ) );
+    }
+    return notebooks;
+}
+
+void Notebook::setChildren(const QVector<Notebook *> &children)
 {
     m_children = children;
 }

@@ -1,7 +1,7 @@
 #ifndef NOTEBOOK_H
 #define NOTEBOOK_H
 #include <QString>
-#include <QList>
+#include <QVector>
 #include <QObject>
 
 class Notebook
@@ -18,8 +18,9 @@ public:
     Notebook *parent() const;
     void setParent(Notebook *parent);
 
-    QList<Notebook *> children() const;
-    void setChildren(const QList<Notebook *> &children);
+    QVector<Notebook *> children() const;
+    QVector<Notebook *> recurseChildren(Notebook* parent=nullptr) const;
+    void setChildren(const QVector<Notebook *> &children);
 
     void addChild(Notebook *child);
     void removeChild(Notebook *child);
@@ -28,7 +29,7 @@ private:
     int m_id;
     QString m_title;
     Notebook *m_parent;
-    QList<Notebook*> m_children;
+    QVector<Notebook*> m_children;
     // TODO: Implement user
     // TODO: implement shared_with
     // TODO: implement is_public

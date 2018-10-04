@@ -10,7 +10,7 @@ NotebookDatabase::NotebookDatabase()
 
 }
 
-QList<Notebook *> NotebookDatabase::list() const
+QVector<Notebook *> NotebookDatabase::list() const
 {
     return m_list;
 }
@@ -21,17 +21,17 @@ int NotebookDatabase::size() const
 }
 
 
-QList<Notebook *> NotebookDatabase::list_recursively() const
+QVector<Notebook *> NotebookDatabase::list_recursively() const
 {
     return list_recursively(m_list);
 }
 
-QList<Notebook*> NotebookDatabase::list_recursively(const QList<Notebook*> notebookList) const
+QVector<Notebook*> NotebookDatabase::list_recursively(const QVector<Notebook*> notebookList) const
 {
-    QList<Notebook*> the_list;
+    QVector<Notebook*> the_list;
     for (int i = 0; i < notebookList.size(); i++) {
         the_list.append(notebookList[i]);
-        QList<Notebook*> the_children = list_recursively(notebookList[i]->children());
+        QVector<Notebook*> the_children = list_recursively(notebookList[i]->children());
         for (int j = 0; j < the_children.size(); j++) {
             the_list.append(the_children[j]);
         }

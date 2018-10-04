@@ -1,10 +1,18 @@
 #+title: Todo List
 
-* TODO Filter the note list based on notebooks and tags you click
+* TODO Add some sort of pagination to the note list to prevent lag.
 
-* TODO Set fallback icons
+* TODO Create a note editor [0/2]
+
+** TODO Create the basic functionality of the editor
+
+** TODO Display contents of selected note in the note editor.
 
 * Archive
+
+** DONE Filter the note list based on notebooks and tags you click
+
+** DONE Set fallback icons
 
 ** DONE Add all of the fields to the Note class
 
