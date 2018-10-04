@@ -38,7 +38,8 @@ SOURCES += \
     src/models/treemodel.cpp \
     src/models/items/basictreeitem.cpp \
     src/ui-managers/old-treemanager.cpp \
-    src/ui-managers/treemanager.cpp
+    src/ui-managers/treemanager.cpp \
+    src/meta/filter/notefilter.cpp
 
 HEADERS += \
     src/meta/info/appconfig.h \
@@ -57,7 +58,8 @@ HEADERS += \
     src/models/treemodel.h \
     src/models/items/basictreeitem.h \
     src/ui-managers/old-treemanager.h \
-    src/ui-managers/treemanager.h
+    src/ui-managers/treemanager.h \
+    src/meta/filter/notefilter.h
 
 INCLUDEPATH += $$PWD/include
 

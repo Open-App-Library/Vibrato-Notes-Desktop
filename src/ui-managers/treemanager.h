@@ -15,12 +15,13 @@
 #include "../models/treemodel.h"
 #include "../meta/db/notebookdatabase.h"
 #include "../meta/db/tagdatabase.h"
+#include "notelistmanager.h"
 
 class TreeManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit TreeManager(QTreeView *treeView, QObject *parent=nullptr);
+    explicit TreeManager(QTreeView *treeView, NoteListManager *noteListManager, QObject *parent=nullptr);
     ~TreeManager();
 
     void update(); // Refreshes GUI
@@ -51,8 +52,9 @@ public:
     void treeItemChanged(const QModelIndex &current, const QModelIndex &previous);
 
 private:
-    TreeModel     *m_tree_model;
-    QTreeView     *m_tree_view;
+    TreeModel       *m_tree_model;
+    QTreeView       *m_tree_view;
+    NoteListManager *m_note_list_manager;
 
     BasicTreeItem *m_all_notes;
     BasicTreeItem *m_notebooks;

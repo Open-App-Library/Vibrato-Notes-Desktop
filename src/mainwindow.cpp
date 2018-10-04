@@ -19,8 +19,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    m_note_list_manager = new NoteListManager(ui->noteList);
-    m_tree_manager      = new TreeManager(ui->TheTree);
 
     m_notes     = new NoteDatabase;
     m_notebooks = new NotebookDatabase;
@@ -29,6 +27,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_notes->loadDummyNotes();
     m_notebooks->loadDummyNotebooks();
     m_tags->loadDummyTags();
+
+    m_note_list_manager = new NoteListManager(ui->noteList, m_notes);
+    m_tree_manager      = new TreeManager(ui->TheTree, m_note_list_manager);
 
     m_tree_manager->loadNotebooksFromNotebookDatabase(m_notebooks);
     m_tree_manager->loadTagsFromTagDatabase(m_tags);

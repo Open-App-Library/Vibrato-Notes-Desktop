@@ -1,15 +1,15 @@
-#include "ui_notelistitem.h"
 #include "notelistmanager.h"
 
-NoteListManager::NoteListManager(QListWidget *listWidget) :
-    m_listWidget(listWidget)
+NoteListManager::NoteListManager(QListWidget *listWidget, NoteDatabase *database) :
+    m_listWidget(listWidget),
+    m_database(database)
 {
-
+    m_filter = new NoteFilter( database );
 }
 
 NoteListManager::~NoteListManager()
 {
-
+    delete m_filter;
 }
 
 NoteListItem *NoteListManager::add_note(Note *note)
@@ -32,10 +32,28 @@ void NoteListManager::clear()
     m_noteList.clear();
 }
 
+void NoteListManager::loadNotesFromNoteDatabase()
+{
+    loadNotesFromNoteDatabase( m_database );
+}
+
 void NoteListManager::loadNotesFromNoteDatabase(NoteDatabase *noteDatabase)
 {
     clear();
     for (int i = 0; i < noteDatabase->size(); i++) {
         add_note(noteDatabase->list()[i]);
     }
+}
+
+void NoteListManager::loadNotesFromNoteFilter(noteFilterList noteList)
+{
+    clear();
+    for (int i = 0; i < noteList.size(); i++) {
+        add_note( noteList[i] );
+    }
+}
+
+NoteFilter *NoteListManager::filter()
+{
+    return m_filter;
 }

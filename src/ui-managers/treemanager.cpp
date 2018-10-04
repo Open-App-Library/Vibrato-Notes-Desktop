@@ -1,9 +1,10 @@
 #include "treemanager.h"
 
-TreeManager::TreeManager(QTreeView *treeView, QObject *parent) :
-    QObject(parent)
+TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, QObject *parent) :
+    QObject(parent),
+    m_tree_view(treeView),
+    m_note_list_manager(noteListManager)
 {
-    m_tree_view = treeView;
     m_tree_model = new TreeModel;
     m_tree_view->setModel(m_tree_model);
 
@@ -150,5 +151,9 @@ void TreeManager::loadTagsFromTagDatabase(TagDatabase *tagDatabase)
 void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex &previous)
 {
     BasicTreeItem *item = static_cast<BasicTreeItem*>(current.internalPointer());
-    qDebug() << "Hello, Hoss. The item name is" << item->isNotebook();
+    if ( item->isNotebook() ) {
+        Notebook *notebook = item->object().notebook;
+        noteFilterList list = m_note_list_manager->filter()->filter(FILTER_NOTEBOOK_ID, notebook->id());
+        m_note_list_manager->loadNotesFromNoteFilter(list);
+    }
 }
