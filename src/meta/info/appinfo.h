@@ -1,7 +1,7 @@
 #pragma once
 
 #define NAME        "Vibrato Notes"
-#define COMPANY     "OpenAppLibary"
+#define COMPANY     "OpenAppLibary.org"
 #define VERSION     "0.0.1" // Semantic Versioning
 
 #define CONFIG      "VibratoNotes"           // Config name that users are allowed to edit.
