@@ -1,17 +1,4 @@
-#include <QSettings>
-#include <QFile>
-#include <QtDebug>
-#include <QCloseEvent>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-
-#include <helper-io.hpp>
-#include "meta/info/appinfo.h"
-#include "meta/info/appconfig.h"
 #include "mainwindow.h"
-#include "ui-managers/notelistmanager.h"
-#include "ui-managers/treemanager.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -23,12 +10,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_notes     = new NoteDatabase;
     m_notebooks = new NotebookDatabase;
     m_tags      = new TagDatabase;
+    m_db        = new Database(m_notes, m_notebooks, m_tags);
 
     m_notes->loadDummyNotes();
     m_notebooks->loadDummyNotebooks();
     m_tags->loadDummyTags();
 
-    m_note_list_manager = new NoteListManager(ui->noteList, m_notes);
+    m_note_list_manager = new NoteListManager(ui->noteList, m_db);
     m_tree_manager      = new TreeManager(ui->TheTree, m_note_list_manager);
 
     m_tree_manager->loadNotebooksFromNotebookDatabase(m_notebooks);

@@ -1,31 +1,49 @@
 #include "notefilter.h"
 
-NoteFilter::NoteFilter(NoteDatabase *database) :
-    m_database(database)
+NoteFilter::NoteFilter(Database *db) :
+    m_db(db)
 {
     // Implementation
 }
 
-noteFilterList NoteFilter::filter(int filterType, QVariant value, noteFilterList additionalFilter)
+noteFilterList NoteFilter::notebookFilter(Notebook *notebook, noteFilterList additionalFilter)
 {
     noteFilterList list;
-    switch (filterType) {
-    case FILTER_NOTEBOOK_ID:
-        list = notebook_filter( value.toInt() );
-        break;
+    for (int i = 0; i < m_db->noteDatabase()->list().size(); i++) {
+        Note *curNote = m_db->noteDatabase()->list()[i];
+        if (curNote->notebook() == notebook->id()) {
+            list << curNote;
+            list << notesOfChildren( notebook->recurseChildren() );
+        }
     }
     list.append(additionalFilter);
     return list;
 }
 
-noteFilterList NoteFilter::notebook_filter(int notebook_id)
+noteFilterList NoteFilter::tagFilter(Tag *tag, noteFilterList additionalFilter)
 {
     noteFilterList list;
-    for (int i = 0; i < m_database->list().size(); i++) {
-        Note *curNote = m_database->list()[i];
-        if (curNote->id() == notebook_id)
+    for (int i = 0; i < m_db->noteDatabase()->list().size(); i++) {
+        Note *curNote = m_db->noteDatabase()->list()[i];
+        if (curNote->tags().contains( tag->id() )) {
             list << curNote;
+        }
     }
+    list.append(additionalFilter);
     return list;
 }
 
+noteFilterList NoteFilter::notesOfChildren(QVector<Notebook *> children)
+{
+    noteFilterList list;
+    for (int i = 0; i < m_db->noteDatabase()->list().size(); i++) {
+        Note *curNote = m_db->noteDatabase()->list()[i];
+        for (int j = 0; j < children.size(); j++) {
+            int notebook_id = children[j]->id();
+            if (curNote->notebook() == notebook_id) {
+                list << curNote;
+            }
+        }
+    }
+    return list;
+}

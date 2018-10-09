@@ -1,10 +1,10 @@
 #include "notelistmanager.h"
 
-NoteListManager::NoteListManager(QListWidget *listWidget, NoteDatabase *database) :
+NoteListManager::NoteListManager(QListWidget *listWidget, Database *db) :
     m_listWidget(listWidget),
-    m_database(database)
+    m_db(db)
 {
-    m_filter = new NoteFilter( database );
+    m_filter = new NoteFilter( m_db );
 }
 
 NoteListManager::~NoteListManager()
@@ -34,7 +34,7 @@ void NoteListManager::clear()
 
 void NoteListManager::loadNotesFromNoteDatabase()
 {
-    loadNotesFromNoteDatabase( m_database );
+    loadNotesFromNoteDatabase( m_db->noteDatabase() );
 }
 
 void NoteListManager::loadNotesFromNoteDatabase(NoteDatabase *noteDatabase)

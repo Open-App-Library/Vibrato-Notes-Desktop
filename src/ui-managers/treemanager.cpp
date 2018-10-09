@@ -21,6 +21,10 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
     m_tree_model->root()->appendChild(m_notebooks);
     m_tree_model->root()->appendChild(m_tags);
 
+    // Set the current selection to the first item in the treeview..which is "All Notes"
+    // Explanation: https://stackoverflow.com/questions/15817429/how-to-get-list-of-visible-qmodelindex-in-qabstractitemview
+    m_tree_view->setCurrentIndex( m_tree_view->indexAt( m_tree_view->rect().topLeft() ) );
+
     // Signal Connections
     connect(m_tree_view->selectionModel(), &QItemSelectionModel::currentChanged,
             this, &TreeManager::treeItemChanged);
@@ -150,10 +154,45 @@ void TreeManager::loadTagsFromTagDatabase(TagDatabase *tagDatabase)
 
 void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex &previous)
 {
-    BasicTreeItem *item = static_cast<BasicTreeItem*>(current.internalPointer());
-    if ( item->isNotebook() ) {
-        Notebook *notebook = item->object().notebook;
-        noteFilterList list = m_note_list_manager->filter()->filter(FILTER_NOTEBOOK_ID, notebook->id());
-        m_note_list_manager->loadNotesFromNoteFilter(list);
+    (void) previous; // Avoid 'unused parameter' compiler warning. Ignore.
+    if ( current != previous ) {
+        BasicTreeItem *item = static_cast<BasicTreeItem*>(current.internalPointer());
+        if (item == m_all_notes)
+        {   // Selected all notes label
+            m_note_list_manager->loadNotesFromNoteDatabase();
+        }
+
+        else if ( item == m_notebooks )
+        {   // Selected notebooks label
+            qDebug("Selected Notebooks label");
+            m_note_list_manager->clear();
+        }
+
+        else if ( item->isNotebook() )
+        {   // Selected a notebook
+            Notebook *notebook = item->object().notebook;
+            noteFilterList list = m_note_list_manager->filter()->notebookFilter(notebook);
+            m_note_list_manager->loadNotesFromNoteFilter( list );
+        }
+
+        else if ( item == m_tags)
+        {   // Selected tags label
+            m_note_list_manager->clear();
+            qDebug("Selected Tags label");
+        }
+
+        else if ( item->isTag() )
+        {   // Selected a tag
+            Tag *tag = item->object().tag;
+            noteFilterList list = m_note_list_manager->filter()->tagFilter(tag);
+            m_note_list_manager->loadNotesFromNoteFilter( list );
+        }
+
+        else
+        {   // Selected something else. Clear for safety.
+            m_note_list_manager->clear();
+        }
+    } else {
+        qWarning("Hmmm..Current tree selection is same as previous. This should NOT happen. [treemanager.cpp]");
     }
 }

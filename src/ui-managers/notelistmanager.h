@@ -5,13 +5,13 @@
 #include "ui_notelistitem.h"
 #include "../components/notelistitem.h"
 #include "../meta/note.h"
-#include "../meta/db/notedatabase.h"
+#include "../meta/db/database.h"
 #include "../meta/filter/notefilter.h"
 
 class NoteListManager
 {
 public:
-    NoteListManager(QListWidget *listWidget, NoteDatabase *database);
+    NoteListManager(QListWidget *listWidget, Database *db);
     ~NoteListManager();
     QList<QWidget*> *noteList();
     NoteListItem *add_note(Note *note);
@@ -25,7 +25,7 @@ private:
     QListWidget *m_listWidget;
     QList<NoteListItem*> m_noteList;
     NoteFilter *m_filter;
-    NoteDatabase *m_database;
+    Database *m_db;
 };
 
 #endif // NOTELISTMANAGER_H
