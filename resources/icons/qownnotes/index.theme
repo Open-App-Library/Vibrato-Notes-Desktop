@@ -1,8 +1,0 @@
-[Icon Theme]
-Name=QOwnNotes Theme
-Comment=Icon Theme for QOwnNotes
-Inherits=breeze-qownnotes
-Directories=16x16
- 
-[16x16]
-Size=16

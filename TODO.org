@@ -3,7 +3,6 @@
 * TODO Add some sort of pagination to the note list to prevent lag.
 
 * TODO Create a note editor [0/2]
-
 ** TODO Create the basic functionality of the editor
 
 ** TODO Display contents of selected note in the note editor.
