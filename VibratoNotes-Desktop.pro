@@ -9,6 +9,8 @@ QT       += core gui widgets
 TARGET = VibratoNotes-Desktop
 TEMPLATE = app
 
+include(src/text-editor/Escriba.pro)
+
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -69,8 +71,6 @@ FORMS += \
     ui/mainwindow.ui \
     ui/userwindow.ui \
     ui/notelistitem.ui
-
-include(src/text-editor/Escriba.pro)
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
