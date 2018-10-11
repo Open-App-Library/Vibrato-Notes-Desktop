@@ -135,7 +135,8 @@ QSplitter::handle {
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="im-user"/>
+            <iconset theme="im-user">
+             <normaloff>.</normaloff>.</iconset>
            </property>
            <property name="checkable">
             <bool>false</bool>
@@ -253,45 +254,12 @@ QTreeView {
 border-bottom: 0;</string>
           </property>
          </widget>
-         <widget class="QFrame" name="noteEditingArea">
+         <widget class="Escriba" name="noteEditingArea" native="true">
           <property name="styleSheet">
            <string notr="true">#noteEditingArea {
 	border: 0;
 }</string>
           </property>
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QTextEdit" name="textEdit">
-             <property name="font">
-              <font>
-               <pointsize>16</pointsize>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">border-top: 0;
-border-bottom: 0;</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
          </widget>
         </widget>
        </item>
@@ -494,6 +462,14 @@ border-bottom: 0;</string>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>Escriba</class>
+   <extends>QWidget</extends>
+   <header location="global">escriba.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

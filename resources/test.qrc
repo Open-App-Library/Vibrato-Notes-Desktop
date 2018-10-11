@@ -99,12 +99,5 @@
         <file>icons/breeze-qownnotes/16x16/zoom-original.svg</file>
         <file>icons/breeze-qownnotes/16x16/zoom-out.svg</file>
         <file>icons/breeze-qownnotes/index.theme</file>
-        <file>icons/breeze-qownnotes/16x16/edit-link.svg</file>
-        <file>icons/breeze-qownnotes/16x16/format-text-underline.svg</file>
-        <file>icons/breeze-qownnotes/16x16/format-indent-less.svg</file>
-        <file>icons/breeze-qownnotes/16x16/format-indent-more.svg</file>
-        <file>icons/breeze-qownnotes/16x16/format-list-ordered.svg</file>
-        <file>icons/breeze-qownnotes/16x16/format-list-unordered.svg</file>
-        <file>icons/breeze-qownnotes/16x16/overflow-menu.svg</file>
     </qresource>
 </RCC>
