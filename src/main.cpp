@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
     QIcon::setThemeName("breeze-qownnotes");
 
     QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication a(argc, argv);
 
