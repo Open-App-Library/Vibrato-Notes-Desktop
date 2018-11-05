@@ -12,6 +12,8 @@
 *.dll
 *.dylib
 
+compile_commands.json
+
 # Qt-es
 object_script.*.Release
 object_script.*.Debug
