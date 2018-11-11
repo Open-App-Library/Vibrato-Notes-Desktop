@@ -6,10 +6,8 @@
 
 QT       += core gui widgets
 
-TARGET = VibratoNotes-Desktop
+TARGET = VibratoNotesDesktop
 TEMPLATE = app
-
-include(src/text-editor/Escriba.pro)
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -25,8 +23,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-    src/meta/info/appconfig.cpp \
     src/main.cpp \
+    src/meta/info/appconfig.cpp \
     src/mainwindow.cpp \
     src/userwindow.cpp \
     src/ui-managers/notelistmanager.cpp \
@@ -72,32 +70,13 @@ FORMS += \
     ui/userwindow.ui \
     ui/notelistitem.ui
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
-
-# Mac-specific things
-macx {
-
-}
-
-# Mac & Linux
-unix {
-    #RESOURCES += # elementary-icons.qrc # Add Elementary icons as fallback icons
-}
-
-# Linux / BSD (NOT Mac) specfic things
-unix:!macx {
-
-}
-
-# Windows-Specific things
-win32 {
-    # TODO: Add Colibre icon theme as fallback
-}
-
+include(src/text-editor/Escriba.pro)
 
 RESOURCES += \
     resources/dummy-data.qrc \
     resources/icons.qrc
+
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
