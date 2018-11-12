@@ -37,8 +37,8 @@ SOURCES += \
     src/meta/db/tagdatabase.cpp \
     src/models/treemodel.cpp \
     src/models/items/basictreeitem.cpp \
-    src/ui-managers/old-treemanager.cpp \
     src/ui-managers/treemanager.cpp \
+    src/ui-managers/escribamanager.cpp \
     src/meta/filter/notefilter.cpp \
     src/meta/db/database.cpp
 
@@ -58,8 +58,8 @@ HEADERS += \
     include/helper-io.hpp \
     src/models/treemodel.h \
     src/models/items/basictreeitem.h \
-    src/ui-managers/old-treemanager.h \
     src/ui-managers/treemanager.h \
+    src/ui-managers/escribamanager.h \
     src/meta/filter/notefilter.h \
     src/meta/db/database.h
 
@@ -81,4 +81,3 @@ RESOURCES += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-

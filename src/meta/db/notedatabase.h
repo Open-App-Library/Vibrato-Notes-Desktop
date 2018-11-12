@@ -11,8 +11,9 @@
 
 #define NULL_INT -1
 
-class NoteDatabase
+class NoteDatabase : public QObject
 {
+	Q_OBJECT
 public:
     NoteDatabase();
 

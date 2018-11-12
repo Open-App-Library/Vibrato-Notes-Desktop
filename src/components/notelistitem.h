@@ -10,14 +10,18 @@ namespace Ui {
 	class NoteListItem;
 }
 
-class NoteListItem : public QListWidgetItem
+class NoteListItem : public QObject, public QListWidgetItem
 {
+	Q_OBJECT
 public:
 	NoteListItem(Note *note, QListWidget *listWidget);
 	~NoteListItem();
 	void updateUI();
 	void trash();
 	Note *note();
+
+public slots:
+	void noteChanged(Note *note);
 
 private:
 	Note *m_note;

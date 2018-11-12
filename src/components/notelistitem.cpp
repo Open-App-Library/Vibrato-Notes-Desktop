@@ -17,6 +17,9 @@ NoteListItem::NoteListItem(Note *note, QListWidget *listWidget) :
 	m_title_label   = m_ui_class->titleLabel;
 	m_excerpt_label = m_ui_class->excerptLabel;
 
+	connect(note, &Note::noteChanged,
+					this, &NoteListItem::noteChanged);
+
 	updateUI();
 }
 
@@ -47,4 +50,10 @@ void NoteListItem::trash()
 Note *NoteListItem::note()
 {
 	return m_note;
+}
+
+void NoteListItem::noteChanged(Note *note)
+{
+	(void) note; // Avoid unused argument compiled warning
+	updateUI();
 }

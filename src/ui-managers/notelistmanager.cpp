@@ -1,10 +1,10 @@
 #include "notelistmanager.h"
 #include <QDebug>
+#include "../meta/db/notedatabase.h"
 
-NoteListManager::NoteListManager(QListWidget *listWidget, Database *db, Escriba *textEditor) :
+NoteListManager::NoteListManager(QListWidget *listWidget, Database *db) :
 	m_listWidget(listWidget),
-	m_db(db),
-	m_textEditor(textEditor)
+	m_db(db)
 {
 	m_filter = new NoteFilter( m_db );
 	connect(m_listWidget, &QListWidget::currentItemChanged,
@@ -64,7 +64,14 @@ NoteFilter *NoteListManager::filter()
 
 void NoteListManager::noteListItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
 {
-	NoteListItem *item = dynamic_cast<NoteListItem*>(current);
-	Note *n = item->note();
-	m_textEditor->setMarkdown(n->title(), n->text());
+	(void) previous; // Avoid unused argument compiler warning.
+	if (current) {
+		NoteListItem *item = dynamic_cast<NoteListItem*>(current);
+		selectNote( item->note() );
+	}
+}
+
+void NoteListManager::selectNote(Note *note)
+{
+	emit noteSelected(note);
 }
