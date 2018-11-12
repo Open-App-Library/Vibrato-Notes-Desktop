@@ -21,7 +21,8 @@
 
 QSplitter::handle {
 /*	border-width: 100px;*/
-}</string>
+}
+</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="minimumSize">
@@ -274,7 +275,7 @@ border-bottom: 0;</string>
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

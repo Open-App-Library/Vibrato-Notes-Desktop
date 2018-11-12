@@ -16,12 +16,14 @@ MainWindow::MainWindow(QWidget *parent) :
     m_notebooks->loadDummyNotebooks();
     m_tags->loadDummyTags();
 
-    m_note_list_manager = new NoteListManager(ui->noteList, m_db);
+    m_note_list_manager = new NoteListManager(ui->noteList, m_db, ui->noteEditingArea);
     m_tree_manager      = new TreeManager(ui->TheTree, m_note_list_manager);
 
     m_tree_manager->loadNotebooksFromNotebookDatabase(m_notebooks);
     m_tree_manager->loadTagsFromTagDatabase(m_tags);
     m_note_list_manager->loadNotesFromNoteDatabase(m_notes);
+
+		ui->noteEditingArea->setMarkdown("My Incredible Document", "# Welcome!\n\n**TEST**");
 
     // ------------------------------------------------------
     // Restoring config variables if exist. Else set default.

@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QSettings>
 #include <QDebug>
-#include <string>
+#include <QFontDatabase>
 
 #include "mainwindow.h"
 #include "meta/info/appinfo.h"
@@ -15,6 +15,10 @@ int main(int argc, char *argv[])
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
     QApplication a(argc, argv);
+
+		QFontDatabase::addApplicationFont(":/fonts/Cantarell-Regular.ttf");
+		QFont defaultFont("Cantarell", 10);
+		QApplication::setFont(defaultFont);
 
     MainWindow w;
     w.setWindowTitle("Vibrato Notes");

@@ -74,9 +74,11 @@ include(src/text-editor/Escriba.pro)
 
 RESOURCES += \
     resources/dummy-data.qrc \
-    resources/icons.qrc
+    resources/icons.qrc \
+    resources/fonts.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
