@@ -6,26 +6,28 @@
 #include "mainwindow.h"
 #include "meta/info/appinfo.h"
 #include "meta/info/appconfig.h"
+#include "crossplatformicon.h"
 
 int main(int argc, char *argv[])
 {
-    QIcon::setThemeName("breeze-qownnotes");
+	QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+	QApplication a(argc, argv);
+	// Set Cross Platform Icon settings
+	CrossPlatformIcon::setThemeName( QIcon::themeName() );
+	CrossPlatformIcon::setFallbackThemeName("breeze-qownnotes");
 
-    QApplication a(argc, argv);
+	QFontDatabase::addApplicationFont(":/fonts/Cantarell-Regular.ttf");
+	QFont defaultFont("Cantarell", 10);
+	QApplication::setFont(defaultFont);
 
-		QFontDatabase::addApplicationFont(":/fonts/Cantarell-Regular.ttf");
-		QFont defaultFont("Cantarell", 10);
-		QApplication::setFont(defaultFont);
+	MainWindow w;
+	w.setWindowTitle("Vibrato Notes");
+	w.show();
 
-    MainWindow w;
-    w.setWindowTitle("Vibrato Notes");
-    w.show();
+	qDebug().nospace() << "Welcome to Vibrato Notes! v." << qPrintable( VERSION );
+	qDebug()           << "User Config Location:" << config()->fileName();
 
-    qDebug().nospace() << "Welcome to Vibrato Notes! v." << qPrintable( VERSION );
-    qDebug()           << "User Config Location:" << config()->fileName();
-
-    return a.exec();
+	return a.exec();
 }

@@ -1,4 +1,5 @@
 #include "treemanager.h"
+#include "../crossplatformicon.h"
 
 TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, QObject *parent) :
     QObject(parent),
@@ -12,9 +13,13 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
     m_notebooks = new BasicTreeItem(QObject::tr("Notebooks"));
     m_tags      = new BasicTreeItem(QObject::tr("Tags"));
 
-    m_all_notes->setIcon(QIcon::fromTheme("document-new"));
-    m_notebooks->setIcon(QIcon::fromTheme("folder"));
-    m_tags->setIcon(QIcon::fromTheme("tag"));
+    // m_all_notes->setIcon(QIcon::fromTheme("document-new"));
+    // m_notebooks->setIcon(QIcon::fromTheme("folder"));
+    // m_tags->setIcon(QIcon::fromTheme("tag"));
+		qDebug() << "TREE"  <<CrossPlatformIcon::themeName();
+    m_all_notes->setIcon(CrossPlatformIcon::get("document-new"));
+    m_notebooks->setIcon(CrossPlatformIcon::get("folder"));
+    m_tags->setIcon(CrossPlatformIcon::get("tag"));
 
 
     m_tree_model->root()->appendChild(m_all_notes);

@@ -40,7 +40,8 @@ SOURCES += \
     src/ui-managers/treemanager.cpp \
     src/ui-managers/escribamanager.cpp \
     src/meta/filter/notefilter.cpp \
-    src/meta/db/database.cpp
+    src/meta/db/database.cpp \
+    src/crossplatformicon.cpp
 
 HEADERS += \
     src/meta/info/appconfig.h \
@@ -61,7 +62,8 @@ HEADERS += \
     src/ui-managers/treemanager.h \
     src/ui-managers/escribamanager.h \
     src/meta/filter/notefilter.h \
-    src/meta/db/database.h
+    src/meta/db/database.h \
+    src/crossplatformicon.h
 
 INCLUDEPATH += $$PWD/include
 

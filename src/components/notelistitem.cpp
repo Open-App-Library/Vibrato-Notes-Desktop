@@ -31,8 +31,7 @@ NoteListItem::~NoteListItem()
 void NoteListItem::updateUI()
 {
 	// Set title and excerpt
-	if (m_title_label->isVisible())
-		m_title_label->setText(m_note->title());
+	m_title_label->setText(m_note->title());
 	QString excerpt = m_note->text();
 	if (excerpt.length() > 50) {
 		excerpt = m_note->text().mid(0, 50) + "...";
