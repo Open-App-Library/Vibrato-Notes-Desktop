@@ -41,17 +41,26 @@ void CrossPlatformIcon::setFallbackThemeName( QString fallbackThemeName )
 /*
  * Function get:
  * This function first checks if an icon with a theme pack exists
- * in the current theme.
+ * in the current theme. If it does, it returns the QIcon.
+ * Otherwise, it will switch to a fallback icon theme temporarily
+ * locate that
  */
 QIcon CrossPlatformIcon::get(QString name, int size)
 {
-	qDebug() << "Using" << m_themeName << "fallback" << m_fallbackThemeName;
 	// If theme icon exists, return it.
 	if ( QIcon::hasThemeIcon(name) )
 		return QIcon::fromTheme( name );
 
 	// Grab icon from Vibrato Notes icon set and return it.
 	QIcon::setThemeName( m_fallbackThemeName );
+
+	// If fallback theme does not have icon either,
+	// switch back to the system icon theme and
+	// return a blank QIcon
+	if ( !QIcon::hasThemeIcon(name) ) {
+		QIcon::setThemeName( m_themeName );
+		return QIcon();
+	}
 
 	// Grab the theme icon
 	QIcon iconRaw = QIcon::fromTheme( name );
