@@ -6,7 +6,6 @@
 #include "mainwindow.h"
 #include "meta/info/appinfo.h"
 #include "meta/info/appconfig.h"
-#include "crossplatformicon.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,8 +14,8 @@ int main(int argc, char *argv[])
 
 	QApplication a(argc, argv);
 	// Set Cross Platform Icon settings
-	CrossPlatformIcon::setThemeName( QIcon::themeName() );
-	CrossPlatformIcon::setFallbackThemeName("breeze-qownnotes");
+	qDebug() << "Cur fallback" << QIcon::fallbackSearchPaths();
+	QIcon::setFallbackSearchPaths( QIcon::fallbackSearchPaths() << ":/vibrato/icons" );
 
 	QFontDatabase::addApplicationFont(":/fonts/Cantarell-Regular.ttf");
 	QFont defaultFont("Cantarell", 10);
