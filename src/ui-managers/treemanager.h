@@ -19,55 +19,62 @@
 
 class TreeManager : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit TreeManager(QTreeView *treeView, NoteListManager *noteListManager, QObject *parent=nullptr);
-    ~TreeManager();
+	explicit TreeManager(QTreeView *treeView, NoteListManager *noteListManager, QObject *parent=nullptr);
+	~TreeManager();
 
-    void update(); // Refreshes GUI
+	enum TreeItemTypes {TreeType_AllNotes, TreeType_Notebooks, TreeType_Notebook, TreeType_Tags, TreeType_Tag, TreeType_Other};
 
-    // Notebook functions
-    QVector<BasicTreeItem*> notebooks() const;
-    BasicTreeItem          *addNotebook(Notebook *notebook);
-    BasicTreeItem          *addNotebook(Notebook *notebook, BasicTreeItem *parent);
+	void update(); // Refreshes GUI
 
-    void                    removeNotebook(BasicTreeItem *item);
-    void                    removeNotebook(BasicTreeItem *item, BasicTreeItem *fosterParent);
+	// Notebook functions
+	QVector<BasicTreeItem*> notebooks() const;
 
-    void                    clearChildren(BasicTreeItem *item);
-    void                    clearNotebooks();
+	BasicTreeItem          *curItem();
 
-    void                    loadNotebookObjectAndChildren(Notebook *notebook, BasicTreeItem *parent=nullptr);
-    void                    loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase);
+	BasicTreeItem          *addNotebook(Notebook *notebook);
+	BasicTreeItem          *addNotebook(Notebook *notebook, BasicTreeItem *parent);
 
-    // Tag functions
-    QVector<BasicTreeItem*> tags() const;
-    BasicTreeItem          *addTag(Tag *tag);
-    void                    removeTag(BasicTreeItem *item);
-    void                    clearTags();
+	void                    removeNotebook(BasicTreeItem *item);
+	void                    removeNotebook(BasicTreeItem *item, BasicTreeItem *fosterParent);
 
-    void loadTagsFromTagDatabase(TagDatabase *tagDatabase);
+	void                    clearChildren(BasicTreeItem *item);
+	void                    clearNotebooks();
 
-    // Signal Callbacks
-    void treeItemChanged(const QModelIndex &current, const QModelIndex &previous);
+	void                    loadNotebookObjectAndChildren(Notebook *notebook, BasicTreeItem *parent=nullptr);
+	void                    loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase);
+
+	// Tag functions
+	QVector<BasicTreeItem*> tags() const;
+	BasicTreeItem          *addTag(Tag *tag);
+	void                    removeTag(BasicTreeItem *item);
+	void                    clearTags();
+
+	void loadTagsFromTagDatabase(TagDatabase *tagDatabase);
+
+	// Signal Callbacks
+	void treeItemChanged(const QModelIndex &current, const QModelIndex &previous);
 
 private:
-    TreeModel       *m_tree_model;
-    QTreeView       *m_tree_view;
-    NoteListManager *m_note_list_manager;
+	ListModel       *m_tree_model;
+	QTreeView       *m_tree_view;
+	NoteListManager *m_note_list_manager;
 
-    BasicTreeItem *m_all_notes;
-    BasicTreeItem *m_notebooks;
-    BasicTreeItem *m_tags;
+	BasicTreeItem *m_curItem;
 
-    // TODO: https://forum.qt.io/topic/45262/disable-certain-rows-in-qtreeview
-    BasicTreeItem *m_no_notebooks_placedholder = nullptr;
-    BasicTreeItem *m_no_tags_placedholder = nullptr;
+	BasicTreeItem *m_all_notes;
+	BasicTreeItem *m_notebooks;
+	BasicTreeItem *m_tags;
 
-    void add_no_notebooks_placeholder();
-    void add_no_tags_placeholder();
-    void remove_no_notebooks_placeholder();
-    void remove_no_tags_placeholder();
+	// TODO: https://forum.qt.io/topic/45262/disable-certain-rows-in-qtreeview
+	BasicTreeItem *m_no_notebooks_placedholder = nullptr;
+	BasicTreeItem *m_no_tags_placedholder = nullptr;
+
+	void add_no_notebooks_placeholder();
+	void add_no_tags_placeholder();
+	void remove_no_notebooks_placeholder();
+	void remove_no_tags_placeholder();
 };
 
 #endif // TREEMANAGER_H

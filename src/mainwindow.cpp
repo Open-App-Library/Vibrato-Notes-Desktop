@@ -57,6 +57,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	// SIGNALS
 	// -------
 	//* User Button clicked - the button to sign into account or access account/sync info.
+	connect(ui->newNoteButton, &QPushButton::clicked,
+					this, &MainWindow::addNewNote);
+
 	connect(ui->userButton, &QPushButton::clicked,
 					this, &MainWindow::userButtonClicked);
 
@@ -108,4 +111,11 @@ void MainWindow::selectedNoteChanged(Note *n)
 void MainWindow::userButtonClicked()
 {
 	m_user_window.show();
+}
+
+void MainWindow::addNewNote()
+{
+	Note *note = new Note;
+	m_notes->addDefaultNote(note);
+	m_note_list_manager->add_note(note);
 }

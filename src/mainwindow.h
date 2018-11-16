@@ -54,6 +54,7 @@ private:
 
 public slots:
 	void userButtonClicked();
+	void addNewNote();
 };
 
 #endif // NOTES_H

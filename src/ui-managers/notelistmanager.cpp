@@ -19,7 +19,7 @@ NoteListManager::~NoteListManager()
 NoteListItem *NoteListManager::add_note(Note *note)
 {
 	NoteListItem *mynote = new NoteListItem(note, m_listWidget);
-	m_noteList.append(mynote);
+	m_noteList.prepend(mynote);
 	return mynote;
 }
 

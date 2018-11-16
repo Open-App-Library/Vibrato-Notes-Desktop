@@ -23,8 +23,18 @@ int NoteDatabase::size() const
 
 Note *NoteDatabase::addNote(Note *note)
 {
-	m_list.append(note);
+	m_list.prepend(note);
 	return note;
+}
+
+Note *NoteDatabase::addDefaultNote(Note *note)
+{
+	note->setTitle("Untitled Note");
+	note->setText("");
+	//	note->setDate_created( );
+	//	note->setDate_modified( );
+	//	note->setId( );
+	return addNote(note);
 }
 
 // This causes use of deleted function error. Probably because I started extending QObject

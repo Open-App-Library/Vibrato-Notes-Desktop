@@ -7,13 +7,13 @@
 #include "items/basictreeitem.h"
 
 
-class TreeModel : public QAbstractItemModel
+class ListModel : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    explicit TreeModel(QObject *parent = nullptr);
-    ~TreeModel();
+    explicit ListModel(QObject *parent = nullptr);
+    ~ListModel();
 
     BasicTreeItem *root() const;
 
