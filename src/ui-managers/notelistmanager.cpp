@@ -2,13 +2,16 @@
 #include <QDebug>
 #include "../meta/db/notedatabase.h"
 
-NoteListManager::NoteListManager(QListWidget *listWidget, Database *db) :
-	m_listWidget(listWidget),
+NoteListManager::NoteListManager(QListView *view, Database *db) :
+	m_view(view),
 	m_db(db)
 {
 	m_filter = new NoteFilter( m_db );
-	connect(m_listWidget, &QListWidget::currentItemChanged,
-					this, &NoteListManager::noteListItemChanged);
+	m_model = new NoteListModel(view);
+	view->setModel(m_model);
+
+	// connect(m_listWidget, &QListWidget::currentItemChanged,
+	// 				this, &NoteListManager::noteListItemChanged);
 }
 
 NoteListManager::~NoteListManager()
@@ -18,9 +21,8 @@ NoteListManager::~NoteListManager()
 
 NoteListItem *NoteListManager::add_note(Note *note)
 {
-	NoteListItem *mynote = new NoteListItem(note, m_listWidget);
-	m_noteList.prepend(mynote);
-	return mynote;
+	NoteListItem *i = m_model->prependItem(note);
+	return i;
 }
 
 void NoteListManager::remove_note(int index)
@@ -30,10 +32,7 @@ void NoteListManager::remove_note(int index)
 
 void NoteListManager::clear()
 {
-	for (int i = 0; i < m_noteList.length(); i++) {
-		m_noteList[i]->trash();
-	}
-	m_noteList.clear();
+    m_model->clear();
 }
 
 void NoteListManager::loadNotesFromNoteDatabase()
@@ -60,18 +59,4 @@ void NoteListManager::loadNotesFromNoteFilter(noteFilterList noteList)
 NoteFilter *NoteListManager::filter()
 {
 	return m_filter;
-}
-
-void NoteListManager::noteListItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
-{
-	(void) previous; // Avoid unused argument compiler warning.
-	if (current) {
-		NoteListItem *item = dynamic_cast<NoteListItem*>(current);
-		selectNote( item->note() );
-	}
-}
-
-void NoteListManager::selectNote(Note *note)
-{
-	emit noteSelected(note);
 }

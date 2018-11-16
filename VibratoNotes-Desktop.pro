@@ -28,7 +28,6 @@ SOURCES += \
     src/mainwindow.cpp \
     src/userwindow.cpp \
     src/ui-managers/notelistmanager.cpp \
-    src/components/notelistitem.cpp \
     src/meta/note.cpp \
     src/meta/notebook.cpp \
     src/meta/tag.cpp \
@@ -40,7 +39,9 @@ SOURCES += \
     src/ui-managers/treemanager.cpp \
     src/ui-managers/escribamanager.cpp \
     src/meta/filter/notefilter.cpp \
-    src/meta/db/database.cpp
+    src/meta/db/database.cpp \
+    src/models/items/notelistitem.cpp \
+    src/models/notelistmodel.cpp
 
 HEADERS += \
     src/meta/info/appconfig.h \
@@ -48,7 +49,6 @@ HEADERS += \
     src/mainwindow.h \
     src/userwindow.h \
     src/ui-managers/notelistmanager.h \
-    src/components/notelistitem.h \
     src/meta/note.h \
     src/meta/notebook.h \
     src/meta/tag.h \
@@ -61,7 +61,9 @@ HEADERS += \
     src/ui-managers/treemanager.h \
     src/ui-managers/escribamanager.h \
     src/meta/filter/notefilter.h \
-    src/meta/db/database.h
+    src/meta/db/database.h \
+    src/models/items/notelistitem.h \
+    src/models/notelistmodel.h
 
 INCLUDEPATH += $$PWD/include
 

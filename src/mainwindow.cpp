@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_notebooks->loadDummyNotebooks();
 	m_tags->loadDummyTags();
 
-	m_note_list_manager = new NoteListManager(ui->noteList, m_db);
+  m_note_list_manager = new NoteListManager(ui->noteList, m_db);
 	m_tree_manager      = new TreeManager(ui->TheTree, m_note_list_manager);
 	m_escriba_manager   = new EscribaManager(ui->noteEditingArea);
 
@@ -63,8 +63,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->userButton, &QPushButton::clicked,
 					this, &MainWindow::userButtonClicked);
 
-	connect(m_note_list_manager, &NoteListManager::noteSelected,
-					this, &MainWindow::selectedNoteChanged);
+    // TODO: RE-IMPLEMENT THIS
+//	connect(m_note_list_manager, &NoteListManager::noteSelected,
+//					this, &MainWindow::selectedNoteChanged);
 
 	//	connect(ui->noteEditingArea, &Escriba::)
 

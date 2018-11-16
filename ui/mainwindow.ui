@@ -249,7 +249,7 @@ QTreeView {
            </item>
           </layout>
          </widget>
-         <widget class="QListWidget" name="noteList">
+         <widget class="QListView" name="noteList">
           <property name="styleSheet">
            <string notr="true">border-top: 0;
 border-bottom: 0;</string>
@@ -275,7 +275,7 @@ border-bottom: 0;</string>
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
