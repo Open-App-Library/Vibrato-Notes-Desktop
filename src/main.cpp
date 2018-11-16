@@ -14,7 +14,6 @@ int main(int argc, char *argv[])
 
 	QApplication a(argc, argv);
 	// Set Cross Platform Icon settings
-	qDebug() << "Cur fallback" << QIcon::fallbackSearchPaths();
 	QIcon::setFallbackSearchPaths( QIcon::fallbackSearchPaths() << ":/vibrato/icons" );
 
 	QFontDatabase::addApplicationFont(":/fonts/Cantarell-Regular.ttf");
