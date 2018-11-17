@@ -225,7 +225,7 @@ QTreeView {
            <item>
             <widget class="QTreeView" name="TheTree">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
@@ -250,6 +250,12 @@ QTreeView {
           </layout>
          </widget>
          <widget class="CustomListView" name="noteList">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="styleSheet">
            <string notr="true">border-top: 0;
 border-bottom: 0;

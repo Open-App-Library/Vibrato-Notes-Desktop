@@ -6,5 +6,7 @@
         <file>icons/im-user.svg</file>
         <file>icons/vibrato-star.svg</file>
         <file>icons/vibrato-star-o.svg</file>
+        <file>icons/trash-empty.svg</file>
+        <file>icons/trash-empty2.svg</file>
     </qresource>
 </RCC>

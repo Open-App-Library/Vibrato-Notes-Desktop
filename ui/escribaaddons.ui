@@ -59,11 +59,22 @@ border: 0;</string>
      </item>
      <item>
       <widget class="QToolButton" name="f_noteTrash">
+       <property name="styleSheet">
+        <string notr="true">QToolButton {
+	background: #f97c7c;
+	border: 2px solid #ee6969;
+	border-radius: 2px;
+}
+
+QToolButton:hover {
+	background: #ee6969;
+}</string>
+       </property>
        <property name="text">
         <string>Trash</string>
        </property>
        <property name="icon">
-        <iconset theme="trash-empty">
+        <iconset theme="trash-empty2">
          <normaloff>.</normaloff>.</iconset>
        </property>
       </widget>

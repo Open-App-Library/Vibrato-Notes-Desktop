@@ -3,9 +3,10 @@
 #include <QAbstractItemView>
 #include "../meta/db/notedatabase.h"
 
-NoteListManager::NoteListManager(CustomListView *view, Database *db) :
+NoteListManager::NoteListManager(CustomListView *view, EscribaManager *escribaManager, Database *db) :
 	m_view(view),
-	m_db(db)
+    m_escribaManager(escribaManager),
+    m_db(db)
 {
 	m_filter = new NoteFilter( m_db );
 	m_model = new NoteListModel(view);
@@ -42,6 +43,12 @@ void NoteListManager::clear()
 void NoteListManager::loadNotesFromNoteDatabase()
 {
 	loadNotesFromNoteDatabase( m_db->noteDatabase() );
+//    if (m_view->currentIndex() == QModelIndex()) {
+//        qDebug("not selecting anything.");
+//    } else {
+//        qDebug(" selecting sdfsdf.");
+//    }
+
 }
 
 void NoteListManager::loadNotesFromNoteDatabase(NoteDatabase *noteDatabase)
@@ -63,6 +70,12 @@ void NoteListManager::loadNotesFromNoteFilter(noteFilterList noteList)
 NoteFilter *NoteListManager::filter()
 {
     return m_filter;
+}
+
+void NoteListManager::openIndexInEditor(int index)
+{
+    m_view->setCurrentIndex( m_model->index(index,0) );
+    m_escribaManager->setNote( m_model->noteItems()[index]->note() );
 }
 
 void NoteListManager::noteListItemChanged(const QModelIndex &current, const QModelIndex &previous)

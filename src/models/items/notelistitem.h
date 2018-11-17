@@ -5,7 +5,7 @@
 #include <QLabel>
 #include "../../meta/note.h"
 
-#define NOTE_LIST_ITEM_HEIGHT 75
+#define NOTE_LIST_ITEM_HEIGHT 90
 
 namespace Ui {
 	class NoteListItem;

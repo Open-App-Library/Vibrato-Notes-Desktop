@@ -98,6 +98,19 @@ QToolButton {
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <pointsize>8</pointsize>
+            <italic>true</italic>
+           </font>
+          </property>
+          <property name="text">
+           <string>November 11, 2018</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="excerptLabel">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Ignored" vsizetype="Maximum">
@@ -136,7 +149,8 @@ background-color: none;</string>
         <string>Favorite this note</string>
        </property>
        <property name="icon">
-        <iconset theme="vibrato-star-o"/>
+        <iconset theme="vibrato-star-o">
+         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>

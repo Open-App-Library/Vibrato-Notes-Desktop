@@ -17,13 +17,16 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_notebooks->loadDummyNotebooks();
 	m_tags->loadDummyTags();
 
-    m_note_list_manager = new NoteListManager(ui->noteList, m_db);
+    m_escriba_manager   = new EscribaManager(ui->noteEditingArea);
+    m_note_list_manager = new NoteListManager(ui->noteList, m_escriba_manager, m_db);
 	m_tree_manager      = new TreeManager(ui->TheTree, m_note_list_manager);
-	m_escriba_manager   = new EscribaManager(ui->noteEditingArea);
 
 	m_tree_manager->loadNotebooksFromNotebookDatabase(m_notebooks);
 	m_tree_manager->loadTagsFromTagDatabase(m_tags);
 	m_note_list_manager->loadNotesFromNoteDatabase(m_notes);
+
+    // Open first item in list in editor
+    m_note_list_manager->openIndexInEditor(0);
 
 	// ------------------------------------------------------
 	// Restoring config variables if exist. Else set default.
