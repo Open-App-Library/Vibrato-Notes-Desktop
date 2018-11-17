@@ -60,6 +60,7 @@ void NoteListItem::updateWidget()
     if (excerpt.length() > 50) {
         excerpt = m_note->text().mid(0, 50) + "...";
     }
+    excerpt.replace("\n", " ");
     m_excerpt_label->setText(excerpt);
 }
 

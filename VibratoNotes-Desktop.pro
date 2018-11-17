@@ -73,7 +73,8 @@ INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
 FORMS += \
     ui/mainwindow.ui \
     ui/userwindow.ui \
-    ui/notelistitem.ui
+    ui/notelistitem.ui \
+    ui/escribaaddons.ui
 
 include(src/text-editor/Escriba.pro)
 
