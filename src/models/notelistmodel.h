@@ -15,6 +15,11 @@ public:
 	NoteListItem *prependItem(Note *note);
 	NoteListItem *appendItem(Note *note);
 
+    bool insertRows(int position, int rows,
+                    const QModelIndex &parent = QModelIndex()) override;
+    bool removeRows(int position, int rows,
+                    const QModelIndex &parent = QModelIndex()) override;
+
 	QVariant data(const QModelIndex &index, int role) const override;
 	Qt::ItemFlags flags(const QModelIndex &index) const override;
 	QVariant headerData(int section, Qt::Orientation orientation,

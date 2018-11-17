@@ -18,6 +18,7 @@ public:
 	NoteListItem(Note *note);
     ~NoteListItem();
 	Note *note();
+    void setNote(Note *note);
 	QWidget *widget();
     void deleteWidget();
 

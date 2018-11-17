@@ -16,27 +16,50 @@ void NoteListModel::refresh(int row)
 
 void NoteListModel::clear()
 {
-    for (int i = 0; i < m_noteItems.length(); i++) {
-        m_noteItems[0]->deleteWidget();
-        m_noteItems.remove(0);
-        removeRow(0);
-    }
+    removeRows(0, m_noteItems.length());
 }
 
 NoteListItem *NoteListModel::prependItem(Note *note)
 {
-	NoteListItem *i = new NoteListItem(note);
-	m_noteItems.prepend( i );
-	refresh(0);
-	return i;
+    insertRows(0, 1);
+    NoteListItem *i = m_noteItems[0];
+    i->setNote(note);
+    return i;
 }
 
 NoteListItem *NoteListModel::appendItem(Note *note)
 {
-	NoteListItem *i = new NoteListItem(note);
-	m_noteItems.append( i );
-	refresh( m_noteItems.length()-1 );
-	return i;
+    insertRows(m_noteItems.length(), 1);
+    NoteListItem *i = m_noteItems[ m_noteItems.length()-1 ];
+    i->setNote(note);
+    return i;
+}
+
+bool NoteListModel::insertRows(int position, int rows, const QModelIndex &parent)
+{
+    beginInsertRows(parent, position, position + rows - 1);
+
+    for (int i = 0; i < rows; i++) {
+        m_noteItems.insert(position+i, new NoteListItem(nullptr));
+    }
+
+    endInsertRows();
+
+    return true;
+}
+
+bool NoteListModel::removeRows(int position, int rows, const QModelIndex &parent)
+{
+    beginRemoveRows(parent, position, position + rows - 1);
+
+    for (int i = 0; i < rows; i++) {
+        delete m_noteItems[position];
+        m_noteItems.remove(position);
+    }
+
+    endRemoveRows();
+
+    return true;
 }
 
 int NoteListModel::columnCount(const QModelIndex &parent) const
