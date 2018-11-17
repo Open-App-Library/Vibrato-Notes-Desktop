@@ -16,6 +16,7 @@ public:
 	Note *note();
 
 public slots:
+    void contentChangedFromEditor(QString markdown);
 	void titleChangedFromEditor(QString title);
 
 private:

@@ -4,6 +4,8 @@
 EscribaManager::EscribaManager(Escriba *editor) :
 	m_editor(editor)
 {
+    connect(editor, &Escriba::documentChanged,
+            this, &EscribaManager::contentChangedFromEditor);
 	connect(editor, &Escriba::documentTitleChanged,
 					this, &EscribaManager::titleChangedFromEditor);
 }
@@ -23,7 +25,16 @@ void EscribaManager::setNote( Note *note )
 
 Note *EscribaManager::note()
 {
-	return m_curNote;
+    return m_curNote;
+}
+
+void EscribaManager::contentChangedFromEditor(QString markdown)
+{
+    if (!m_curNote)
+        return;
+    if (!QString::compare(m_curNote->text(), markdown)) // If titles are same, exit
+        return;
+    m_curNote->setText(markdown);
 }
 
 void EscribaManager::titleChangedFromEditor(QString title)

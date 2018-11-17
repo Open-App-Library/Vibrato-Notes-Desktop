@@ -4,5 +4,7 @@
         <file>icons/folder.svg</file>
         <file>icons/document-new.svg</file>
         <file>icons/im-user.svg</file>
+        <file>icons/vibrato-star.svg</file>
+        <file>icons/vibrato-star-o.svg</file>
     </qresource>
 </RCC>

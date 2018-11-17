@@ -1,14 +1,18 @@
 #include "notelistmanager.h"
 #include <QDebug>
+#include <QAbstractItemView>
 #include "../meta/db/notedatabase.h"
 
-NoteListManager::NoteListManager(QListView *view, Database *db) :
+NoteListManager::NoteListManager(CustomListView *view, Database *db) :
 	m_view(view),
 	m_db(db)
 {
 	m_filter = new NoteFilter( m_db );
 	m_model = new NoteListModel(view);
 	view->setModel(m_model);
+
+    connect(m_view, &CustomListView::selectedItemChanged,
+            this, &NoteListManager::noteListItemChanged);
 
 	// connect(m_listWidget, &QListWidget::currentItemChanged,
 	// 				this, &NoteListManager::noteListItemChanged);
@@ -58,5 +62,19 @@ void NoteListManager::loadNotesFromNoteFilter(noteFilterList noteList)
 
 NoteFilter *NoteListManager::filter()
 {
-	return m_filter;
+    return m_filter;
+}
+
+void NoteListManager::noteListItemChanged(const QModelIndex &current, const QModelIndex &previous)
+{
+   if (previous.isValid()) {
+       NoteListItem *prevItem = m_model->noteItems()[ previous.row() ];
+       prevItem->setSelectedStyle(false);
+   }
+
+   if (current.isValid()) {
+       NoteListItem *curItem = m_model->noteItems()[ current.row() ];
+       curItem->setSelectedStyle(true);
+       emit selectedNote( curItem->note() );
+   }
 }

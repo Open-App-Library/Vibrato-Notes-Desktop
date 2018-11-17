@@ -4,8 +4,13 @@
 NoteListModel::NoteListModel(QListView *view) : QAbstractItemModel()
 {
 	m_view = view;
-    QString style = QString("QListView:item { height: %1 }").arg( NOTE_LIST_ITEM_HEIGHT );
-	m_view->setStyleSheet(style);
+    QString style = QString("QListView:item::active  { color: white; } QListView:item { height: %1 }").arg( NOTE_LIST_ITEM_HEIGHT );
+    m_view->setStyleSheet(style);
+}
+
+QVector<NoteListItem *> NoteListModel::noteItems() const
+{
+    return m_noteItems;
 }
 
 void NoteListModel::refresh(int row)

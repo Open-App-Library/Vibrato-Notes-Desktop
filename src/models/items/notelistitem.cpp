@@ -13,11 +13,11 @@ NoteListItem::NoteListItem(Note *note) :
     m_title_label   = m_ui_class->titleLabel;
     m_excerpt_label = m_ui_class->excerptLabel;
 
-//    connect(note, &Note::noteChanged,
-//            this, &NoteListItem::noteChanged);
-
-    if (note != nullptr)
+    if (note != nullptr) {
         updateWidget();
+        connect(note, &Note::noteChanged,
+                this, &NoteListItem::noteChanged);
+    }
 }
 
 NoteListItem::~NoteListItem()
@@ -35,6 +35,8 @@ void NoteListItem::setNote(Note *note)
 {
     m_note = note;
     updateWidget();
+    connect(note, &Note::noteChanged,
+            this, &NoteListItem::noteChanged);
 }
 
 QWidget *NoteListItem::widget()
@@ -61,7 +63,16 @@ void NoteListItem::updateWidget()
     m_excerpt_label->setText(excerpt);
 }
 
+void NoteListItem::setSelectedStyle(bool selected)
+{
+    if (selected)
+        m_widget->setStyleSheet("color: palette(Light)");
+    else
+        m_widget->setStyleSheet("color: initial");
+}
+
 void NoteListItem::noteChanged(Note *note)
 {
+    (void) note; // Ignore unused variable compiler warning
 	updateWidget();
 }

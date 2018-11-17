@@ -249,10 +249,11 @@ QTreeView {
            </item>
           </layout>
          </widget>
-         <widget class="QListView" name="noteList">
+         <widget class="CustomListView" name="noteList">
           <property name="styleSheet">
            <string notr="true">border-top: 0;
-border-bottom: 0;</string>
+border-bottom: 0;
+</string>
           </property>
          </widget>
          <widget class="Escriba" name="noteEditingArea" native="true">
@@ -469,6 +470,11 @@ border-bottom: 0;</string>
    <extends>QWidget</extends>
    <header location="global">escriba.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CustomListView</class>
+   <extends>QListView</extends>
+   <header location="global">customlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

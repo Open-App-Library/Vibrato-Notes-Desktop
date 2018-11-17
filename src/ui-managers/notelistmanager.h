@@ -1,7 +1,7 @@
 #ifndef NOTELISTMANAGER_H
 #define NOTELISTMANAGER_H
 #include <QVector>
-#include <QListView>
+#include "../models/views/customlistview.h"
 #include "ui_notelistitem.h"
 #include "../models/notelistmodel.h"
 #include "../models/items/notelistitem.h"
@@ -13,7 +13,7 @@ class NoteListManager : public QObject
 {
 	Q_OBJECT
 public:
-	NoteListManager(QListView *view, Database *db);
+    NoteListManager(CustomListView *view, Database *db);
 	~NoteListManager();
 	NoteListItem *add_note(Note *note);
 	void remove_note(int index);
@@ -23,8 +23,14 @@ public:
 	void loadNotesFromNoteFilter(noteFilterList noteList);
 	NoteFilter *filter();
 
+public slots:
+    void noteListItemChanged(const QModelIndex & current, const QModelIndex & previous);
+
+signals:
+    void selectedNote(Note *note);
+
 private:
-	QListView *m_view;
+    CustomListView *m_view;
 	NoteListModel *m_model;
 
 	NoteFilter *m_filter;

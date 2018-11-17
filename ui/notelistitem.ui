@@ -136,8 +136,7 @@ background-color: none;</string>
         <string>Favorite this note</string>
        </property>
        <property name="icon">
-        <iconset theme="draw-star" resource="breeze-icons.qrc">
-         <normaloff>:/draw-star</normaloff>:/draw-star</iconset>
+        <iconset theme="vibrato-star-o"/>
        </property>
        <property name="iconSize">
         <size>
@@ -154,8 +153,6 @@ background-color: none;</string>
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="breeze-icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

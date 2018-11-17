@@ -41,7 +41,8 @@ SOURCES += \
     src/meta/filter/notefilter.cpp \
     src/meta/db/database.cpp \
     src/models/items/notelistitem.cpp \
-    src/models/notelistmodel.cpp
+    src/models/notelistmodel.cpp \
+    src/models/views/customlistview.cpp
 
 HEADERS += \
     src/meta/info/appconfig.h \
@@ -63,9 +64,11 @@ HEADERS += \
     src/meta/filter/notefilter.h \
     src/meta/db/database.h \
     src/models/items/notelistitem.h \
-    src/models/notelistmodel.h
+    src/models/notelistmodel.h \
+    src/models/views/customlistview.h
 
 INCLUDEPATH += $$PWD/include
+INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
 
 FORMS += \
     ui/mainwindow.ui \

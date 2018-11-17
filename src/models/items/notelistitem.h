@@ -24,6 +24,8 @@ public:
 
 	void updateWidget();
 
+    void setSelectedStyle(bool selected);
+
 private:
 	Ui::NoteListItem *m_ui_class;
 	QWidget *m_widget;

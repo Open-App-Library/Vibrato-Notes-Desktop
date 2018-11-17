@@ -10,6 +10,8 @@ class NoteListModel : public QAbstractItemModel
 public:
 	NoteListModel(QListView *view);
 
+    QVector<NoteListItem*> noteItems() const;
+
 	void refresh(int row);
     void clear();
 	NoteListItem *prependItem(Note *note);
