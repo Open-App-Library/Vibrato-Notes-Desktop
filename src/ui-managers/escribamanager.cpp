@@ -92,5 +92,4 @@ void EscribaManager::addTag()
     }
     updateTagsButtonCounter();
     m_tagsInputWidget->clear();
-    qDebug() << m_curNote->tags();
 }

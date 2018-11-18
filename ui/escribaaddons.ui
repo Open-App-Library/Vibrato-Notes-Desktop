@@ -116,7 +116,7 @@ QToolButton:hover {
       <string notr="true">border: 0;
 padding: 0;
 background: palette(Window);
-padding: 5px;</string>
+padding: 0 2px;</string>
      </property>
      <property name="placeholderText">
       <string>Title</string>
