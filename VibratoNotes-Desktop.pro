@@ -74,7 +74,8 @@ FORMS += \
     ui/mainwindow.ui \
     ui/userwindow.ui \
     ui/notelistitem.ui \
-    ui/escribaaddons.ui
+    ui/escribaaddons.ui \
+    ui/tagitem.ui
 
 include(src/text-editor/Escriba.pro)
 
@@ -87,3 +88,6 @@ RESOURCES += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    resources/icons/window-close.svg

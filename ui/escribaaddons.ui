@@ -47,13 +47,28 @@ QToolButton:hover {
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="f_noteTags">
+      <widget class="QToolButton" name="f_noteTagsViewer">
+       <property name="styleSheet">
+        <string notr="true">QToolButton {
+	border: 0;
+}
+QToolButton:hover {
+	background: #ccc;
+}</string>
+       </property>
+       <property name="text">
+        <string>Manage Tags (0)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="f_noteTagsInput">
        <property name="styleSheet">
         <string notr="true">background: palette(Window);
 border: 0;</string>
        </property>
        <property name="placeholderText">
-        <string>Tags...</string>
+        <string>Add a tag, press enter</string>
        </property>
       </widget>
      </item>
@@ -113,6 +128,9 @@ padding: 5px;</string>
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
+     <property name="bottomMargin">
+      <number>5</number>
+     </property>
      <property name="horizontalSpacing">
       <number>15</number>
      </property>
@@ -137,14 +155,14 @@ padding: 5px;</string>
         </size>
        </property>
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Created&lt;/span&gt;: November 17, 2018&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Created&lt;/span&gt;: January 17, 1706&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
       <widget class="QLabel" name="f_noteDateModified">
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Modified&lt;/span&gt;: November 17, 2018&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Modified&lt;/span&gt;: April 17, 1790&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="margin">
         <number>0</number>

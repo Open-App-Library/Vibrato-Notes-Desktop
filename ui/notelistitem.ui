@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>387</width>
-    <height>72</height>
+    <height>76</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -106,7 +106,7 @@ QToolButton {
            </font>
           </property>
           <property name="text">
-           <string>November 11, 2018</string>
+           <string>January 17, 1706</string>
           </property>
          </widget>
         </item>

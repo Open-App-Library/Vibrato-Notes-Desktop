@@ -12,9 +12,14 @@ public:
     int           size() const;
 
     void addTag(Tag *tag);
+    Tag *addTag(int id, QString title);
 
     void removeTag(int index);
     void clearTags();
+
+    Tag *findTagWithID(int id);
+    Tag *findTagWithName(QString name);
+    Tag *findTagWithNameOrCreate(QString name);
 
     void loadJSON(QJsonDocument jsonDocument);
 

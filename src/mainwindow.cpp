@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_notebooks->loadDummyNotebooks();
 	m_tags->loadDummyTags();
 
-    m_escriba_manager   = new EscribaManager(ui->noteEditingArea);
+    m_escriba_manager   = new EscribaManager(ui->noteEditingArea, m_db);
     m_note_list_manager = new NoteListManager(ui->noteList, m_escriba_manager, m_db);
 	m_tree_manager      = new TreeManager(ui->TheTree, m_note_list_manager);
 

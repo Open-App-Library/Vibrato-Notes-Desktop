@@ -25,6 +25,15 @@ void TagDatabase::addTag(Tag *Tag)
     m_list.append(Tag);
 }
 
+Tag *TagDatabase::addTag(int id, QString title)
+{
+    Tag *tag = new Tag();
+    tag->setId(id);
+    tag->setTitle(title);
+    addTag(tag);
+    return tag;
+}
+
 void TagDatabase::removeTag(int index)
 {
     delete m_list[index];
@@ -36,6 +45,33 @@ void TagDatabase::clearTags()
     for (int i = m_list.size()-1; i >= 0; i--) {
         removeTag(i);
     }
+}
+
+Tag *TagDatabase::findTagWithID(int id)
+{
+    for (Tag *tag : m_list) {
+        if (tag->id() == id)
+            return tag;
+    }
+    return nullptr;
+}
+
+Tag *TagDatabase::findTagWithName(QString name)
+{
+    for (Tag *tag : m_list) {
+        if ( QString::compare(tag->title(), name, Qt::CaseInsensitive) == 0 )
+            return tag;
+    }
+    return nullptr;
+}
+
+Tag *TagDatabase::findTagWithNameOrCreate(QString name)
+{
+    Tag *tag = findTagWithName( name );
+    if (tag != nullptr)
+        return tag;
+    else
+        return addTag(m_list.count()+1, name);
 }
 
 void TagDatabase::loadJSON(QJsonDocument jsonDocument)
