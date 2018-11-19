@@ -8,5 +8,9 @@
         <file>icons/vibrato-star-o.svg</file>
         <file>icons/trash-empty.svg</file>
         <file>icons/trash-empty2.svg</file>
+        <file>icons/edit-find.svg</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>icons/vibrato-default/index.theme</file>
     </qresource>
 </RCC>

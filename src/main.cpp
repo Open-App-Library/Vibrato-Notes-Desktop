@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 
 
 	QApplication a(argc, argv);
-    QIcon::setThemeName("breeze");
+    QIcon::setThemeName("vibrato-default");
 
 	// Set Cross Platform Icon settings
 	QIcon::setFallbackSearchPaths( QIcon::fallbackSearchPaths() << ":/vibrato/icons" );

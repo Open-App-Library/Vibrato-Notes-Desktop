@@ -56,6 +56,10 @@ void EscribaManager::setNote( Note *note )
     m_titleWidget->setText(note->title());
     m_editor->setMarkdown(note->text());
     updateTagsButtonCounter();
+
+    QString created = "<strong>Created:</strong> %1";
+    QString modified = "<strong>Modified:</strong> %1";
+    //m_dateCreatedWidget->setText( created.arg( m_curNote->date_created().toString() ) );
 }
 
 Note *EscribaManager::note()

@@ -64,6 +64,8 @@ private:
 	BasicTreeItem *m_curItem;
 
 	BasicTreeItem *m_all_notes;
+    BasicTreeItem *m_search;
+    BasicTreeItem *m_favorites;
 	BasicTreeItem *m_notebooks;
 	BasicTreeItem *m_tags;
 

@@ -9,16 +9,24 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
 	m_tree_view->setModel(m_tree_model);
 
 	m_all_notes = new BasicTreeItem( tr("All Notes") );
+    m_favorites = new BasicTreeItem( tr("Favorites") );
 	m_notebooks = new BasicTreeItem( tr("Notebooks") );
 	m_tags      = new BasicTreeItem( tr("Tags") );
+    m_search    = new BasicTreeItem( tr("Search results for \"Test\"") );
+
 
 	m_all_notes->setIcon( QIcon::fromTheme("document-new") );
+    m_favorites->setIcon( QIcon::fromTheme("vibrato-star") );
 	m_notebooks->setIcon(QIcon::fromTheme("folder") );
 	m_tags->setIcon( QIcon::fromTheme("tag") );
+    m_search->setIcon( QIcon::fromTheme("edit-find") );
+
 
 	m_tree_model->root()->appendChild(m_all_notes);
+    m_tree_model->root()->appendChild(m_favorites);
 	m_tree_model->root()->appendChild(m_notebooks);
 	m_tree_model->root()->appendChild(m_tags);
+    m_tree_model->root()->appendChild(m_search);
 
 	// Set the current selection to the first item in the treeview..which is "All Notes"
 	// Explanation: https://stackoverflow.com/questions/15817429/how-to-get-list-of-visible-qmodelindex-in-qabstractitemview
