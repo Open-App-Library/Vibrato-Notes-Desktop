@@ -35,6 +35,8 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db) :
             this, &EscribaManager::titleChangedFromEditor);
     connect(m_tagsInputWidget, &QLineEdit::returnPressed,
             this, &EscribaManager::addTag);
+    connect(m_notebookWidget, &QToolButton::clicked,
+            this, &EscribaManager::openNotebookEditor);
 
 }
 
@@ -92,4 +94,23 @@ void EscribaManager::addTag()
     }
     updateTagsButtonCounter();
     m_tagsInputWidget->clear();
+}
+
+void EscribaManager::openNotebookEditor()
+{
+    if ( m_curNote == nullptr)
+        return;
+
+    // If dialog is not a nullptr and its note ID is not equal to the new note, delete it.
+    if (m_editNotebookDialog != nullptr && m_editNotebookDialog->note()->id() != m_curNote->id()) {
+        // Save changes dialog if user tweaked around
+        delete m_editNotebookDialog;
+        m_editNotebookDialog = nullptr;
+    }
+
+    if (m_editNotebookDialog == nullptr) {
+        m_editNotebookDialog = new Note_EditNotebook(m_db, m_curNote);
+    }
+
+    m_editNotebookDialog->show();
 }
