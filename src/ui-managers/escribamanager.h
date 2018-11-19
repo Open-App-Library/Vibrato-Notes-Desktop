@@ -5,6 +5,7 @@
 #include <escriba.h>
 #include "../meta/note.h"
 #include "../meta/db/database.h"
+#include "../../ui/note_editnotebook.h"
 #include <ui_escribaaddons.h>
 
 namespace Ui {
@@ -28,6 +29,8 @@ public slots:
 	void titleChangedFromEditor(QString title);
     void addTag();
 
+    void openNotebookEditor();
+
 private:
 	Escriba  *m_editor;
 	Database *m_db;
@@ -42,6 +45,8 @@ private:
 	QToolButton *m_trashWidget;
 	QLabel *m_dateCreatedWidget;
 	QLabel *m_dateModifiedWidget;
+
+    Note_EditNotebook *m_editNotebookDialog = nullptr;
 };
 
 #endif

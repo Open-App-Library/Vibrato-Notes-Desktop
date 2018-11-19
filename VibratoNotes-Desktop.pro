@@ -42,7 +42,9 @@ SOURCES += \
     src/meta/db/database.cpp \
     src/models/items/notelistitem.cpp \
     src/models/notelistmodel.cpp \
-    src/models/views/customlistview.cpp
+    src/models/views/customlistview.cpp \
+    ui/note_editnotebook.cpp \
+    src/models/items/treeitemwithid.cpp
 
 HEADERS += \
     src/meta/info/appconfig.h \
@@ -65,7 +67,9 @@ HEADERS += \
     src/meta/db/database.h \
     src/models/items/notelistitem.h \
     src/models/notelistmodel.h \
-    src/models/views/customlistview.h
+    src/models/views/customlistview.h \
+    ui/note_editnotebook.h \
+    src/models/items/treeitemwithid.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
@@ -75,7 +79,8 @@ FORMS += \
     ui/userwindow.ui \
     ui/notelistitem.ui \
     ui/escribaaddons.ui \
-    ui/tagitem.ui
+    ui/tagitem.ui \
+    ui/note_editnotebook.ui
 
 include(src/text-editor/Escriba.pro)
 
