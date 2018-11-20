@@ -55,6 +55,9 @@ private:
 public slots:
 	void userButtonClicked();
 	void addNewNote();
+    void view_default();
+    void view_minimal();
+    void view_focus();
 };
 
 #endif // NOTES_H

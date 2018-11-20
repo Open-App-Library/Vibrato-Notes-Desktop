@@ -1,4 +1,5 @@
- #include "treemanager.h"
+#include "treemanager.h"
+#include "../../iconutils.h"
 
 TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, QObject *parent) :
 	QObject(parent),
@@ -8,24 +9,31 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
 	m_tree_model = new ListModel;
 	m_tree_view->setModel(m_tree_model);
 
+    QFile styleFile( ":/style/DarkSolarized.qss" );
+    styleFile.open( QFile::ReadOnly );
+    QString style(styleFile.readAll());
+    m_tree_view->setStyleSheet( style );
+
 	m_all_notes = new BasicTreeItem( tr("All Notes") );
     m_favorites = new BasicTreeItem( tr("Favorites") );
 	m_notebooks = new BasicTreeItem( tr("Notebooks") );
 	m_tags      = new BasicTreeItem( tr("Tags") );
+    m_trash     = new BasicTreeItem( tr("Trash") );
     m_search    = new BasicTreeItem( tr("Search results for \"Test\"") );
 
-
-	m_all_notes->setIcon( QIcon::fromTheme("document-new") );
-    m_favorites->setIcon( QIcon::fromTheme("vibrato-star") );
-	m_notebooks->setIcon(QIcon::fromTheme("folder") );
-	m_tags->setIcon( QIcon::fromTheme("tag") );
-    m_search->setIcon( QIcon::fromTheme("edit-find") );
+    m_all_notes->setIcon( IconUtils::requestDarkIcon("document-new") );
+    m_favorites->setIcon( IconUtils::requestDarkIcon("draw-star") );
+    m_notebooks->setIcon( IconUtils::requestDarkIcon("folder") );
+    m_tags->setIcon     ( IconUtils::requestDarkIcon("tag") );
+    m_trash->setIcon    ( IconUtils::requestDarkIcon("trash-empty") );
+    m_search->setIcon   ( IconUtils::requestDarkIcon("edit-find") );
 
 
 	m_tree_model->root()->appendChild(m_all_notes);
     m_tree_model->root()->appendChild(m_favorites);
 	m_tree_model->root()->appendChild(m_notebooks);
 	m_tree_model->root()->appendChild(m_tags);
+    m_tree_model->root()->appendChild(m_trash);
     m_tree_model->root()->appendChild(m_search);
 
 	// Set the current selection to the first item in the treeview..which is "All Notes"

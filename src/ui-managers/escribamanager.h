@@ -31,6 +31,8 @@ public slots:
 
     void openNotebookEditor();
 
+    void focusEditor();
+
 private:
 	Escriba  *m_editor;
 	Database *m_db;

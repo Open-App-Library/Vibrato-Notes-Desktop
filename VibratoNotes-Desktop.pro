@@ -44,7 +44,8 @@ SOURCES += \
     src/models/notelistmodel.cpp \
     src/models/views/customlistview.cpp \
     ui/note_editnotebook.cpp \
-    src/models/items/treeitemwithid.cpp
+    src/models/items/treeitemwithid.cpp \
+    src/iconutils.cpp
 
 HEADERS += \
     src/meta/info/appconfig.h \
@@ -69,7 +70,8 @@ HEADERS += \
     src/models/notelistmodel.h \
     src/models/views/customlistview.h \
     ui/note_editnotebook.h \
-    src/models/items/treeitemwithid.h
+    src/models/items/treeitemwithid.h \
+    src/iconutils.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
@@ -87,7 +89,8 @@ include(src/text-editor/Escriba.pro)
 RESOURCES += \
     resources/dummy-data.qrc \
     resources/icons.qrc \
-    resources/fonts.qrc
+    resources/fonts.qrc \
+    resources/styles.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

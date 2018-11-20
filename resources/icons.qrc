@@ -1,16 +1,23 @@
 <RCC>
-    <qresource prefix="/vibrato">
-        <file>icons/tag.svg</file>
-        <file>icons/folder.svg</file>
-        <file>icons/document-new.svg</file>
-        <file>icons/im-user.svg</file>
-        <file>icons/vibrato-star.svg</file>
-        <file>icons/vibrato-star-o.svg</file>
-        <file>icons/trash-empty.svg</file>
-        <file>icons/trash-empty2.svg</file>
-        <file>icons/edit-find.svg</file>
-    </qresource>
     <qresource prefix="/">
         <file>icons/vibrato-default/index.theme</file>
+        <file>icons/vibrato-default/icons/tag.svg</file>
+        <file>icons/vibrato-default/icons/folder.svg</file>
+        <file>icons/vibrato-default/icons/document-new.svg</file>
+        <file>icons/vibrato-default/icons/im-user.svg</file>
+        <file>icons/vibrato-default/icons/trash-empty.svg</file>
+        <file>icons/vibrato-default/icons/trash-empty2.svg</file>
+        <file>icons/vibrato-default/icons/edit-find.svg</file>
+        <file>icons/vibrato-default/icons/draw-star.svg</file>
+        <file>icons/vibrato-default/icons/favorite.svg</file>
+        <file>icons/vibrato-default-dark/icons/document-new.svg</file>
+        <file>icons/vibrato-default-dark/icons/draw-star.svg</file>
+        <file>icons/vibrato-default-dark/icons/edit-find.svg</file>
+        <file>icons/vibrato-default-dark/icons/favorite.svg</file>
+        <file>icons/vibrato-default-dark/icons/folder.svg</file>
+        <file>icons/vibrato-default-dark/icons/im-user.svg</file>
+        <file>icons/vibrato-default-dark/icons/tag.svg</file>
+        <file>icons/vibrato-default-dark/icons/trash-empty.svg</file>
+        <file>icons/vibrato-default-dark/index.theme</file>
     </qresource>
 </RCC>

@@ -68,6 +68,7 @@ private:
     BasicTreeItem *m_favorites;
 	BasicTreeItem *m_notebooks;
 	BasicTreeItem *m_tags;
+    BasicTreeItem *m_trash;
 
 	// TODO: https://forum.qt.io/topic/45262/disable-certain-rows-in-qtreeview
 	BasicTreeItem *m_no_notebooks_placedholder = nullptr;

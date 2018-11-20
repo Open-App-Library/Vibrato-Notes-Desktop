@@ -1,0 +1,8 @@
+[Icon Theme]
+Name=Vibrato Default (Dark)
+Comment=Default dark icon set for Vibrato Notes. Uses Breeze icons mostly.
+
+[icons]
+Size=16
+Context=Actions
+Type=Scalable

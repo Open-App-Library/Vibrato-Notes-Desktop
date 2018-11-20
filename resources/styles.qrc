@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>style/DarkSolarized.qss</file>
+    </qresource>
+</RCC>

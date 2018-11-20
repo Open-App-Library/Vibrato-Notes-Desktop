@@ -12,12 +12,11 @@ int main(int argc, char *argv[])
 	QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-
 	QApplication a(argc, argv);
     QIcon::setThemeName("vibrato-default");
 
 	// Set Cross Platform Icon settings
-	QIcon::setFallbackSearchPaths( QIcon::fallbackSearchPaths() << ":/vibrato/icons" );
+    QIcon::setFallbackSearchPaths( QIcon::fallbackSearchPaths() << ":/icons/vibrato-default/icons" );
 
 	QFontDatabase::addApplicationFont(":/fonts/Cantarell-Regular.ttf");
 	QFont defaultFont("Cantarell", 10);

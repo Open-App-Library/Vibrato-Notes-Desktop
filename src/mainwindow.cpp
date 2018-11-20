@@ -37,12 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	if ( meta_config_key_exists(MAIN_SCREEN_LAYOUT) ) {
 		ui->mainSplitter->restoreState( meta_config_value(MAIN_SCREEN_LAYOUT).toByteArray() );
 	} else {
-		QList<int> splitterSizes = {0,0,0};
-		int window_width = this->width();
-		splitterSizes[0] = window_width / 6;     // First split is 1/6 of the screen
-		splitterSizes[1] = window_width / 6;     // Second split is 1/6 of the screen
-		splitterSizes[2] = window_width / 6 * 4; // Last split occupies 4/6 of the screen
-		ui->mainSplitter->setSizes(splitterSizes);
+        view_default();
 	}
 
 	// Remove margin on toolbar on Mac OS X
@@ -69,7 +64,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_note_list_manager, &NoteListManager::selectedNote,
             this, &MainWindow::selectedNoteChanged);
 
-	//	connect(ui->noteEditingArea, &Escriba::)
+    // Menu items
+    connect(ui->action_ViewDefault, &QAction::triggered,
+            this, &MainWindow::view_default);
+    connect(ui->action_ViewMinimal, &QAction::triggered,
+            this, &MainWindow::view_minimal);
+    connect(ui->action_viewFocus, &QAction::triggered,
+            this, &MainWindow::view_focus);
 
 }
 
@@ -120,5 +121,35 @@ void MainWindow::addNewNote()
 {
 	Note *note = new Note;
 	m_notes->addDefaultNote(note);
-	m_note_list_manager->add_note(note);
+    m_note_list_manager->add_note(note);
+}
+
+void MainWindow::view_default()
+{
+    QList<int> splitterSizes = {0,0,0};
+    int window_width = this->width();
+    splitterSizes[0] = window_width / 6;     // First split is 1/6 of the screen
+    splitterSizes[1] = window_width / 6;     // Second split is 1/6 of the screen
+    splitterSizes[2] = window_width / 6 * 4; // Last split occupies 4/6 of the screen
+    ui->mainSplitter->setSizes(splitterSizes);
+}
+
+void MainWindow::view_minimal()
+{
+    QList<int> splitterSizes = {0,0,0};
+    int window_width = this->width();
+    splitterSizes[0] = 0;     // First split is 1/6 of the screen
+    splitterSizes[1] = window_width / 6 * 2;     // Second split is 1/6 of the screen
+    splitterSizes[2] = window_width / 6 * 5; // Last split occupies 4/6 of the screen
+    ui->mainSplitter->setSizes(splitterSizes);
+}
+
+void MainWindow::view_focus()
+{
+    QList<int> splitterSizes = {0,0,0};
+    int window_width = this->width();
+    splitterSizes[0] = 0;     // First split is 1/6 of the screen
+    splitterSizes[1] = 0;     // Second split is 1/6 of the screen
+    splitterSizes[2] = window_width; // Last split occupies 4/6 of the screen
+    ui->mainSplitter->setSizes(splitterSizes);
 }

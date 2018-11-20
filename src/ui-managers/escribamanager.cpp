@@ -33,6 +33,8 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db) :
             this, &EscribaManager::contentChangedFromEditor);
     connect(m_titleWidget, &QLineEdit::textChanged,
             this, &EscribaManager::titleChangedFromEditor);
+    connect(m_titleWidget, &QLineEdit::returnPressed,
+            this, &EscribaManager::focusEditor);
     connect(m_tagsInputWidget, &QLineEdit::returnPressed,
             this, &EscribaManager::addTag);
     connect(m_notebookWidget, &QToolButton::clicked,
@@ -117,4 +119,9 @@ void EscribaManager::openNotebookEditor()
     }
 
     m_editNotebookDialog->show();
+}
+
+void EscribaManager::focusEditor()
+{
+    m_editor->focusEditor();
 }

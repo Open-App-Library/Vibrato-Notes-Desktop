@@ -345,9 +345,9 @@ border-bottom: 0;
      <property name="title">
       <string>Layout</string>
      </property>
-     <addaction name="actionDefault_2"/>
-     <addaction name="actionMinimal"/>
-     <addaction name="actionFocus"/>
+     <addaction name="action_ViewDefault"/>
+     <addaction name="action_ViewMinimal"/>
+     <addaction name="action_viewFocus"/>
     </widget>
     <addaction name="menuLayout"/>
     <addaction name="actionShow_Menubar"/>
@@ -442,17 +442,17 @@ border-bottom: 0;
     <string>Dark</string>
    </property>
   </action>
-  <action name="actionDefault_2">
+  <action name="action_ViewDefault">
    <property name="text">
     <string>Default</string>
    </property>
   </action>
-  <action name="actionFocus">
+  <action name="action_viewFocus">
    <property name="text">
     <string>Focus</string>
    </property>
   </action>
-  <action name="actionMinimal">
+  <action name="action_ViewMinimal">
    <property name="text">
     <string>Minimal</string>
    </property>
