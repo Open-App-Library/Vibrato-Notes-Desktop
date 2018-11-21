@@ -40,7 +40,6 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db) :
             this, &EscribaManager::addTag);
     connect(m_notebookWidget, &QToolButton::clicked,
             this, &EscribaManager::openNotebookEditor);
-
 }
 
 void EscribaManager::updateTagsButtonCounter()
@@ -56,27 +55,18 @@ void EscribaManager::setNote( Note *note )
         m_curNote->setText( m_editor->toMarkdown() );
     }
 
+    connect(note, &Note::noteChanged,
+            this, &EscribaManager::updateNotebookWidget);
+    disconnect(m_curNote, &Note::noteChanged,
+            this, &EscribaManager::updateNotebookWidget);
+
     // Change to requested note
     m_curNote = note;
     m_titleWidget->setText(note->title());
     m_editor->setMarkdown(note->text());
     updateTagsButtonCounter();
 
-    // Adjust notebook selector widget
-    if ( m_curNote != nullptr && m_curNote->notebook() >= 0 ) {
-        Notebook *notebook = m_db->notebookDatabase()->findNotebookWithID(m_curNote->notebook());
-        if ( notebook != nullptr )
-            m_notebookWidget->setText( notebook->title() );
-        if ( notebook->parent() != nullptr ) {
-            Notebook *parent = notebook->parent();
-            while (parent != nullptr) {
-                m_notebookWidget->setText( QString(parent->title() + " -> ").append( m_notebookWidget->text() ) );
-                parent = parent->parent();
-            }
-        }
-    } else {
-        m_notebookWidget->setText( "Default Notebook" );
-    }
+    updateNotebookWidget();
 
     QString created = "<strong>Created:</strong> %1";
     QString modified = "<strong>Modified:</strong> %1";
@@ -140,4 +130,24 @@ void EscribaManager::openNotebookEditor()
 void EscribaManager::focusEditor()
 {
     m_editor->focusEditor();
+}
+
+void EscribaManager::updateNotebookWidget()
+{
+    // Adjust notebook selector widget
+    if ( m_curNote != nullptr && m_curNote->notebook() >= 0 ) {
+        Notebook *notebook = m_db->notebookDatabase()->findNotebookWithID(m_curNote->notebook());
+        if ( notebook != nullptr )
+            m_notebookWidget->setText( notebook->title() );
+        // If notebook has parents, append a nice little hierarchy indication
+        if ( notebook->parent() != nullptr ) {
+            Notebook *parent = notebook->parent();
+            while (parent != nullptr) {
+                m_notebookWidget->setText( QString(parent->title() + " -> ").append( m_notebookWidget->text() ) );
+                parent = parent->parent();
+            }
+        }
+    } else {
+        m_notebookWidget->setText( "Default Notebook" );
+    }
 }

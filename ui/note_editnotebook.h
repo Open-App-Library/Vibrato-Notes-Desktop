@@ -25,6 +25,12 @@ public:
 
 private slots:
     void noteChanged(void);
+    void selectNotebook();
+
+    void currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+
+signals:
+    void notebookChanged();
 
 private:
     Ui::Note_EditNotebook *ui;

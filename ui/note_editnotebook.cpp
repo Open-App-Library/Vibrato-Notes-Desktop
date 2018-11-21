@@ -17,7 +17,7 @@ Note_EditNotebook::Note_EditNotebook(Database *db, Note *note, QWidget *parent) 
 
     // Button box
     m_selectNotebook = new QPushButton("Select Notebook");
-    m_selectNotebook->setEnabled(false);
+
     ui->buttonBox->addButton(m_selectNotebook, QDialogButtonBox::ActionRole);
 
     updateTitle();
@@ -25,8 +25,14 @@ Note_EditNotebook::Note_EditNotebook(Database *db, Note *note, QWidget *parent) 
     loadNotesNotebooks();
     m_notebookTree->expandAll();
 
+    m_selectNotebook->setEnabled(false);
+
     connect(note, &Note::noteChanged,
             this, &Note_EditNotebook::noteChanged);
+    connect(m_selectNotebook, &QPushButton::clicked,
+            this, &Note_EditNotebook::selectNotebook);
+    connect(m_notebookTree, &QTreeWidget::currentItemChanged,
+            this, &Note_EditNotebook::currentItemChanged);
 }
 
 Note_EditNotebook::~Note_EditNotebook()
@@ -43,6 +49,28 @@ Note *Note_EditNotebook::note()
 void Note_EditNotebook::noteChanged(void)
 {
     updateTitle();
+}
+
+void Note_EditNotebook::selectNotebook()
+{
+    QList<QTreeWidgetItem*> selItemsArray = m_notebookTree->selectedItems();
+    if ( selItemsArray.length() == 0)
+        return;
+    TreeItemWithID *sel = static_cast<TreeItemWithID*>( selItemsArray.at(0) );
+
+    // Uncheck all
+    for ( int i = 0; i < m_treeItems.length(); i++ )
+        checkItem(m_treeItems.at(i), false);
+    // Check selected icon
+    checkItem(sel, true);
+
+    // Save into note object
+    int curId = m_note->notebook();
+    int id = sel->id();
+    if ( curId != id ) {
+        m_note->setNotebook(id);
+        emit notebookChanged();
+    }
 }
 
 void Note_EditNotebook::updateTitle()
@@ -111,4 +139,15 @@ void Note_EditNotebook::checkItem(TreeItemWithID *item, bool isChecked)
     }
     else
         item->setIcon(0, QIcon());
+}
+
+void Note_EditNotebook::currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+    (void) previous; // Ignore unused parameter compiler warning
+    TreeItemWithID *cur = static_cast<TreeItemWithID*>(current);
+    if ( cur->id() == m_note->notebook()) {
+        m_selectNotebook->setEnabled(false);
+    } else {
+        m_selectNotebook->setEnabled(true);
+    }
 }
