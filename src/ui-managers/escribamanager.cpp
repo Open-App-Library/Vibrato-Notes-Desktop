@@ -49,15 +49,15 @@ void EscribaManager::updateTagsButtonCounter()
 
 void EscribaManager::setNote( Note *note )
 {
-    // Save current note
+    // Save current note and disconnect signal/slot
     if (m_curNote != nullptr) {
         m_curNote->setTitle( m_titleWidget->text() );
         m_curNote->setText( m_editor->toMarkdown() );
+        disconnect(m_curNote, &Note::noteChanged,
+                this, &EscribaManager::updateNotebookWidget);
     }
 
     connect(note, &Note::noteChanged,
-            this, &EscribaManager::updateNotebookWidget);
-    disconnect(m_curNote, &Note::noteChanged,
             this, &EscribaManager::updateNotebookWidget);
 
     // Change to requested note
