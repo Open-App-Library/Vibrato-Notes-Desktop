@@ -18,9 +18,12 @@ int main(int argc, char *argv[])
 	// Set Cross Platform Icon settings
     QIcon::setFallbackSearchPaths( QIcon::fallbackSearchPaths() << ":/icons/vibrato-default/icons" );
 
-	QFontDatabase::addApplicationFont(":/fonts/Cantarell-Regular.ttf");
-	QFont defaultFont("Cantarell", 10);
-	QApplication::setFont(defaultFont);
+#if defined(TARGET_OS_MAC)
+#else
+    QFontDatabase::addApplicationFont(":/fonts/Cantarell-Regular.ttf");
+    QFont defaultFont("Cantarell", 10);
+    QApplication::setFont(defaultFont);
+#endif
 
 	MainWindow w;
 	w.setWindowTitle("Vibrato Notes");
