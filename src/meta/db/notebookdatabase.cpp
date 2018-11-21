@@ -21,17 +21,17 @@ int NotebookDatabase::size() const
 }
 
 
-QVector<Notebook *> NotebookDatabase::list_recursively() const
+QVector<Notebook *> NotebookDatabase::listRecursively() const
 {
-    return list_recursively(m_list);
+    return listRecursively(m_list);
 }
 
-QVector<Notebook*> NotebookDatabase::list_recursively(const QVector<Notebook*> notebookList) const
+QVector<Notebook*> NotebookDatabase::listRecursively(const QVector<Notebook*> notebookList) const
 {
     QVector<Notebook*> the_list;
     for (int i = 0; i < notebookList.size(); i++) {
         the_list.append(notebookList[i]);
-        QVector<Notebook*> the_children = list_recursively(notebookList[i]->children());
+        QVector<Notebook*> the_children = listRecursively(notebookList[i]->children());
         for (int j = 0; j < the_children.size(); j++) {
             the_list.append(the_children[j]);
         }
@@ -55,6 +55,15 @@ void NotebookDatabase::clearNotebooks()
     for (int i = m_list.size()-1; i >= 0; i--) {
         removeNotebook(i);
     }
+}
+
+Notebook *NotebookDatabase::findNotebookWithID(int id)
+{
+    for (Notebook *notebook : listRecursively()) {
+        if (notebook->id() == id)
+            return notebook;
+    }
+    return nullptr;
 }
 
 void NotebookDatabase::jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent)

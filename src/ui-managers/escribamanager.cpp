@@ -1,5 +1,6 @@
 #include "escribamanager.h"
 #include <QDebug>
+#include "../models/items/treeitemwithid.h"
 
 // Parse tags string (saving thing for when I'm ready to implement)
 //    QString tagsStr;
@@ -61,6 +62,22 @@ void EscribaManager::setNote( Note *note )
     m_editor->setMarkdown(note->text());
     updateTagsButtonCounter();
 
+    // Adjust notebook selector widget
+    if ( m_curNote != nullptr && m_curNote->notebook() >= 0 ) {
+        Notebook *notebook = m_db->notebookDatabase()->findNotebookWithID(m_curNote->notebook());
+        if ( notebook != nullptr )
+            m_notebookWidget->setText( notebook->title() );
+        if ( notebook->parent() != nullptr ) {
+            Notebook *parent = notebook->parent();
+            while (parent != nullptr) {
+                m_notebookWidget->setText( QString(parent->title() + " -> ").append( m_notebookWidget->text() ) );
+                parent = parent->parent();
+            }
+        }
+    } else {
+        m_notebookWidget->setText( "Default Notebook" );
+    }
+
     QString created = "<strong>Created:</strong> %1";
     QString modified = "<strong>Modified:</strong> %1";
     //m_dateCreatedWidget->setText( created.arg( m_curNote->date_created().toString() ) );
@@ -109,7 +126,6 @@ void EscribaManager::openNotebookEditor()
 
     // If dialog is not a nullptr and its note ID is not equal to the new note, delete it.
     if (m_editNotebookDialog != nullptr && m_editNotebookDialog->note()->id() != m_curNote->id()) {
-        // Save changes dialog if user tweaked around
         delete m_editNotebookDialog;
         m_editNotebookDialog = nullptr;
     }

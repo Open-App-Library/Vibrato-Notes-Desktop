@@ -9,14 +9,16 @@ public:
     NotebookDatabase();
     QVector<Notebook *> list() const;
     int               size() const;
-    QVector<Notebook *> list_recursively() const;
-    QVector<Notebook *> list_recursively(const QVector<Notebook*> notebookList) const;
+    QVector<Notebook *> listRecursively() const;
+    QVector<Notebook *> listRecursively(const QVector<Notebook*> notebookList) const;
 
     void addNotebook(Notebook *notebook);
     void addNotebook(Notebook *notebook, Notebook *parent);
 
     void removeNotebook(int index);
     void clearNotebooks();
+
+    Notebook *findNotebookWithID(int id);
 
     void loadJSON(QJsonDocument jsonDocument);
 

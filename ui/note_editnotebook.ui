@@ -21,11 +21,6 @@
        <string>Notebook</string>
       </property>
      </column>
-     <item>
-      <property name="text">
-       <string>Default Notebook</string>
-      </property>
-     </item>
     </widget>
    </item>
    <item>

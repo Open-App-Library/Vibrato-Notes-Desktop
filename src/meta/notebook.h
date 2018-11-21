@@ -28,7 +28,7 @@ public:
 private:
     int m_id;
     QString m_title;
-    Notebook *m_parent;
+    Notebook *m_parent=nullptr;
     QVector<Notebook*> m_children;
     // TODO: Implement user
     // TODO: implement shared_with

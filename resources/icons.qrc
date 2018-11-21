@@ -19,5 +19,7 @@
         <file>icons/vibrato-default-dark/icons/tag.svg</file>
         <file>icons/vibrato-default-dark/icons/trash-empty.svg</file>
         <file>icons/vibrato-default-dark/index.theme</file>
+        <file>icons/vibrato-default-dark/icons/dialog-ok-apply.svg</file>
+        <file>icons/vibrato-default/icons/dialog-ok-apply.svg</file>
     </qresource>
 </RCC>
