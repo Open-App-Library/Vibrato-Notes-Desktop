@@ -33,6 +33,8 @@ public slots:
 
     void focusEditor();
 
+    void noteChanged();
+
     void updateNotebookWidget();
     void updateDateWidgets();
 

@@ -68,6 +68,11 @@ void GenericTest::dateFormatting()
 
     note.setDate_modified( isoDate("1989-12-25T09:38:59Z") ); // eleven years ago
     QCOMPARE(note.date_modified_str(), "11 years ago");
+
+    // Invalid date scenerio where modified date is later than current
+    note.setDate_modified( isoDate("2001-01-01T09:38:59Z") );
+    QCOMPARE(note.date_modified_str(), "Just now"); // "Just now" is possibly the safest response we could expect.
+
 }
 
 QDateTime GenericTest::isoDate(QString str)

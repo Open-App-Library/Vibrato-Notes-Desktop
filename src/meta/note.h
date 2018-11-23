@@ -10,7 +10,7 @@ class Note : public QObject
 	Q_OBJECT
 
 public:
-	Note();
+    Note(int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, int notebook, QVector<int> tags);
 
 	int id() const;
 	void setId(int value);
@@ -34,11 +34,14 @@ public:
 	int  notebook() const;
 	void setNotebook(int id);
 
-	QList<int> tags() const;
-	void setTags(const QList<int> &value);
+    QVector<int> tags() const;
+    void setTags(const QVector<int> &value);
+
+private slots:
+    void handleNoteChange(Note *note);
 
 signals:
-	void noteChanged(Note *note);
+	void noteChanged(Note *note);    
 
 private:
 	int        m_id;
@@ -47,7 +50,7 @@ private:
 	QDateTime  m_date_created;
 	QDateTime  m_date_modified;
 	int        m_notebook;
-	QList<int> m_tags;
+    QVector<int> m_tags;
 
     QString informativeDate(QDateTime date);
     QString numberToString(int number, bool capitalize=false);

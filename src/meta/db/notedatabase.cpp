@@ -27,15 +27,11 @@ Note *NoteDatabase::addNote(Note *note)
 	return note;
 }
 
-Note *NoteDatabase::addDefaultNote(Note *note)
+Note *NoteDatabase::addDefaultNote()
 {
-    note->setTitle("Untitleffd Note");
-	note->setText("");
-    note->setDate_created( QDateTime::currentDateTime() );
-    note->setDate_modified( QDateTime::currentDateTime() );
-    note->setId( m_list.size()+1 );
-    note->setNotebook(-1); // Default Notebook
-	return addNote(note);
+    Note *note = new Note(-1, "Untitled Note", "", QDateTime::currentDateTime(), QDateTime::currentDateTime(), -1, {});
+    // Todo add note to cloud and get ID
+    return addNote(note);
 }
 
 // This causes use of deleted function error. Probably because I started extending QObject
@@ -70,23 +66,23 @@ void NoteDatabase::loadJSON(QJsonDocument jsonDocument)
 	QJsonArray noteArray = jsonDocument.array();
 	for (int i = 0; i < noteArray.size(); i++) {
 		QJsonObject val = noteArray[i].toObject();
-		Note *note = new Note();
 
-        note->setId( get(val, "id").toInt() );
-        note->setNotebook( get(val, "notebook").toInt() );
-        note->setTitle( get(val, "title").toString() );
-        note->setText( get(val, "text").toString() );
-        note->setDate_created( QDateTime::fromString(get(val, "date_created").toString(), Qt::ISODate) );
-        note->setDate_modified( QDateTime::fromString(get(val, "date_modified").toString(), Qt::ISODate) );
+		int id = get(val, "id").toInt();
+        QString title = get(val, "title").toString();
+        QString text = get(val, "text").toString();
+        QDateTime date_created = QDateTime::fromString(get(val, "date_created").toString(), Qt::ISODate);
+        QDateTime date_modified = QDateTime::fromString(get(val, "date_modified").toString(), Qt::ISODate);
+		int notebook = get(val, "notebook").toInt();
+        QVector<int> tags = {};
 
-        // Setting Tags
+		// Setting Tags
 		QJsonArray raw_tag_array = val["tags"].toArray();
-        QList<int>     tag_array = {};
 		for (int i = 0; i < raw_tag_array.size(); i++) {
 			int tag_id = raw_tag_array[i].toInt();
-			tag_array.append(tag_id);
+            tags.append(tag_id);
 		}
-		note->setTags(tag_array);
+
+        Note *note = new Note(id, title, text, date_created, date_modified, notebook, tags);
 
 		m_list.append(note);
 	}

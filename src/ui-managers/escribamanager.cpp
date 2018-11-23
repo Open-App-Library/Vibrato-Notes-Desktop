@@ -58,7 +58,7 @@ void EscribaManager::setNote( Note *note )
     }
 
     connect(note, &Note::noteChanged,
-            this, &EscribaManager::updateNotebookWidget);
+            this, &EscribaManager::noteChanged);
 
     // Change to requested note
     m_curNote = note;
@@ -67,6 +67,7 @@ void EscribaManager::setNote( Note *note )
     updateTagsButtonCounter();
 
     updateNotebookWidget();
+    updateDateWidgets();
 
     QString created = "<strong>Created:</strong> %1";
     QString modified = "<strong>Modified:</strong> %1";
@@ -132,6 +133,12 @@ void EscribaManager::focusEditor()
     m_editor->focusEditor();
 }
 
+void EscribaManager::noteChanged()
+{
+    updateNotebookWidget();
+    updateDateWidgets();
+}
+
 void EscribaManager::updateNotebookWidget()
 {
     // Adjust notebook selector widget
@@ -157,9 +164,9 @@ void EscribaManager::updateDateWidgets()
     if ( m_curNote == nullptr )
         return;
     //QString cur = m_curNote->date_created().toString()
-    m_dateCreatedWidget->setText( m_curNote->date_created_str() );
+    m_dateCreatedWidget->setText( "<strong>Created:</strong> " + m_curNote->date_created_str() );
     m_dateCreatedWidget->setToolTip( m_curNote->date_created_str_informative() );
 
-    m_dateModifiedWidget->setText( m_curNote->date_modified_str() );
+    m_dateModifiedWidget->setText( "<strong>Modified:</strong> " + m_curNote->date_modified_str() );
     m_dateModifiedWidget->setToolTip( m_curNote->date_modified_str_informative() );
 }

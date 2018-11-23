@@ -22,7 +22,7 @@ public:
 	int          size() const;
 
 	Note *addNote(Note *note);
-	Note *addDefaultNote(Note *note); // Takes note, sets certain fields to default values.
+    Note *addDefaultNote(); // Takes note, sets certain fields to default values.
 	//p	Note *addNote(Note note);
 
 	void removeNote(int index);

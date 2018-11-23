@@ -71,7 +71,8 @@ HEADERS += \
     $$PWD/src/models/views/customlistview.h \
     $$PWD/ui/note_editnotebook.h \
     $$PWD/src/models/items/treeitemwithid.h \
-    $$PWD/src/iconutils.h
+    $$PWD/src/iconutils.h \
+    $$PWD/include/helper-io.hpp
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
