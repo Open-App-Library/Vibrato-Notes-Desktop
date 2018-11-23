@@ -32,7 +32,7 @@ NoteListItem *NoteListManager::add_note(Note *note)
 
 void NoteListManager::remove_note(int index)
 {
-	// TODO: Implement remove_note
+    m_model->removeRows(index, 1);
 }
 
 void NoteListManager::clear()
@@ -43,12 +43,6 @@ void NoteListManager::clear()
 void NoteListManager::loadNotesFromNoteDatabase()
 {
 	loadNotesFromNoteDatabase( m_db->noteDatabase() );
-//    if (m_view->currentIndex() == QModelIndex()) {
-//        qDebug("not selecting anything.");
-//    } else {
-//        qDebug(" selecting sdfsdf.");
-//    }
-
 }
 
 void NoteListManager::loadNotesFromNoteDatabase(NoteDatabase *noteDatabase)

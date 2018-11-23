@@ -34,6 +34,7 @@ private:
 
 	QLabel *m_title_label;
 	QLabel *m_excerpt_label;
+    QLabel *m_date_created_label;
 
 public slots:
 	void noteChanged(Note *note);

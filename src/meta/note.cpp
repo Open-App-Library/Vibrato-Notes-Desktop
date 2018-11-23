@@ -26,7 +26,8 @@ void Note::setId(int id)
 	if (m_id == id)
 		return;
 	m_id = id;
-	emit noteChanged( this );
+	// emit noteChanged( this );
+	emit noteIdChanged( this );
 }
 
 QString Note::title() const
@@ -53,6 +54,7 @@ void Note::setText(const QString text)
 		return;
 	m_text = text;
 	emit noteChanged( this );
+	emit noteTextChanged( this );
 }
 
 QDateTime Note::date_created() const
@@ -76,6 +78,7 @@ void Note::setDate_created(const QDateTime &date_created)
 		return;
 	m_date_created = date_created;
 	emit noteChanged( this );
+	emit noteDateCreatedChanged( this );
 }
 
 
@@ -149,6 +152,7 @@ void Note::setDate_modified(const QDateTime &date_modified)
 		return;
 	m_date_modified = date_modified;
 	emit noteChanged( this );
+	emit noteDateModifiedChanged( this );
 }
 
 int Note::notebook() const
@@ -162,6 +166,7 @@ void Note::setNotebook(int id)
 		return;
 	m_notebook = id;
 	emit noteChanged( this );
+	emit noteNotebookChanged( this );
 }
 
 QVector<int> Note::tags() const
@@ -173,6 +178,7 @@ void Note::setTags(const QVector<int> &tags)
 {
 	m_tags = tags;
 	emit noteChanged( this );
+	emit noteTagsChanged( this );
 }
 
 void Note::handleNoteChange(Note *note)

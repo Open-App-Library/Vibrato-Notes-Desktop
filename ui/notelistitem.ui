@@ -98,7 +98,7 @@ QToolButton {
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="dateCreatedLabel">
           <property name="font">
            <font>
             <pointsize>8</pointsize>

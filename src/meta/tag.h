@@ -5,17 +5,16 @@
 class Tag
 {
 public:
-    Tag();
-    int id() const;
-    void setId(int id);
+	Tag();
+	int id() const;
+	void setId(int id);
 
-    QString title() const;
-    void setTitle(const QString &value);
+	QString title() const;
+	void setTitle(const QString &value);
 
 private:
-    int     m_id;
-    QString m_title;
-    // TODO: Implement user
+	int     m_id;
+	QString m_title;
 };
 
 #endif // TAG_H

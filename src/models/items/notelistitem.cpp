@@ -10,8 +10,9 @@ NoteListItem::NoteListItem(Note *note) :
     m_widget = new QWidget;
     m_ui_class->setupUi(m_widget);
 
-    m_title_label   = m_ui_class->titleLabel;
-    m_excerpt_label = m_ui_class->excerptLabel;
+    m_title_label        = m_ui_class->titleLabel;
+    m_excerpt_label      = m_ui_class->excerptLabel;
+    m_date_created_label = m_ui_class->dateCreatedLabel;
 
     if (note != nullptr) {
         updateWidget();
@@ -62,6 +63,9 @@ void NoteListItem::updateWidget()
     }
     excerpt.replace("\n", " ");
     m_excerpt_label->setText(excerpt);
+
+    // Set date created label
+    m_date_created_label->setText(m_note->date_created_str());
 }
 
 void NoteListItem::setSelectedStyle(bool selected)
