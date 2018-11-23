@@ -22,7 +22,12 @@
 QSplitter::handle {
 /*	border-width: 100px;*/
 }
-</string>
+
+/*
+Escriba QTextEdit, Escriba QPlainTextEdit{
+	max-width: 750px;
+}
+*/</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="minimumSize">
