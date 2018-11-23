@@ -34,6 +34,7 @@ public slots:
     void focusEditor();
 
     void updateNotebookWidget();
+    void updateDateWidgets();
 
 private:
 	Escriba  *m_editor;

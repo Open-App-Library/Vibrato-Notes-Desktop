@@ -151,3 +151,15 @@ void EscribaManager::updateNotebookWidget()
         m_notebookWidget->setText( "Default Notebook" );
     }
 }
+
+void EscribaManager::updateDateWidgets()
+{
+    if ( m_curNote == nullptr )
+        return;
+    //QString cur = m_curNote->date_created().toString()
+    m_dateCreatedWidget->setText( m_curNote->date_created_str() );
+    m_dateCreatedWidget->setToolTip( m_curNote->date_created_str_informative() );
+
+    m_dateModifiedWidget->setText( m_curNote->date_modified_str() );
+    m_dateModifiedWidget->setToolTip( m_curNote->date_modified_str_informative() );
+}

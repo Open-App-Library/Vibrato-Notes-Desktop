@@ -36,7 +36,7 @@ public:
 private:
 	QList<Note*> m_list;
 
-	int getInt(QJsonObject obj, QString key);
+    QJsonValue get(QJsonObject obj, QString key);
 };
 
 #endif // NOTELIST_H

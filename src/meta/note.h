@@ -8,6 +8,7 @@
 class Note : public QObject
 {
 	Q_OBJECT
+
 public:
 	Note();
 
@@ -21,9 +22,13 @@ public:
 	void    setText(const QString text);
 
 	QDateTime date_created() const;
+    QString date_created_str(); // ex. January 26, 1965
+    QString date_created_str_informative(); // ex. January 26, 1965 at 12:30pm EST
 	void setDate_created(const QDateTime &date_created);
 
 	QDateTime date_modified() const;
+    QString date_modified_str(); // ex. 5 minutes ago
+    QString date_modified_str_informative(); // ex. January 26, 1965 at 12:30pm EST
 	void setDate_modified(const QDateTime &date_modified);
 
 	int  notebook() const;
@@ -43,6 +48,10 @@ private:
 	QDateTime  m_date_modified;
 	int        m_notebook;
 	QList<int> m_tags;
+
+    QString informativeDate(QDateTime date);
+    QString numberToString(int number, bool capitalize=false);
+
 	// TODO: Implement user (shows ID of note owner)
 	// TODO: Implement shared_with
 	// TODO: Implement is_public

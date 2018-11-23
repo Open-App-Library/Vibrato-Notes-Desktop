@@ -29,11 +29,12 @@ Note *NoteDatabase::addNote(Note *note)
 
 Note *NoteDatabase::addDefaultNote(Note *note)
 {
-	note->setTitle("Untitled Note");
+    note->setTitle("Untitleffd Note");
 	note->setText("");
-	//	note->setDate_created( );
-	//	note->setDate_modified( );
-	//	note->setId( );
+    note->setDate_created( QDateTime::currentDateTime() );
+    note->setDate_modified( QDateTime::currentDateTime() );
+    note->setId( m_list.size()+1 );
+    note->setNotebook(-1); // Default Notebook
 	return addNote(note);
 }
 
@@ -70,17 +71,23 @@ void NoteDatabase::loadJSON(QJsonDocument jsonDocument)
 	for (int i = 0; i < noteArray.size(); i++) {
 		QJsonObject val = noteArray[i].toObject();
 		Note *note = new Note();
-		note->setId( getInt(val, "id") );
-		note->setNotebook(getInt(val, "notebook"));
-		note->setTitle(val["title"].toString());
-		note->setText(val["text"].toString());
+
+        note->setId( get(val, "id").toInt() );
+        note->setNotebook( get(val, "notebook").toInt() );
+        note->setTitle( get(val, "title").toString() );
+        note->setText( get(val, "text").toString() );
+        note->setDate_created( QDateTime::fromString(get(val, "date_created").toString(), Qt::ISODate) );
+        note->setDate_modified( QDateTime::fromString(get(val, "date_modified").toString(), Qt::ISODate) );
+
+        // Setting Tags
 		QJsonArray raw_tag_array = val["tags"].toArray();
-		QList<int>     tag_array = {};
+        QList<int>     tag_array = {};
 		for (int i = 0; i < raw_tag_array.size(); i++) {
 			int tag_id = raw_tag_array[i].toInt();
 			tag_array.append(tag_id);
 		}
 		note->setTags(tag_array);
+
 		m_list.append(note);
 	}
 }
@@ -88,13 +95,12 @@ void NoteDatabase::loadJSON(QJsonDocument jsonDocument)
 void NoteDatabase::loadDummyNotes()
 {
 	QJsonDocument dummy_notes = fileToQJsonDocument(":/dummy/notes.json");
-	loadJSON(dummy_notes);
+    loadJSON(dummy_notes);
 }
 
-int NoteDatabase::getInt(QJsonObject obj, QString key)
+QJsonValue NoteDatabase::get(QJsonObject obj, QString key)
 {
-	if ( obj.contains(key) )
-		if ( obj[key].type() != QJsonValue::Null )
-			return obj[key].toInt();
-	return NULL_INT;
+    if ( obj.value(key).isNull() )
+        return QJsonValue();
+    return obj.value(key);
 }

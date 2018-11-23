@@ -23,74 +23,74 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-    src/main.cpp \
-    src/meta/info/appconfig.cpp \
-    src/mainwindow.cpp \
-    src/userwindow.cpp \
-    src/ui-managers/notelistmanager.cpp \
-    src/meta/note.cpp \
-    src/meta/notebook.cpp \
-    src/meta/tag.cpp \
-    src/meta/db/notedatabase.cpp \
-    src/meta/db/notebookdatabase.cpp \
-    src/meta/db/tagdatabase.cpp \
-    src/models/treemodel.cpp \
-    src/models/items/basictreeitem.cpp \
-    src/ui-managers/treemanager.cpp \
-    src/ui-managers/escribamanager.cpp \
-    src/meta/filter/notefilter.cpp \
-    src/meta/db/database.cpp \
-    src/models/items/notelistitem.cpp \
-    src/models/notelistmodel.cpp \
-    src/models/views/customlistview.cpp \
-    ui/note_editnotebook.cpp \
-    src/models/items/treeitemwithid.cpp \
-    src/iconutils.cpp
+    $$PWD/src/main.cpp \
+    $$PWD/src/meta/info/appconfig.cpp \
+    $$PWD/src/mainwindow.cpp \
+    $$PWD/src/userwindow.cpp \
+    $$PWD/src/ui-managers/notelistmanager.cpp \
+    $$PWD/src/meta/note.cpp \
+    $$PWD/src/meta/notebook.cpp \
+    $$PWD/src/meta/tag.cpp \
+    $$PWD/src/meta/db/notedatabase.cpp \
+    $$PWD/src/meta/db/notebookdatabase.cpp \
+    $$PWD/src/meta/db/tagdatabase.cpp \
+    $$PWD/src/models/treemodel.cpp \
+    $$PWD/src/models/items/basictreeitem.cpp \
+    $$PWD/src/ui-managers/treemanager.cpp \
+    $$PWD/src/ui-managers/escribamanager.cpp \
+    $$PWD/src/meta/filter/notefilter.cpp \
+    $$PWD/src/meta/db/database.cpp \
+    $$PWD/src/models/items/notelistitem.cpp \
+    $$PWD/src/models/notelistmodel.cpp \
+    $$PWD/src/models/views/customlistview.cpp \
+    $$PWD/ui/note_editnotebook.cpp \
+    $$PWD/src/models/items/treeitemwithid.cpp \
+    $$PWD/src/iconutils.cpp
 
 HEADERS += \
-    src/meta/info/appconfig.h \
-    src/meta/info/appinfo.h \
-    src/mainwindow.h \
-    src/userwindow.h \
-    src/ui-managers/notelistmanager.h \
-    src/meta/note.h \
-    src/meta/notebook.h \
-    src/meta/tag.h \
-    src/meta/db/notedatabase.h \
-    src/meta/db/notebookdatabase.h \
-    src/meta/db/tagdatabase.h \
-    include/helper-io.hpp \
-    src/models/treemodel.h \
-    src/models/items/basictreeitem.h \
-    src/ui-managers/treemanager.h \
-    src/ui-managers/escribamanager.h \
-    src/meta/filter/notefilter.h \
-    src/meta/db/database.h \
-    src/models/items/notelistitem.h \
-    src/models/notelistmodel.h \
-    src/models/views/customlistview.h \
-    ui/note_editnotebook.h \
-    src/models/items/treeitemwithid.h \
-    src/iconutils.h
+    $$PWD/src/meta/info/appconfig.h \
+    $$PWD/src/meta/info/appinfo.h \
+    $$PWD/src/mainwindow.h \
+    $$PWD/src/userwindow.h \
+    $$PWD/src/ui-managers/notelistmanager.h \
+    $$PWD/src/meta/note.h \
+    $$PWD/src/meta/notebook.h \
+    $$PWD/src/meta/tag.h \
+    $$PWD/src/meta/db/notedatabase.h \
+    $$PWD/src/meta/db/notebookdatabase.h \
+    $$PWD/src/meta/db/tagdatabase.h \
+    $$PWD/include/helper-io.hpp \
+    $$PWD/src/models/treemodel.h \
+    $$PWD/src/models/items/basictreeitem.h \
+    $$PWD/src/ui-managers/treemanager.h \
+    $$PWD/src/ui-managers/escribamanager.h \
+    $$PWD/src/meta/filter/notefilter.h \
+    $$PWD/src/meta/db/database.h \
+    $$PWD/src/models/items/notelistitem.h \
+    $$PWD/src/models/notelistmodel.h \
+    $$PWD/src/models/views/customlistview.h \
+    $$PWD/ui/note_editnotebook.h \
+    $$PWD/src/models/items/treeitemwithid.h \
+    $$PWD/src/iconutils.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
 
 FORMS += \
-    ui/mainwindow.ui \
-    ui/userwindow.ui \
-    ui/notelistitem.ui \
-    ui/escribaaddons.ui \
-    ui/tagitem.ui \
-    ui/note_editnotebook.ui
+    $$PWD/ui/mainwindow.ui \
+    $$PWD/ui/userwindow.ui \
+    $$PWD/ui/notelistitem.ui \
+    $$PWD/ui/escribaaddons.ui \
+    $$PWD/ui/tagitem.ui \
+    $$PWD/ui/note_editnotebook.ui
 
-include(src/text-editor/Escriba.pro)
+include($$PWD/src/text-editor/Escriba.pro)
 
 RESOURCES += \
-    resources/dummy-data.qrc \
-    resources/icons.qrc \
-    resources/fonts.qrc \
-    resources/styles.qrc
+    $$PWD/resources/dummy-data.qrc \
+    $$PWD/resources/icons.qrc \
+    $$PWD/resources/fonts.qrc \
+    $$PWD/resources/styles.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
