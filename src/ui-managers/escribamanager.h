@@ -6,6 +6,7 @@
 #include "../meta/note.h"
 #include "../meta/db/database.h"
 #include "../../ui/note_editnotebook.h"
+#include "../../ui/note_edittags.h"
 #include <ui_escribaaddons.h>
 
 namespace Ui {
@@ -30,6 +31,7 @@ public slots:
     void addTag();
 
     void openNotebookEditor();
+    void openTagsEditor();
 
     void focusEditor();
 
@@ -54,6 +56,7 @@ private:
 	QLabel *m_dateModifiedWidget;
 
     Note_EditNotebook *m_editNotebookDialog = nullptr;
+    Note_EditTags     *m_editTagsDialog = nullptr;
 };
 
 #endif

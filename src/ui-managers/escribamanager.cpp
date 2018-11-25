@@ -40,6 +40,8 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db) :
             this, &EscribaManager::addTag);
     connect(m_notebookWidget, &QToolButton::clicked,
             this, &EscribaManager::openNotebookEditor);
+    connect(m_tagsViewerWidget, &QToolButton::clicked,
+            this, &EscribaManager::openTagsEditor);
 }
 
 void EscribaManager::updateTagsButtonCounter()
@@ -126,6 +128,24 @@ void EscribaManager::openNotebookEditor()
     }
 
     m_editNotebookDialog->show();
+}
+
+void EscribaManager::openTagsEditor()
+{
+    if ( m_curNote == nullptr)
+        return;
+
+    // If dialog is not a nullptr and its note ID is not equal to the new note, delete it.
+    if (m_editTagsDialog != nullptr && m_editTagsDialog->note()->id() != m_curNote->id()) {
+        delete m_editNotebookDialog;
+        m_editTagsDialog = nullptr;
+    }
+
+    if (m_editTagsDialog == nullptr) {
+        m_editTagsDialog = new Note_EditTags(m_db, m_curNote);
+    }
+
+    m_editTagsDialog->show();
 }
 
 void EscribaManager::focusEditor()

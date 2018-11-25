@@ -45,7 +45,9 @@ SOURCES += \
     $$PWD/src/models/views/customlistview.cpp \
     $$PWD/ui/note_editnotebook.cpp \
     $$PWD/src/models/items/treeitemwithid.cpp \
-    $$PWD/src/iconutils.cpp
+    $$PWD/src/iconutils.cpp \
+    ui/note_edittags.cpp \
+    src/models/items/listitemwithid.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -72,7 +74,9 @@ HEADERS += \
     $$PWD/ui/note_editnotebook.h \
     $$PWD/src/models/items/treeitemwithid.h \
     $$PWD/src/iconutils.h \
-    $$PWD/include/helper-io.hpp
+    $$PWD/include/helper-io.hpp \
+    ui/note_edittags.h \
+    src/models/items/listitemwithid.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
@@ -83,7 +87,8 @@ FORMS += \
     $$PWD/ui/notelistitem.ui \
     $$PWD/ui/escribaaddons.ui \
     $$PWD/ui/tagitem.ui \
-    $$PWD/ui/note_editnotebook.ui
+    $$PWD/ui/note_editnotebook.ui \
+    ui/note_edittags.ui
 
 include($$PWD/src/text-editor/Escriba.pro)
 

@@ -1,5 +1,5 @@
-#ifndef MANAGENOTENOTEBOOKSDIALOG_H
-#define MANAGENOTENOTEBOOKSDIALOG_H
+#ifndef NOTE_EDITNOTEBOOKS_H
+#define NOTE_EDITNOTEBOOKS_H
 #include <QDialog>
 #include <QPushButton>
 #include <QTreeWidget>
@@ -54,4 +54,4 @@ private:
 
 };
 
-#endif // MANAGENOTENOTEBOOKSDIALOG_H
+#endif // NOTE_EDITNOTEBOOKS_H
