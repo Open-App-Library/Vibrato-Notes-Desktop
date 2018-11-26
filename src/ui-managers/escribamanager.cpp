@@ -170,7 +170,7 @@ void EscribaManager::updateNotebookWidget()
         if ( notebook->parent() != nullptr ) {
             Notebook *parent = notebook->parent();
             while (parent != nullptr) {
-                m_notebookWidget->setText( QString(parent->title() + " -> ").append( m_notebookWidget->text() ) );
+                m_notebookWidget->setText( QString(parent->title() + " → ").append( m_notebookWidget->text() ) );
                 parent = parent->parent();
             }
         }
