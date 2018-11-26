@@ -33,6 +33,8 @@ Note_EditTags::Note_EditTags(Database *db, Note *note, QWidget *parent) :
             this, &Note_EditTags::removeTagsFromNote);
     connect(m_tagInput, &QLineEdit::returnPressed,
             this, &Note_EditTags::addTag);
+    connect(ui->addTagButton, &QPushButton::clicked,
+            this, &Note_EditTags::addTag);
     connect(m_tagList, &QListWidget::currentItemChanged,
             this, &Note_EditTags::currentItemChanged);
 }
@@ -99,6 +101,7 @@ void Note_EditTags::addTag()
     m_db->addTagToNote(m_note, m_tagInput->text());
     loadNotesTags();
     m_tagInput->clear();
+    m_tagInput->setFocus();
 }
 
 void Note_EditTags::updateTitle()

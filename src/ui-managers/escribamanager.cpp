@@ -150,6 +150,7 @@ void EscribaManager::focusEditor()
 void EscribaManager::noteChanged()
 {
     updateNotebookWidget();
+    updateTagsButtonCounter();
     updateDateWidgets();
 }
 
