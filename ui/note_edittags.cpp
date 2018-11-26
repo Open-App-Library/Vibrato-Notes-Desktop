@@ -18,8 +18,10 @@ Note_EditTags::Note_EditTags(Database *db, Note *note, QWidget *parent) :
 
     // Button box
     m_removeTagButton = new QPushButton( "Remove selected tag from note" );
-
     ui->buttonBox->addButton(m_removeTagButton, QDialogButtonBox::ActionRole);
+
+    // Tag input
+    m_tagInput = ui->tagInput;
 
     updateTitle();
 
@@ -29,6 +31,8 @@ Note_EditTags::Note_EditTags(Database *db, Note *note, QWidget *parent) :
             this, &Note_EditTags::noteChanged);
     connect(m_removeTagButton, &QPushButton::clicked,
             this, &Note_EditTags::removeTagsFromNote);
+    connect(m_tagInput, &QLineEdit::returnPressed,
+            this, &Note_EditTags::addTag);
     connect(m_tagList, &QListWidget::currentItemChanged,
             this, &Note_EditTags::currentItemChanged);
 }
@@ -36,12 +40,21 @@ Note_EditTags::Note_EditTags(Database *db, Note *note, QWidget *parent) :
 Note_EditTags::~Note_EditTags()
 {
     delete m_removeTagButton;
+    delete m_tagInput;
     delete ui;
 }
 
 Note *Note_EditTags::note()
 {
     return m_note;
+}
+
+void Note_EditTags::keyPressEvent(QKeyEvent *event)
+{
+    // Ignore enter key. We must ignore it because we are using it in our tagInput.
+    if( event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return )
+        return;
+    QDialog::keyPressEvent(event);
 }
 
 void Note_EditTags::noteChanged(void)
@@ -56,7 +69,8 @@ void Note_EditTags::removeTagsFromNote()
     if ( selItemsArray.length() == 0)
         return;
 
-    bool tagsChanged = false;
+    QVector<int> tags = m_note->tags();
+    QVector<int> remove_list;
     for (int i=0; i < selItemsArray.length(); i++) {
         ListItemWithID *sel = static_cast<ListItemWithID*>( selItemsArray.at(i) );
 
@@ -65,15 +79,26 @@ void Note_EditTags::removeTagsFromNote()
         if (t == nullptr)
             continue;
 
-        // Save into note object
-        QVector<int> tags = m_note->tags();
-        if ( tags.contains(id) ) {
-            tags.remove( tags.indexOf(id) );
-            m_note->setTags( tags );
-            tagsChanged = true;
-        }
+        if ( tags.contains(id) )
+            remove_list.append(tags.indexOf(id));
     }
-    emit tagChanged();
+
+    // sort remove list (ascending)
+    std::sort(remove_list.begin(), remove_list.end());
+
+    if ( remove_list.size() > 0 ) {
+        for (int i=remove_list.length()-1; i>=0; i--)
+            tags.remove(remove_list.at(i));
+        m_note->setTags( tags );
+        emit tagChanged();
+    }
+}
+
+void Note_EditTags::addTag()
+{
+    m_db->addTagToNote(m_note, m_tagInput->text());
+    loadNotesTags();
+    m_tagInput->clear();
 }
 
 void Note_EditTags::updateTitle()
@@ -81,7 +106,7 @@ void Note_EditTags::updateTitle()
     if ( m_note == nullptr)
         return;
 
-    setWindowTitle( QString("Editing notebook for \"%1\"").arg(m_note->title()) );
+    setWindowTitle( QString("Editing tags for \"%1\"").arg(m_note->title()) );
 }
 
 void Note_EditTags::clearList()
@@ -115,6 +140,8 @@ void Note_EditTags::loadNotesTags()
             continue;
         addTagToList(t);
     }
+    if ( m_listItems.length() > 0 && m_tagList->selectedItems().length() == 0 )
+         m_tagList->setCurrentRow(0);
 }
 
 void Note_EditTags::currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)

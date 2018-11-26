@@ -23,9 +23,12 @@ public:
 
     int selectedTag() const;
 
+    virtual void keyPressEvent(QKeyEvent *event) override;
+
 private slots:
     void noteChanged(void);
     void removeTagsFromNote();
+    void addTag();
 
     void currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
@@ -39,6 +42,7 @@ private:
 
     QListWidget *m_tagList;
     QPushButton *m_removeTagButton;
+    QLineEdit   *m_tagInput;
 
     Database *m_db=nullptr;
     Note *m_note=nullptr;

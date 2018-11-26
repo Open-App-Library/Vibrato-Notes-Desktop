@@ -24,3 +24,14 @@ TagDatabase *Database::tagDatabase() const
 {
     return m_tag_database;
 }
+
+void Database::addTagToNote(Note *note, QString tagString)
+{
+    tagString = tagString.trimmed();
+    if ( tagString.isEmpty() )
+        return;
+    Tag *tag = m_tag_database->findTagWithNameOrCreate( tagString );
+    // If tag is not already added, add it.
+    if ( note->tags().indexOf(tag->id()) == -1 )
+        note->setTags( note->tags() << tag->id());
+}

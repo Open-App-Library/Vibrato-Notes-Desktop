@@ -101,13 +101,7 @@ void EscribaManager::titleChangedFromEditor(QString title)
 
 void EscribaManager::addTag()
 {
-    Tag *tag = m_db->tagDatabase()->findTagWithNameOrCreate( m_tagsInputWidget->text() );
-
-    // If tag is not already added, add it.
-    if ( m_curNote->tags().indexOf(tag->id()) == -1 ) {
-        m_curNote->tags().append( tag->id() );
-        m_curNote->setTags( m_curNote->tags() << tag->id());
-    }
+    m_db->addTagToNote(m_curNote, m_tagsInputWidget->text());
     updateTagsButtonCounter();
     m_tagsInputWidget->clear();
 }

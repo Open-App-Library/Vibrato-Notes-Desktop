@@ -22,6 +22,9 @@ public:
     NoteDatabase     *noteDatabase()     const;
     NotebookDatabase *notebookDatabase() const;
     TagDatabase      *tagDatabase()      const;
+
+    // Helper functions
+    void addTagToNote(Note *note, QString tag);
 private:
     NoteDatabase     *m_note_database;
     NotebookDatabase *m_notebook_database;
