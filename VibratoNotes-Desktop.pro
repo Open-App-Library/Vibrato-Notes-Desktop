@@ -90,7 +90,8 @@ FORMS += \
     $$PWD/ui/escribaaddons.ui \
     $$PWD/ui/tagitem.ui \
     $$PWD/ui/note_editnotebook.ui \
-    ui/note_edittags.ui
+    ui/note_edittags.ui \
+    ui/notelist_addons.ui
 
 include($$PWD/src/text-editor/Escriba.pro)
 

@@ -1,5 +1,4 @@
 #include "notelistmodel.h"
-#include <QDebug>
 
 NoteListModel::NoteListModel(QListView *view) : QAbstractItemModel()
 {
@@ -71,8 +70,6 @@ bool NoteListModel::insertRows(int position, int rows, const QModelIndex &parent
 {
     beginInsertRows(parent, position, position + rows - 1);
 
-    qDebug() << "Inserting"  << rows << "rows";
-
     for (int i = 0; i < rows; i++)
         m_noteItems.insert(position+i, new NoteListItem(nullptr));
 
@@ -83,19 +80,15 @@ bool NoteListModel::insertRows(int position, int rows, const QModelIndex &parent
 
 bool NoteListModel::removeRows(int position, int rows, const QModelIndex &parent)
 {
-    qDebug() << "Beginning delete at" << position << "With a size of" << rows <<" cur size is" << rowCount();
     beginRemoveRows(parent, position, position + rows - 1);
 
     for (int i = 0; i < rows; i++) {
-        qDebug() << "Deleting" <<  i << "of" << rows;
-        qDebug() << "Note name to delete:" << m_noteItems.at(position)->note()->title();
         delete m_noteItems[position];
         m_noteItems[position] = nullptr;
         m_noteItems.remove(position);
     }
 
     endRemoveRows();
-    qDebug() <<"after deletoion the row count is" << rowCount();
 
     return true;
 }
@@ -118,8 +111,6 @@ QVariant NoteListModel::data(const QModelIndex &index, int role) const
 //    if (item->widget() != nullptr) {
 //        m_view->setIndexWidget(index, item->widget() );
 //    }
-
-    qDebug() << "Getting data" << item->note()->title();
 
 	return QVariant();
 }

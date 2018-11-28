@@ -18,7 +18,7 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
     m_favorites = new BasicTreeItem( tr("Favorites") );
 	m_notebooks = new BasicTreeItem( tr("Notebooks") );
 	m_tags      = new BasicTreeItem( tr("Tags") );
-    m_trash     = new BasicTreeItem( tr("Trash") );
+    m_trash     = new BasicTreeItem( tr("Trash (6)") );
     m_search    = new BasicTreeItem( tr("Search results for \"Test\"") );
 
     m_all_notes->setIcon( IconUtils::requestDarkIcon("document-new") );

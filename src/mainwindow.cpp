@@ -17,16 +17,16 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_notebooks->loadDummyNotebooks();
 	m_tags->loadDummyTags();
 
-    m_escriba_manager   = new EscribaManager(ui->noteEditingArea, m_db);
-    m_note_list_manager = new NoteListManager(ui->noteList, m_escriba_manager, m_db);
+	m_escriba_manager   = new EscribaManager(ui->noteEditingArea, m_db);
+	m_note_list_manager = new NoteListManager(ui->noteList, ui->noteListAddons, m_escriba_manager, m_db);
 	m_tree_manager      = new TreeManager(ui->TheTree, m_note_list_manager);
 
 	m_tree_manager->loadNotebooksFromNotebookDatabase(m_notebooks);
 	m_tree_manager->loadTagsFromTagDatabase(m_tags);
 	m_note_list_manager->loadNotesFromNoteDatabase(m_notes);
 
-    // Open first item in list in editor
-    m_note_list_manager->openIndexInEditor(0);
+	// Open first item in list in editor
+	m_note_list_manager->openIndexInEditor(0);
 
 	// ------------------------------------------------------
 	// Restoring config variables if exist. Else set default.
@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	if ( meta_config_key_exists(MAIN_SCREEN_LAYOUT) ) {
 		ui->mainSplitter->restoreState( meta_config_value(MAIN_SCREEN_LAYOUT).toByteArray() );
 	} else {
-        view_default();
+		view_default();
 	}
 
 	// Remove margin on toolbar on Mac OS X
@@ -61,16 +61,16 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->userButton, &QPushButton::clicked,
 					this, &MainWindow::userButtonClicked);
 
-    connect(m_note_list_manager, &NoteListManager::selectedNote,
-            this, &MainWindow::selectedNoteChanged);
+	connect(m_note_list_manager, &NoteListManager::selectedNote,
+					this, &MainWindow::selectedNoteChanged);
 
-    // Menu items
-    connect(ui->action_ViewDefault, &QAction::triggered,
-            this, &MainWindow::view_default);
-    connect(ui->action_ViewMinimal, &QAction::triggered,
-            this, &MainWindow::view_minimal);
-    connect(ui->action_viewFocus, &QAction::triggered,
-            this, &MainWindow::view_focus);
+	// Menu items
+	connect(ui->action_ViewDefault, &QAction::triggered,
+					this, &MainWindow::view_default);
+	connect(ui->action_ViewMinimal, &QAction::triggered,
+					this, &MainWindow::view_minimal);
+	connect(ui->action_viewFocus, &QAction::triggered,
+					this, &MainWindow::view_focus);
 
 }
 
@@ -119,35 +119,35 @@ void MainWindow::userButtonClicked()
 
 void MainWindow::addNewNote()
 {
-    m_note_list_manager->add_note( m_notes->addDefaultNote() );
+	m_note_list_manager->add_note( m_notes->addDefaultNote() );
 }
 
 void MainWindow::view_default()
 {
-    QList<int> splitterSizes = {0,0,0};
-    int window_width = this->width();
-    splitterSizes[0] = window_width / 6;     // First split is 1/6 of the screen
-    splitterSizes[1] = window_width / 6;     // Second split is 1/6 of the screen
-    splitterSizes[2] = window_width / 6 * 4; // Last split occupies 4/6 of the screen
-    ui->mainSplitter->setSizes(splitterSizes);
+	QList<int> splitterSizes = {0,0,0};
+	int window_width = this->width();
+	splitterSizes[0] = window_width / 6;     // First split is 1/6 of the screen
+	splitterSizes[1] = window_width / 6 + 40;     // Second split is 1/6 of the screen
+	splitterSizes[2] = window_width / 6 * 4 - 40; // Last split occupies 4/6 of the screen
+	ui->mainSplitter->setSizes(splitterSizes);
 }
 
 void MainWindow::view_minimal()
 {
-    QList<int> splitterSizes = {0,0,0};
-    int window_width = this->width();
-    splitterSizes[0] = 0;     // First split is 1/6 of the screen
-    splitterSizes[1] = window_width / 6 * 2;     // Second split is 1/6 of the screen
-    splitterSizes[2] = window_width / 6 * 5; // Last split occupies 4/6 of the screen
-    ui->mainSplitter->setSizes(splitterSizes);
+	QList<int> splitterSizes = {0,0,0};
+	int window_width = this->width();
+	splitterSizes[0] = 0;                    // First split is 0/6 of the screen
+	splitterSizes[1] = window_width / 6;     // Second split is 1/6 of the screen
+	splitterSizes[2] = window_width / 6 * 5; // Last split occupies 5/6 of the screen
+	ui->mainSplitter->setSizes(splitterSizes);
 }
 
 void MainWindow::view_focus()
 {
-    QList<int> splitterSizes = {0,0,0};
-    int window_width = this->width();
-    splitterSizes[0] = 0;     // First split is 1/6 of the screen
-    splitterSizes[1] = 0;     // Second split is 1/6 of the screen
-    splitterSizes[2] = window_width; // Last split occupies 4/6 of the screen
-    ui->mainSplitter->setSizes(splitterSizes);
+	QList<int> splitterSizes = {0,0,0};
+	int window_width = this->width();
+	splitterSizes[0] = 0;     // First split is 1/6 of the screen
+	splitterSizes[1] = 0;     // Second split is 1/6 of the screen
+	splitterSizes[2] = window_width; // Last split occupies 4/6 of the screen
+	ui->mainSplitter->setSizes(splitterSizes);
 }

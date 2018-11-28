@@ -4,18 +4,22 @@
 #include "escribamanager.h"
 #include "../sortfilter/notelistproxymodel.h"
 #include "../models/views/customlistview.h"
-#include "ui_notelistitem.h"
 #include "../models/notelistmodel.h"
 #include "../models/items/notelistitem.h"
 #include "../meta/note.h"
 #include "../meta/db/database.h"
 #include "../meta/filter/notefilter.h"
+#include <ui_notelist_addons.h>
+
+namespace Ui {
+	class NoteListAddonsWidget;
+}
 
 class NoteListManager : public QObject
 {
 	Q_OBJECT
 public:
-    NoteListManager(CustomListView *view, EscribaManager *escribaManager, Database *db);
+	NoteListManager(CustomListView *view, QWidget *noteListAddons, EscribaManager *escribaManager, Database *db);
 	~NoteListManager();
 	NoteListItem *add_note(Note *note);
 	void remove_note(int index);
@@ -25,21 +29,23 @@ public:
 	void loadNotesFromNoteFilter(noteFilterList noteList);
 	NoteFilter *filter();
 
-    void openIndexInEditor(int index);
+	void openIndexInEditor(int index);
 
 public slots:
-    void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
+	void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
 
 
 signals:
-    void selectedNote(Note *note);
+	void selectedNote(Note *note);
 
 private:
-    CustomListView *m_view;
+	CustomListView *m_view;
+	Ui::NoteListAddonsWidget *m_noteListAddonsUi;
+	QWidget *m_noteListAddons;
 	NoteListModel *m_model;
-    NoteListProxyModel *m_proxyModel;
+	NoteListProxyModel *m_proxyModel;
 
-    EscribaManager *m_escribaManager;
+	EscribaManager *m_escribaManager;
 
 	NoteFilter *m_filter;
 	Database *m_db;
