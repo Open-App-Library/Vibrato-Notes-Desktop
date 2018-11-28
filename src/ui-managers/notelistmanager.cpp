@@ -63,23 +63,27 @@ void NoteListManager::loadNotesFromNoteDatabase(NoteDatabase *noteDatabase)
 	}
 }
 
-void NoteListManager::loadNotesFromNoteFilter(noteFilterList noteList)
-{
-	clear();
-	for (int i = 0; i < noteList.size(); i++) {
-		add_note( noteList[i] );
-	}
-}
-
-NoteFilter *NoteListManager::filter()
-{
-	return m_filter;
-}
-
 void NoteListManager::openIndexInEditor(int index)
 {
-	m_view->setCurrentIndex( m_model->index(index,0) );
-	m_escribaManager->setNote( m_model->noteItems()[index]->note() );
+	if ( m_model->noteItems().length() > 0 && index < m_model->noteItems().length() ) {
+		m_view->setCurrentIndex( m_proxyModel->index(index,0) );
+		m_escribaManager->setNote( m_proxyModel->item(index)->note() );
+    }
+}
+
+void NoteListManager::clearFilter()
+{
+    m_proxyModel->clearFilter();
+}
+
+void NoteListManager::addNotebookToFilter(Notebook *notebook)
+{
+    m_proxyModel->addNotebookToFilter(notebook);
+}
+
+void NoteListManager::addTagToFilter(Tag *tag)
+{
+    m_proxyModel->addTagToFilter(tag);
 }
 
 void NoteListManager::noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy)

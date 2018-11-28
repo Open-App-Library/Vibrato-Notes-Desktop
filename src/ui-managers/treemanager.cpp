@@ -6,39 +6,41 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
 	m_tree_view(treeView),
 	m_note_list_manager(noteListManager)
 {
-	m_tree_model = new ListModel;
+	m_tree_model = new TreeModel;
 	m_tree_view->setModel(m_tree_model);
 
-    QFile styleFile( ":/style/DarkSolarized.qss" );
-    styleFile.open( QFile::ReadOnly );
-    QString style(styleFile.readAll());
-    m_tree_view->setStyleSheet( style );
+	QFile styleFile( ":/style/DarkSolarized.qss" );
+	styleFile.open( QFile::ReadOnly );
+	QString style(styleFile.readAll());
+	m_tree_view->setStyleSheet( style );
 
 	m_all_notes = new BasicTreeItem( tr("All Notes") );
-    m_favorites = new BasicTreeItem( tr("Favorites") );
+	m_favorites = new BasicTreeItem( tr("Favorites") );
 	m_notebooks = new BasicTreeItem( tr("Notebooks") );
 	m_tags      = new BasicTreeItem( tr("Tags") );
-    m_trash     = new BasicTreeItem( tr("Trash (6)") );
-    m_search    = new BasicTreeItem( tr("Search results for \"Test\"") );
+	m_trash     = new BasicTreeItem( tr("Trash (6)") );
+	m_search    = new BasicTreeItem( tr("Search results for \"Test\"") );
 
-    m_all_notes->setIcon( IconUtils::requestDarkIcon("document-new") );
-    m_favorites->setIcon( IconUtils::requestDarkIcon("draw-star") );
-    m_notebooks->setIcon( IconUtils::requestDarkIcon("folder") );
-    m_tags->setIcon     ( IconUtils::requestDarkIcon("tag") );
-    m_trash->setIcon    ( IconUtils::requestDarkIcon("trash-empty") );
-    m_search->setIcon   ( IconUtils::requestDarkIcon("edit-find") );
+	m_all_notes->setIcon( IconUtils::requestDarkIcon("document-new") );
+	m_favorites->setIcon( IconUtils::requestDarkIcon("draw-star") );
+	m_notebooks->setIcon( IconUtils::requestDarkIcon("folder") );
+	m_tags->setIcon     ( IconUtils::requestDarkIcon("tag") );
+	m_trash->setIcon    ( IconUtils::requestDarkIcon("trash-empty") );
+	m_search->setIcon   ( IconUtils::requestDarkIcon("edit-find") );
 
 
 	m_tree_model->root()->appendChild(m_all_notes);
-    m_tree_model->root()->appendChild(m_favorites);
+	m_tree_model->root()->appendChild(m_favorites);
 	m_tree_model->root()->appendChild(m_notebooks);
 	m_tree_model->root()->appendChild(m_tags);
-    m_tree_model->root()->appendChild(m_trash);
-    m_tree_model->root()->appendChild(m_search);
+	m_tree_model->root()->appendChild(m_trash);
+	m_tree_model->root()->appendChild(m_search);
 
 	// Set the current selection to the first item in the treeview..which is "All Notes"
 	// Explanation: https://stackoverflow.com/questions/15817429/how-to-get-list-of-visible-qmodelindex-in-qabstractitemview
-	m_tree_view->setCurrentIndex( m_tree_view->indexAt( m_tree_view->rect().topLeft() ) );
+	QModelIndex all_notes_index = m_tree_model->index(0, 0);
+	m_tree_view->setCurrentIndex( all_notes_index );
+	treeItemChanged(all_notes_index, QModelIndex());
 
 	// Signal Connections
 	connect(m_tree_view->selectionModel(), &QItemSelectionModel::currentChanged,
@@ -175,46 +177,45 @@ void TreeManager::loadTagsFromTagDatabase(TagDatabase *tagDatabase)
 void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex &previous)
 {
 	(void) previous; // Avoid 'unused parameter' compiler warning. Ignore.
+
 	if ( current != previous ) {
 		BasicTreeItem *item = static_cast<BasicTreeItem*>(current.internalPointer());
 		m_curItem = item;
 
 		if (item == m_all_notes)
 			{   // Selected all notes label
-				m_note_list_manager->loadNotesFromNoteDatabase();
+                m_note_list_manager->clearFilter();
 			}
 
 		else if ( item == m_notebooks )
 			{   // Selected notebooks label
-				qDebug("Selected Notebooks label");
-				m_note_list_manager->clear();
+                m_note_list_manager->clearFilter();
 			}
 
 		else if ( item->isNotebook() )
 			{   // Selected a notebook
-				Notebook *notebook = item->object().notebook;
-				noteFilterList list = m_note_list_manager->filter()->notebookFilter(notebook);
-				m_note_list_manager->loadNotesFromNoteFilter( list );
+                Notebook *notebook = item->object().notebook;
+                m_note_list_manager->clearFilter();
+                m_note_list_manager->addNotebookToFilter(notebook);
+
 			}
 
 		else if ( item == m_tags)
 			{   // Selected tags label
-				m_note_list_manager->clear();
-				qDebug("Selected Tags label");
-			}
+
+        }
 
 		else if ( item->isTag() )
 			{   // Selected a tag
 				Tag *tag = item->object().tag;
-				noteFilterList list = m_note_list_manager->filter()->tagFilter(tag);
-				m_note_list_manager->loadNotesFromNoteFilter( list );
+                m_note_list_manager->clearFilter();
+                m_note_list_manager->addTagToFilter(tag);
 			}
 
 		else
 			{   // Selected something else. Clear for safety.
 				qWarning("Selected something weird in the tree list :S");
-				m_note_list_manager->clear();
-			}
+            }
 	} else {
 		qWarning("Hmmm..Current tree selection is same as previous. This should NOT happen. [treemanager.cpp]");
 	}

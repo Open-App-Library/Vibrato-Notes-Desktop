@@ -52,6 +52,8 @@ void NoteListItem::setNote(Note *note)
 
 QWidget *NoteListItem::widget()
 {
+    if (!m_widget)
+        return nullptr;
     return m_widget;
 }
 
@@ -94,5 +96,6 @@ void NoteListItem::noteChanged(Note *note)
 
 void NoteListItem::noteDateChanged_slot(Note *note)
 {
+    (void)note; // Ignore compiler warning
     emit noteDateChanged(this);
 }

@@ -5,30 +5,30 @@
 #include <QDebug>
 #include <QIcon>
 
-ListModel::ListModel(QObject *parent) :
+TreeModel::TreeModel(QObject *parent) :
     QAbstractItemModel(parent),
     m_rootItem( new BasicTreeItem("User Data") )
 {
     // TreeModel Constructor
 }
 
-ListModel::~ListModel()
+TreeModel::~TreeModel()
 {
     delete m_rootItem;
 }
 
-BasicTreeItem *ListModel::root() const
+BasicTreeItem *TreeModel::root() const
 {
     return m_rootItem;
 }
 
-int ListModel::columnCount(const QModelIndex &parent) const
+int TreeModel::columnCount(const QModelIndex &parent) const
 {
     (void) parent; // This line does nothing. Just silences compiler warning for unused parameter
     return 1; // One column only
 }
 
-QVariant ListModel::data(const QModelIndex &index, int role) const
+QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
     // Safety check
     if ( !index.isValid() )
@@ -46,7 +46,7 @@ QVariant ListModel::data(const QModelIndex &index, int role) const
     return item->label();
 }
 
-Qt::ItemFlags ListModel::flags(const QModelIndex &index) const
+Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
         return nullptr;
@@ -54,14 +54,14 @@ Qt::ItemFlags ListModel::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index);
 }
 
-QVariant ListModel::headerData(int section, Qt::Orientation orientation,
+QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
     (void) section; (void) orientation; (void) role; // This line stops 'unused variable' compiler warnings
     return QVariant(tr("User Data"));
 }
 
-QModelIndex ListModel::index(int row, int column, const QModelIndex &parent)
+QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
             const
 {
     if (!hasIndex(row, column, parent))
@@ -81,7 +81,7 @@ QModelIndex ListModel::index(int row, int column, const QModelIndex &parent)
         return QModelIndex();
 }
 
-QModelIndex ListModel::parent(const QModelIndex &index) const
+QModelIndex TreeModel::parent(const QModelIndex &index) const
 {
     if (!index.isValid())
         return QModelIndex();
@@ -95,7 +95,7 @@ QModelIndex ListModel::parent(const QModelIndex &index) const
     return createIndex(parentItem->row(), 0, parentItem);
 }
 
-int ListModel::rowCount(const QModelIndex &parent) const
+int TreeModel::rowCount(const QModelIndex &parent) const
 {
     BasicTreeItem *parentItem;
     if (parent.column() > 0)

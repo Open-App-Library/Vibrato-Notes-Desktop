@@ -26,10 +26,13 @@ public:
 	void clear();
 	void loadNotesFromNoteDatabase();
 	void loadNotesFromNoteDatabase(NoteDatabase *noteDatabase);
-	void loadNotesFromNoteFilter(noteFilterList noteList);
-	NoteFilter *filter();
 
 	void openIndexInEditor(int index);
+
+    // Filter controls
+    void clearFilter();
+    void addNotebookToFilter(Notebook *notebook);
+    void addTagToFilter(Tag *tag);
 
 public slots:
 	void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
@@ -42,6 +45,9 @@ private:
 	CustomListView *m_view;
 	Ui::NoteListAddonsWidget *m_noteListAddonsUi;
 	QWidget *m_noteListAddons;
+
+	// m_model is the global list of notes
+	// m_proxyModel is the sorted & filtered list of notes, based on m_model.
 	NoteListModel *m_model;
 	NoteListProxyModel *m_proxyModel;
 

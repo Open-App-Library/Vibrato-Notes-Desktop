@@ -57,7 +57,7 @@ public:
 	void treeItemChanged(const QModelIndex &current, const QModelIndex &previous);
 
 private:
-	ListModel       *m_tree_model;
+	TreeModel       *m_tree_model;
 	QTreeView       *m_tree_view;
 	NoteListManager *m_note_list_manager;
 

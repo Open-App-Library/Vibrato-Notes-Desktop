@@ -8,23 +8,35 @@
 #define NOTELISTPROXYMODEL_H
 #include <QSortFilterProxyModel>
 #include <QListView>
+#include "../items/notelistitem.h"
 
 class NoteListProxyModel : public QSortFilterProxyModel
 {
 public:
-    NoteListProxyModel(QListView *view);
+	NoteListProxyModel(QListView *view);
 
-    QVariant data(const QModelIndex &index, int role) const;
+	QVariant data(const QModelIndex &index, int role) const;
 
-    enum SortingMethods {DateCreated, DateModified};
-    void setSortingMethod(int sortingMethod);
+	enum SortingMethods {DateCreated, DateModified};
+	void setSortingMethod(int sortingMethod);
 
-    bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
-    bool greaterThan(const QModelIndex &left, const QModelIndex &right) const;
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+    void clearFilter();
+    void addNotebookToFilter(Notebook *notebook);
+    void addTagToFilter(Tag *tag);
+
+	bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
+	bool greaterThan(const QModelIndex &left, const QModelIndex &right) const;
+
+	NoteListItem *item(int row);
+
 
 private:
-    QListView *m_view;
-    int m_sortingMethod=DateModified;
+	QListView *m_view;
+	int m_sortingMethod=DateModified;
+
+    QVector<Notebook*> m_notebook_filter;
+    QVector<Tag*> m_tag_filter;
 };
 
 #endif // NOTELISTPROXYMODEL_H
