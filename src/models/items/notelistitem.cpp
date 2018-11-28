@@ -18,6 +18,10 @@ NoteListItem::NoteListItem(Note *note) :
         updateWidget();
         connect(note, &Note::noteChanged,
                 this, &NoteListItem::noteChanged);
+        connect(note, &Note::noteDateCreatedChanged,
+                this, &NoteListItem::noteDateChanged_slot);
+        connect(note, &Note::noteDateModifiedChanged,
+                this, &NoteListItem::noteDateChanged_slot);
     }
 }
 
@@ -25,6 +29,8 @@ NoteListItem::~NoteListItem()
 {
     delete m_ui_class;
     delete m_widget;
+    m_widget = nullptr;
+    m_note = nullptr;
 }
 
 Note *NoteListItem::note()
@@ -38,6 +44,10 @@ void NoteListItem::setNote(Note *note)
     updateWidget();
     connect(note, &Note::noteChanged,
             this, &NoteListItem::noteChanged);
+    connect(note, &Note::noteDateCreatedChanged,
+            this, &NoteListItem::noteDateChanged_slot);
+    connect(note, &Note::noteDateModifiedChanged,
+            this, &NoteListItem::noteDateChanged_slot);
 }
 
 QWidget *NoteListItem::widget()
@@ -79,5 +89,10 @@ void NoteListItem::setSelectedStyle(bool selected)
 void NoteListItem::noteChanged(Note *note)
 {
     (void) note; // Ignore unused variable compiler warning
-	updateWidget();
+    updateWidget();
+}
+
+void NoteListItem::noteDateChanged_slot(Note *note)
+{
+    emit noteDateChanged(this);
 }

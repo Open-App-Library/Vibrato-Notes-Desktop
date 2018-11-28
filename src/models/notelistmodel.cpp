@@ -21,32 +21,60 @@ void NoteListModel::refresh(int row)
 
 void NoteListModel::clear()
 {
-    removeRows(0, m_noteItems.length());
+    if (m_noteItems.length() > 0)
+        removeRows(0, m_noteItems.length());
 }
 
 NoteListItem *NoteListModel::prependItem(Note *note)
 {
-    insertRows(0, 1);
-    NoteListItem *i = m_noteItems[0];
+    int newIndex = 0;
+    beginInsertRows(QModelIndex(), newIndex, newIndex);
+
+    m_noteItems.prepend( new NoteListItem(nullptr));
+    NoteListItem *i = m_noteItems.at(newIndex);
     i->setNote(note);
+
+    connect(i, &NoteListItem::noteDateChanged,
+            this, &NoteListModel::noteDateChanged);
+
+    endInsertRows();
     return i;
 }
 
 NoteListItem *NoteListModel::appendItem(Note *note)
 {
-    insertRows(m_noteItems.length(), 1);
-    NoteListItem *i = m_noteItems[ m_noteItems.length()-1 ];
+    int newIndex = m_noteItems.length();
+    beginInsertRows(QModelIndex(), newIndex, newIndex);
+
+    m_noteItems.append( new NoteListItem(nullptr));
+    NoteListItem *i = m_noteItems.at(newIndex);
     i->setNote(note);
+
+    connect(i, &NoteListItem::noteDateChanged,
+            this, &NoteListModel::noteDateChanged);
+
+    endInsertRows();
     return i;
+}
+
+void NoteListModel::noteDateChanged(NoteListItem *item)
+{
+    for ( int i=0; i < m_noteItems.length(); i++ ) {
+        if ( m_noteItems.at(i) == item ) {
+            refresh( i );
+            break;
+        }
+    }
 }
 
 bool NoteListModel::insertRows(int position, int rows, const QModelIndex &parent)
 {
     beginInsertRows(parent, position, position + rows - 1);
 
-    for (int i = 0; i < rows; i++) {
+    qDebug() << "Inserting"  << rows << "rows";
+
+    for (int i = 0; i < rows; i++)
         m_noteItems.insert(position+i, new NoteListItem(nullptr));
-    }
 
     endInsertRows();
 
@@ -55,21 +83,26 @@ bool NoteListModel::insertRows(int position, int rows, const QModelIndex &parent
 
 bool NoteListModel::removeRows(int position, int rows, const QModelIndex &parent)
 {
+    qDebug() << "Beginning delete at" << position << "With a size of" << rows <<" cur size is" << rowCount();
     beginRemoveRows(parent, position, position + rows - 1);
 
     for (int i = 0; i < rows; i++) {
+        qDebug() << "Deleting" <<  i << "of" << rows;
+        qDebug() << "Note name to delete:" << m_noteItems.at(position)->note()->title();
         delete m_noteItems[position];
+        m_noteItems[position] = nullptr;
         m_noteItems.remove(position);
     }
 
     endRemoveRows();
+    qDebug() <<"after deletoion the row count is" << rowCount();
 
     return true;
 }
 
 int NoteListModel::columnCount(const QModelIndex &parent) const
 {
-	return 1;
+    return 1;
 }
 
 QVariant NoteListModel::data(const QModelIndex &index, int role) const
@@ -82,9 +115,11 @@ QVariant NoteListModel::data(const QModelIndex &index, int role) const
 
 	NoteListItem *item = static_cast<NoteListItem*>(index.internalPointer());
 
-    if (item->widget() != nullptr) {
-        m_view->setIndexWidget(index, item->widget() );
-    }
+//    if (item->widget() != nullptr) {
+//        m_view->setIndexWidget(index, item->widget() );
+//    }
+
+    qDebug() << "Getting data" << item->note()->title();
 
 	return QVariant();
 }

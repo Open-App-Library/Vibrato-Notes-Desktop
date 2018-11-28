@@ -119,7 +119,7 @@ void MainWindow::userButtonClicked()
 
 void MainWindow::addNewNote()
 {
-    m_notes->addDefaultNote();
+    m_note_list_manager->add_note( m_notes->addDefaultNote() );
 }
 
 void MainWindow::view_default()

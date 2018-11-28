@@ -37,6 +37,12 @@ public:
 	QVector<int> tags() const;
 	void setTags(const QVector<int> &value);
 
+    // Sorting comparison functions for your convenience.
+    static bool byDateCreatedAsc(const Note *n1, const Note *n2);
+    static bool byDateCreatedDesc(const Note *n1, const Note *n2);
+    static bool byDateModifiedAsc(const Note *n1, const Note *n2);
+    static bool byDateModifiedDesc(const Note *n1, const Note *n2);
+
 private slots:
 	void handleNoteChange(Note *note);
 

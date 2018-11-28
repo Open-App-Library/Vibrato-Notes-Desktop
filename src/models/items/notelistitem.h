@@ -36,8 +36,13 @@ private:
 	QLabel *m_excerpt_label;
     QLabel *m_date_created_label;
 
+signals:
+    void noteDateChanged(NoteListItem *item);
+
 public slots:
 	void noteChanged(Note *note);
+    void noteDateChanged_slot(Note *note);
+
 };
 
 #endif // NOTELISTITEM_H

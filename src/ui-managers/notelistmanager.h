@@ -2,6 +2,7 @@
 #define NOTELISTMANAGER_H
 #include <QVector>
 #include "escribamanager.h"
+#include "../sortfilter/notelistproxymodel.h"
 #include "../models/views/customlistview.h"
 #include "ui_notelistitem.h"
 #include "../models/notelistmodel.h"
@@ -27,7 +28,7 @@ public:
     void openIndexInEditor(int index);
 
 public slots:
-    void noteListItemChanged(const QModelIndex & current, const QModelIndex & previous);
+    void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
 
 
 signals:
@@ -36,6 +37,8 @@ signals:
 private:
     CustomListView *m_view;
 	NoteListModel *m_model;
+    NoteListProxyModel *m_proxyModel;
+
     EscribaManager *m_escribaManager;
 
 	NoteFilter *m_filter;

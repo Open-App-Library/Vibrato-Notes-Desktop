@@ -17,6 +17,8 @@ public:
 	NoteListItem *prependItem(Note *note);
 	NoteListItem *appendItem(Note *note);
 
+    void noteDateChanged(NoteListItem *item);
+
     bool insertRows(int position, int rows,
                     const QModelIndex &parent = QModelIndex()) override;
     bool removeRows(int position, int rows,

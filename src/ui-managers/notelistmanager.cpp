@@ -10,13 +10,13 @@ NoteListManager::NoteListManager(CustomListView *view, EscribaManager *escribaMa
 {
 	m_filter = new NoteFilter( m_db );
 	m_model = new NoteListModel(view);
-	view->setModel(m_model);
+    m_proxyModel = new NoteListProxyModel(view);
+    m_proxyModel->setSourceModel(m_model);
+    m_proxyModel->sort(0, Qt::DescendingOrder);
+    view->setModel(m_proxyModel);
 
     connect(m_view, &CustomListView::selectedItemChanged,
             this, &NoteListManager::noteListItemChanged);
-
-	// connect(m_listWidget, &QListWidget::currentItemChanged,
-	// 				this, &NoteListManager::noteListItemChanged);
 }
 
 NoteListManager::~NoteListManager()
@@ -72,8 +72,10 @@ void NoteListManager::openIndexInEditor(int index)
     m_escribaManager->setNote( m_model->noteItems()[index]->note() );
 }
 
-void NoteListManager::noteListItemChanged(const QModelIndex &current, const QModelIndex &previous)
+void NoteListManager::noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy)
 {
+   QModelIndex current = m_proxyModel->mapToSource(current_proxy);
+   QModelIndex previous = m_proxyModel->mapToSource(previous_proxy);
    if (previous.isValid()) {
        NoteListItem *prevItem = m_model->noteItems()[ previous.row() ];
        prevItem->setSelectedStyle(false);

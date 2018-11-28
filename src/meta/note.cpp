@@ -235,3 +235,33 @@ QString Note::numberToString(int number, bool capitalize)
 		str[0] = str[0].toUpper();
 	return str;
 }
+
+bool compareTwoDateTimes(QDateTime t1, QDateTime t2, char comparisonSymbol) {
+    qint64 d1 = t1.toMSecsSinceEpoch();
+    qint64 d2 = t2.toMSecsSinceEpoch();
+    if ( comparisonSymbol == '>' && d1 > d2 ) {
+        return true;
+    } else if ( comparisonSymbol == '<' && d1 < d2 )
+        return true;
+    return false;
+}
+
+bool Note::byDateCreatedAsc(const Note *n1, const Note *n2)
+{
+    return compareTwoDateTimes( n1->date_created(), n2->date_created(), '<' );
+}
+
+bool Note::byDateCreatedDesc(const Note *n1, const Note *n2)
+{
+    return compareTwoDateTimes( n1->date_created(), n2->date_created(), '>' );
+}
+
+bool Note::byDateModifiedAsc(const Note *n1, const Note *n2)
+{
+    return compareTwoDateTimes( n1->date_modified(), n2->date_modified(), '<' );
+}
+
+bool Note::byDateModifiedDesc(const Note *n1, const Note *n2)
+{
+    return compareTwoDateTimes( n1->date_modified(), n2->date_modified(), '>' );
+}
