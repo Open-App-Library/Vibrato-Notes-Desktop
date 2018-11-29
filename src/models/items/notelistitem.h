@@ -19,16 +19,12 @@ public:
     ~NoteListItem();
 	Note *note();
     void setNote(Note *note);
-	QWidget *widget();
-    void deleteWidget();
-
-	void updateWidget();
 
     void setSelectedStyle(bool selected);
 
 private:
-	Ui::NoteListItem *m_ui_class;
-	QWidget *m_widget;
+    Ui::NoteListItem *m_ui_class;
+    QWidget *m_widget;
 
 	Note *m_note;
 
@@ -40,7 +36,6 @@ signals:
     void noteDateChanged(NoteListItem *item);
 
 public slots:
-	void noteChanged(Note *note);
     void noteDateChanged_slot(Note *note);
 
 };

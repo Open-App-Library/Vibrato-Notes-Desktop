@@ -9,6 +9,7 @@
 #include <QSortFilterProxyModel>
 #include <QListView>
 #include "../items/notelistitem.h"
+#include "../items/notelistitemwidget.h"
 
 class NoteListProxyModel : public QSortFilterProxyModel
 {
@@ -26,9 +27,8 @@ public:
     void addTagToFilter(Tag *tag);
 
 	bool lessThan(const QModelIndex &left, const QModelIndex &right) const;
-	bool greaterThan(const QModelIndex &left, const QModelIndex &right) const;
 
-	NoteListItem *item(int row);
+    NoteListItem *item(int row);
 
 
 private:
@@ -37,6 +37,9 @@ private:
 
     QVector<Notebook*> m_notebook_filter;
     QVector<Tag*> m_tag_filter;
+
+    QMap<int, NoteListItemWidget*> m_notelistitemwidgets;
+    NoteListItemWidget *getWidget(const int row, Note *note);
 };
 
 #endif // NOTELISTPROXYMODEL_H

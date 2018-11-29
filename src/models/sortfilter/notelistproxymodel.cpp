@@ -1,5 +1,4 @@
 #include "notelistproxymodel.h"
-#include "../items/notelistitem.h"
 #include "../../meta/db/notedatabase.h"
 #include "../notelistmodel.h"
 #include <QStandardItemModel>
@@ -24,9 +23,9 @@ QVariant NoteListProxyModel::data(const QModelIndex &index, int role) const
     QModelIndex realIndex = mapToSource(index);
     NoteListItem *item = static_cast<NoteListItem*>( realIndex.internalPointer() );
 
-    if (item->widget() != nullptr && m_view->indexWidget(index) == nullptr) {
-        m_view->setIndexWidget( index, item->widget() );
-    }
+    NoteListItemWidget *w = getWidget(3, item->note());
+//    if ( !m_view->indexWidget(index) )
+//        m_view->setIndexWidget( index,  );
 
 	return QVariant();
 }
@@ -102,27 +101,24 @@ bool NoteListProxyModel::lessThan(const QModelIndex &left, const QModelIndex &ri
 	return false;
 }
 
-bool NoteListProxyModel::greaterThan(const QModelIndex &left, const QModelIndex &right) const
-{
-	if ( !left.isValid() ) return false;
-	if ( !right.isValid() ) return true;
-	NoteListItem *item1 = static_cast<NoteListItem*>(left.internalPointer());
-	NoteListItem *item2 = static_cast<NoteListItem*>(right.internalPointer());
-
-	switch (m_sortingMethod) {
-	case DateCreated:
-		return Note::byDateCreatedDesc(item1->note(), item2->note());
-	case DateModified:
-		return Note::byDateModifiedDesc(item1->note(), item2->note());
-	}
-
-	return false;
-}
-
 NoteListItem *NoteListProxyModel::item(int row)
 {
 	QModelIndex i = index(row,0);
 	if ( !i.isValid() ) return nullptr;
 
-	return static_cast<NoteListItem*>( mapToSource(i).internalPointer() );
+    return static_cast<NoteListItem*>( mapToSource(i).internalPointer() );
+}
+
+NoteListItemWidget *NoteListProxyModel::getWidget(const int row, Note *note)
+{
+    NoteListItemWidget *item;
+    if ( m_notelistitemwidgets.contains(row) ) {
+        item = m_notelistitemwidgets.value(row);
+        item->setNote(note);
+    } else {
+        item = new NoteListItemWidget(note);
+        m_notelistitemwidgets.insert(row, item);
+    }
+    qDebug() << "Reporting...size is" << m_notelistitemwidgets.size();
+    return item;
 }

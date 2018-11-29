@@ -48,7 +48,8 @@ SOURCES += \
     $$PWD/src/iconutils.cpp \
     ui/note_edittags.cpp \
     src/models/items/listitemwithid.cpp \
-    src/models/sortfilter/notelistproxymodel.cpp
+    src/models/sortfilter/notelistproxymodel.cpp \
+    src/models/items/notelistitemwidget.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -78,7 +79,8 @@ HEADERS += \
     $$PWD/include/helper-io.hpp \
     ui/note_edittags.h \
     src/models/items/listitemwithid.h \
-    src/models/sortfilter/notelistproxymodel.h
+    src/models/sortfilter/notelistproxymodel.h \
+    src/models/items/notelistitemwidget.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview

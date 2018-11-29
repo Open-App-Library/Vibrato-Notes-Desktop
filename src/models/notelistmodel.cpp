@@ -106,12 +106,6 @@ QVariant NoteListModel::data(const QModelIndex &index, int role) const
 	if (role != Qt::DisplayRole)
 		return QVariant();
 
-	NoteListItem *item = static_cast<NoteListItem*>(index.internalPointer());
-
-//    if (item->widget() != nullptr) {
-//        m_view->setIndexWidget(index, item->widget() );
-//    }
-
 	return QVariant();
 }
 
