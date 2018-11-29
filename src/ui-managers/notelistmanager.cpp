@@ -26,6 +26,11 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
 
 	connect(m_view, &CustomListView::selectedItemChanged,
 					this, &NoteListManager::noteListItemChanged);
+
+    // commented out for now. This is potentially a more efficient way to set indexWidgets
+    // however it has a slight graphical bug when loading a lot of notes.
+//    connect(m_proxyModel, &QSortFilterProxyModel::rowsInserted,
+//            this, &NoteListManager::rowsInsertedInProxy);
 }
 
 NoteListManager::~NoteListManager()
@@ -71,9 +76,9 @@ void NoteListManager::openIndexInEditor(int index)
     }
 }
 
-void NoteListManager::clearFilter()
+void NoteListManager::clearFilter(bool invalidate)
 {
-    m_proxyModel->clearFilter();
+    m_proxyModel->clearFilter(invalidate);
 }
 
 void NoteListManager::addNotebookToFilter(Notebook *notebook)
@@ -99,5 +104,22 @@ void NoteListManager::noteListItemChanged(const QModelIndex &current_proxy, cons
 		NoteListItem *curItem = m_model->noteItems()[ current.row() ];
 		curItem->setSelectedStyle(true);
 		emit selectedNote( curItem->note() );
-	}
+    }
+}
+
+// This is potentially a more efficient way to set indexWidgets
+// however it has a slight graphical bug when loading a lot of notes.
+void NoteListManager::rowsInsertedInProxy(const QModelIndex &parent, int start, int end)
+{
+    (void)parent;
+
+    for (int i = start; i <= end; i++) {
+        QModelIndex index = m_proxyModel->index(i,0);
+        QModelIndex sourceIndex = m_proxyModel->mapToSource(index);
+        if ( m_proxyModel->filterAcceptsRow(sourceIndex.row(), QModelIndex()) ) {
+            NoteListItem *item = static_cast<NoteListItem*>( sourceIndex.internalPointer() );
+            qDebug() << "Filter accepts row" << i;
+            m_view->setIndexWidget(index, new NoteListItemWidget( item->note() ));
+        }
+    }
 }

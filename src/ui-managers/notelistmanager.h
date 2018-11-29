@@ -30,12 +30,15 @@ public:
 	void openIndexInEditor(int index);
 
     // Filter controls
-    void clearFilter();
+    void clearFilter(bool invalidate=true);
     void addNotebookToFilter(Notebook *notebook);
     void addTagToFilter(Tag *tag);
 
 public slots:
 	void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
+
+private slots:
+    void rowsInsertedInProxy(const QModelIndex & parent, int start, int end);
 
 
 signals:

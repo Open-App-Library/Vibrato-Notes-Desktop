@@ -195,7 +195,7 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
 		else if ( item->isNotebook() )
 			{   // Selected a notebook
                 Notebook *notebook = item->object().notebook;
-                m_note_list_manager->clearFilter();
+                m_note_list_manager->clearFilter(false);
                 m_note_list_manager->addNotebookToFilter(notebook);
 
 			}

@@ -20,67 +20,67 @@ QVariant NoteListProxyModel::data(const QModelIndex &index, int role) const
 	if (role != Qt::DisplayRole)
 		return QVariant();
 
-    QModelIndex realIndex = mapToSource(index);
-    NoteListItem *item = static_cast<NoteListItem*>( realIndex.internalPointer() );
+	QModelIndex realIndex = mapToSource(index);
+	NoteListItem *item = static_cast<NoteListItem*>( realIndex.internalPointer() );
 
-    NoteListItemWidget *w = getWidget(3, item->note());
-//    if ( !m_view->indexWidget(index) )
-//        m_view->setIndexWidget( index,  );
+    if ( !m_view->indexWidget(index) )
+        m_view->setIndexWidget( index, new NoteListItemWidget(item->note()) );
 
 	return QVariant();
 }
 
 void NoteListProxyModel::setSortingMethod(int sortingMethod)
 {
-    m_sortingMethod = sortingMethod;
+	m_sortingMethod = sortingMethod;
 }
 
 bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
-        const QModelIndex &sourceParent) const
+																					const QModelIndex &sourceParent) const
 {
-    QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
-    NoteListItem *item = static_cast<NoteListItem*>(index.internalPointer());
+	QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
+	NoteListItem *item = static_cast<NoteListItem*>(index.internalPointer());
 
-    int notebookId = item->note()->notebook();
-    QVector<int> tagIds = item->note()->tags();
+	int notebookId = item->note()->notebook();
+	QVector<int> tagIds = item->note()->tags();
 
-    bool passed_notebook_check = false;
-    bool passed_tag_check      = false;
+	bool passed_notebook_check = false;
+	bool passed_tag_check      = false;
 
-    if ( m_notebook_filter.length() == 0 )
-        passed_notebook_check = true;
+	if ( m_notebook_filter.length() == 0 )
+		passed_notebook_check = true;
 
-    if ( m_tag_filter.length() == 0 )
-        passed_tag_check = true;
+	if ( m_tag_filter.length() == 0 )
+		passed_tag_check = true;
 
-    for ( Notebook *n : m_notebook_filter )
-        if ( notebookId == n->id() )
-            passed_notebook_check = true;
+	for ( Notebook *n : m_notebook_filter )
+		if ( notebookId == n->id() )
+			passed_notebook_check = true;
 
-    for ( Tag *t : m_tag_filter )
-        if ( tagIds.contains(t->id()) )
-            passed_tag_check = true;
+	for ( Tag *t : m_tag_filter )
+		if ( tagIds.contains(t->id()) )
+			passed_tag_check = true;
 
-    return passed_notebook_check && passed_tag_check;
+	return passed_notebook_check && passed_tag_check;
 }
 
-void NoteListProxyModel::clearFilter()
+void NoteListProxyModel::clearFilter(bool invalidate)
 {
-    m_notebook_filter.clear();
-    m_tag_filter.clear();
-    setFilterRegExp(QRegExp(""));
+	m_notebook_filter.clear();
+	m_tag_filter.clear();
+    if ( invalidate )
+        invalidateFilter();
 }
 
 void NoteListProxyModel::addNotebookToFilter(Notebook *notebook)
 {
-    m_notebook_filter.append(notebook);
-    setFilterRegExp(QRegExp(""));
+	m_notebook_filter.append(notebook);
+    invalidateFilter();
 }
 
 void NoteListProxyModel::addTagToFilter(Tag *tag)
 {
-    m_tag_filter.append(tag);
-    setFilterRegExp(QRegExp(""));
+	m_tag_filter.append(tag);
+    invalidateFilter();
 }
 
 
@@ -106,19 +106,5 @@ NoteListItem *NoteListProxyModel::item(int row)
 	QModelIndex i = index(row,0);
 	if ( !i.isValid() ) return nullptr;
 
-    return static_cast<NoteListItem*>( mapToSource(i).internalPointer() );
-}
-
-NoteListItemWidget *NoteListProxyModel::getWidget(const int row, Note *note)
-{
-    NoteListItemWidget *item;
-    if ( m_notelistitemwidgets.contains(row) ) {
-        item = m_notelistitemwidgets.value(row);
-        item->setNote(note);
-    } else {
-        item = new NoteListItemWidget(note);
-        m_notelistitemwidgets.insert(row, item);
-    }
-    qDebug() << "Reporting...size is" << m_notelistitemwidgets.size();
-    return item;
+	return static_cast<NoteListItem*>( mapToSource(i).internalPointer() );
 }
