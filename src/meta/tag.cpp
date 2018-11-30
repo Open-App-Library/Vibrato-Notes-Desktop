@@ -1,9 +1,9 @@
 #include "tag.h"
 
-Tag::Tag()
+Tag::Tag(int id, QString title) :
+	m_id(id),
+	m_title(title)
 {
-    m_id = -1;
-    m_title = "Untitled Tag";
 }
 
 int Tag::id() const
@@ -14,6 +14,8 @@ int Tag::id() const
 void Tag::setId(int id)
 {
     m_id = id;
+		emit tagIDChanged(this);
+		emit tagChanged(this);
 }
 
 QString Tag::title() const
@@ -24,4 +26,6 @@ QString Tag::title() const
 void Tag::setTitle(const QString &title)
 {
     m_title = title;
+		emit tagTitleChanged(this);
+		emit tagChanged(this);
 }

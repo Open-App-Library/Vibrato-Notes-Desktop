@@ -1,7 +1,7 @@
 #include "notelistmodel.h"
 
 NoteListModel::NoteListModel(QListView *view) : QAbstractItemModel()
-{
+{   
 	m_view = view;
     QString style = QString("QListView:item::active  { color: white; } QListView:item { height: %1 }").arg( NOTE_LIST_ITEM_HEIGHT );
     m_view->setStyleSheet(style);

@@ -14,14 +14,14 @@
 #include "../models/items/basictreeitem.h"
 #include "../models/treemodel.h"
 #include "../meta/db/notebookdatabase.h"
-#include "../meta/db/tagdatabase.h"
+#include "../meta/db/database.h"
 #include "notelistmanager.h"
 
 class TreeManager : public QObject
 {
 	Q_OBJECT
 public:
-	explicit TreeManager(QTreeView *treeView, NoteListManager *noteListManager, QObject *parent=nullptr);
+	explicit TreeManager(QTreeView *treeView, NoteListManager *noteListManager, Database *db, QObject *parent=nullptr);
 	~TreeManager();
 
 	enum TreeItemTypes {TreeType_AllNotes, TreeType_Notebooks, TreeType_Notebook, TreeType_Tags, TreeType_Tag, TreeType_Other};
@@ -56,19 +56,24 @@ public:
 	// Signal Callbacks
 	void treeItemChanged(const QModelIndex &current, const QModelIndex &previous);
 
+public slots:
+	void tagAdded(Tag *tag);
+	void tagChanged(Tag *tag);
+
 private:
 	TreeModel       *m_tree_model;
 	QTreeView       *m_tree_view;
 	NoteListManager *m_note_list_manager;
+	Database *m_db;
 
 	BasicTreeItem *m_curItem;
 
 	BasicTreeItem *m_all_notes;
-    BasicTreeItem *m_search;
-    BasicTreeItem *m_favorites;
+	BasicTreeItem *m_search;
+	BasicTreeItem *m_favorites;
 	BasicTreeItem *m_notebooks;
 	BasicTreeItem *m_tags;
-    BasicTreeItem *m_trash;
+	BasicTreeItem *m_trash;
 
 	// TODO: https://forum.qt.io/topic/45262/disable-certain-rows-in-qtreeview
 	BasicTreeItem *m_no_notebooks_placedholder = nullptr;

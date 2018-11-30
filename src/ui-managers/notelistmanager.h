@@ -29,16 +29,19 @@ public:
 
 	void openIndexInEditor(int index);
 
-    // Filter controls
-    void clearFilter(bool invalidate=true);
-    void addNotebookToFilter(Notebook *notebook);
-    void addTagToFilter(Tag *tag);
+	// Filter controls
+	void clearFilter(bool invalidate=true);
+	void addNotebookToFilter(Notebook *notebook);
+	void addTagToFilter(Tag *tag);
+
+	void showNotebookView(Notebook *notebook);
+	void showTagView(Tag *tag);
 
 public slots:
 	void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
 
 private slots:
-    void rowsInsertedInProxy(const QModelIndex & parent, int start, int end);
+	void rowsInsertedInProxy(const QModelIndex & parent, int start, int end);
 
 
 signals:

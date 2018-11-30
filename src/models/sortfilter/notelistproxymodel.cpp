@@ -23,8 +23,8 @@ QVariant NoteListProxyModel::data(const QModelIndex &index, int role) const
 	QModelIndex realIndex = mapToSource(index);
 	NoteListItem *item = static_cast<NoteListItem*>( realIndex.internalPointer() );
 
-    if ( !m_view->indexWidget(index) )
-        m_view->setIndexWidget( index, new NoteListItemWidget(item->note()) );
+	if ( !m_view->indexWidget(index) )
+		m_view->setIndexWidget( index, new NoteListItemWidget(item->note()) );
 
 	return QVariant();
 }
@@ -40,7 +40,7 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
 	QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
 	NoteListItem *item = static_cast<NoteListItem*>(index.internalPointer());
 
-	int notebookId = item->note()->notebook();
+	int curNotebookId = item->note()->notebook();
 	QVector<int> tagIds = item->note()->tags();
 
 	bool passed_notebook_check = false;
@@ -52,9 +52,14 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
 	if ( m_tag_filter.length() == 0 )
 		passed_tag_check = true;
 
-	for ( Notebook *n : m_notebook_filter )
-		if ( notebookId == n->id() )
+	for ( Notebook *n : m_notebook_filter ) {
+		QVector<Notebook*> childNotebooks = n->recurseChildren();
+		QVector<int> notebookIds = {n->id()};
+		for (Notebook *child : childNotebooks)
+			notebookIds.append( child->id() );
+		if ( notebookIds.contains(curNotebookId) )
 			passed_notebook_check = true;
+	}
 
 	for ( Tag *t : m_tag_filter )
 		if ( tagIds.contains(t->id()) )
@@ -67,20 +72,20 @@ void NoteListProxyModel::clearFilter(bool invalidate)
 {
 	m_notebook_filter.clear();
 	m_tag_filter.clear();
-    if ( invalidate )
-        invalidateFilter();
+	if ( invalidate )
+		invalidateFilter();
 }
 
 void NoteListProxyModel::addNotebookToFilter(Notebook *notebook)
 {
 	m_notebook_filter.append(notebook);
-    invalidateFilter();
+	invalidateFilter();
 }
 
 void NoteListProxyModel::addTagToFilter(Tag *tag)
 {
 	m_tag_filter.append(tag);
-    invalidateFilter();
+	invalidateFilter();
 }
 
 

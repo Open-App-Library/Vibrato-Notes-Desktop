@@ -1,10 +1,11 @@
 #include "treemanager.h"
 #include "../../iconutils.h"
 
-TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, QObject *parent) :
+TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, Database *db, QObject *parent) :
 	QObject(parent),
 	m_tree_view(treeView),
-	m_note_list_manager(noteListManager)
+	m_note_list_manager(noteListManager),
+	m_db(db)
 {
 	m_tree_model = new TreeModel;
 	m_tree_view->setModel(m_tree_model);
@@ -45,6 +46,14 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
 	// Signal Connections
 	connect(m_tree_view->selectionModel(), &QItemSelectionModel::currentChanged,
 					this, &TreeManager::treeItemChanged);
+	connect(m_db->tagDatabase(), &TagDatabase::tagAdded,
+					this, &TreeManager::tagAdded);
+	connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
+					this, &TreeManager::tagChanged);
+
+	// Load databases
+	loadNotebooksFromNotebookDatabase( m_db->notebookDatabase() );
+	loadTagsFromTagDatabase( m_db->tagDatabase() );
 }
 
 TreeManager::~TreeManager()
@@ -184,39 +193,47 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
 
 		if (item == m_all_notes)
 			{   // Selected all notes label
-                m_note_list_manager->clearFilter();
+				m_note_list_manager->clearFilter();
 			}
 
 		else if ( item == m_notebooks )
 			{   // Selected notebooks label
-                m_note_list_manager->clearFilter();
+				m_note_list_manager->clearFilter();
 			}
 
 		else if ( item->isNotebook() )
 			{   // Selected a notebook
-                Notebook *notebook = item->object().notebook;
-                m_note_list_manager->clearFilter(false);
-                m_note_list_manager->addNotebookToFilter(notebook);
-
+				Notebook *notebook = item->object().notebook;
+				m_note_list_manager->showNotebookView(notebook);
 			}
 
 		else if ( item == m_tags)
 			{   // Selected tags label
 
-        }
+			}
 
 		else if ( item->isTag() )
 			{   // Selected a tag
 				Tag *tag = item->object().tag;
-                m_note_list_manager->clearFilter();
-                m_note_list_manager->addTagToFilter(tag);
+				m_note_list_manager->showTagView(tag);
 			}
 
 		else
 			{   // Selected something else. Clear for safety.
 				qWarning("Selected something weird in the tree list :S");
-            }
+			}
 	} else {
 		qWarning("Hmmm..Current tree selection is same as previous. This should NOT happen. [treemanager.cpp]");
 	}
+}
+
+void TreeManager::tagAdded(Tag *tag)
+{
+	qDebug() << "Tag" << tag->title() << "added";
+	addTag(tag);
+}
+
+void TreeManager::tagChanged(Tag *tag)
+{
+	qDebug() << "Tag" << tag->title() << "modified";
 }

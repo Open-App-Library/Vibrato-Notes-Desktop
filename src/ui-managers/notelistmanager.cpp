@@ -21,7 +21,8 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
 	m_model = new NoteListModel(view);
 	m_proxyModel = new NoteListProxyModel(view);
 	m_proxyModel->setSourceModel(m_model);
-	m_proxyModel->sort(0, Qt::DescendingOrder);
+    m_proxyModel->sort(0, Qt::DescendingOrder);
+
 	view->setModel(m_proxyModel);
 
 	connect(m_view, &CustomListView::selectedItemChanged,
@@ -89,6 +90,18 @@ void NoteListManager::addNotebookToFilter(Notebook *notebook)
 void NoteListManager::addTagToFilter(Tag *tag)
 {
     m_proxyModel->addTagToFilter(tag);
+}
+
+void NoteListManager::showNotebookView(Notebook *notebook)
+{
+	clearFilter(false);
+  addNotebookToFilter(notebook);
+}
+
+void NoteListManager::showTagView(Tag *tag)
+{
+	clearFilter(false);
+  addTagToFilter(tag);
 }
 
 void NoteListManager::noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy)
