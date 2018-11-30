@@ -5,6 +5,8 @@
 #include "notebook.h"
 #include "tag.h"
 
+#define NOTE_DEFAULT_TITLE "Untitled Note"
+
 class Note : public QObject
 {
 	Q_OBJECT

@@ -49,7 +49,8 @@ SOURCES += \
     ui/note_edittags.cpp \
     src/models/items/listitemwithid.cpp \
     src/models/sortfilter/notelistproxymodel.cpp \
-    src/models/items/notelistitemwidget.cpp
+    src/models/items/notelistitemwidget.cpp \
+    ui/edittags.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -80,7 +81,8 @@ HEADERS += \
     ui/note_edittags.h \
     src/models/items/listitemwithid.h \
     src/models/sortfilter/notelistproxymodel.h \
-    src/models/items/notelistitemwidget.h
+    src/models/items/notelistitemwidget.h \
+    ui/edittags.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
@@ -93,7 +95,8 @@ FORMS += \
     $$PWD/ui/tagitem.ui \
     $$PWD/ui/note_editnotebook.ui \
     ui/note_edittags.ui \
-    ui/notelist_addons.ui
+    ui/notelist_addons.ui \
+    ui/edittags.ui
 
 include($$PWD/src/text-editor/Escriba.pro)
 
@@ -101,7 +104,7 @@ RESOURCES += \
     $$PWD/resources/dummy-data.qrc \
     $$PWD/resources/icons.qrc \
     $$PWD/resources/fonts.qrc \
-    $$PWD/resources/styles.qrc
+    $$PWD/resources/qdarkstyle.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -12,6 +12,11 @@ int ListItemWithID::id() const
     return m_id;
 }
 
+void ListItemWithID::setLabel(QString label)
+{
+	setText(label);
+}
+
 void ListItemWithID::setID(int id)
 {
     m_id = id;

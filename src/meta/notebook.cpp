@@ -1,10 +1,11 @@
 #include "notebook.h"
 
-Notebook::Notebook()
+Notebook::Notebook(int id, QString title, Notebook *parent, QVector<Notebook*> children) :
+	m_id(id),
+	m_title(title),
+	m_parent(parent),
+	m_children(children)
 {
-    m_id = -1;
-    m_title = "Untitled Notebook";
-    m_parent = nullptr;
 }
 
 int Notebook::id() const
@@ -15,6 +16,8 @@ int Notebook::id() const
 void Notebook::setId(int id)
 {
     m_id = id;
+		emit notebookIDChanged(this);
+		emit notebookChanged(this);
 }
 
 QString Notebook::title() const
@@ -25,6 +28,8 @@ QString Notebook::title() const
 void Notebook::setTitle(const QString &title)
 {
     m_title = title;
+		emit notebookTitleChanged(this);
+		emit notebookChanged(this);
 }
 
 Notebook *Notebook::parent() const
@@ -35,6 +40,8 @@ Notebook *Notebook::parent() const
 void Notebook::setParent(Notebook *parent)
 {
     m_parent = parent;
+		emit notebookParentChanged(this);
+		emit notebookChanged(this);
 }
 
 QVector<Notebook *> Notebook::children() const
@@ -59,12 +66,16 @@ QVector<Notebook *> Notebook::recurseChildren(Notebook* parent) const
 void Notebook::setChildren(const QVector<Notebook *> &children)
 {
     m_children = children;
+		emit notebookChildrenChanged(this);
+		emit notebookChanged(this);
 }
 
 void Notebook::addChild(Notebook *child)
 {
     m_children.append(child);
     child->setParent(this);
+		emit notebookChildrenChanged(this);
+		emit notebookChanged(this);
 }
 
 void Notebook::removeChild(Notebook *child)
@@ -72,4 +83,6 @@ void Notebook::removeChild(Notebook *child)
     int index = m_children.indexOf(child);
     child->setParent(nullptr);
     m_children.removeAt(index);
+		emit notebookChildrenChanged(this);
+		emit notebookChanged(this);
 }

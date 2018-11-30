@@ -11,6 +11,7 @@
 #include <QObject>
 #include <QTreeView>
 #include <QDebug>
+#include <QMenu>
 #include "../models/items/basictreeitem.h"
 #include "../models/treemodel.h"
 #include "../meta/db/notebookdatabase.h"
@@ -43,7 +44,7 @@ public:
 	void                    clearNotebooks();
 
 	void                    loadNotebookObjectAndChildren(Notebook *notebook, BasicTreeItem *parent=nullptr);
-	void                    loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase);
+	void                    loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase, bool expandAll=true);
 
 	// Tag functions
 	QVector<BasicTreeItem*> tags() const;
@@ -56,9 +57,19 @@ public:
 	// Signal Callbacks
 	void treeItemChanged(const QModelIndex &current, const QModelIndex &previous);
 
+	void treeContextMenu(const QPoint &point);
+
 public slots:
 	void tagAdded(Tag *tag);
 	void tagChanged(Tag *tag);
+
+	void notebookAdded(Notebook *notebook);
+	void notebookChanged(Notebook *notebook);
+
+	void contextNewNotebook();
+	void contextDeleteNotebook();
+	void contextRenameNotebook();
+	void contextEditNotebookHierarchy();
 
 private:
 	TreeModel       *m_tree_model;
@@ -75,9 +86,18 @@ private:
 	BasicTreeItem *m_tags;
 	BasicTreeItem *m_trash;
 
+	void setContextEditingControlVisability(bool visible);
+	QMenu *m_notebookContextMenu;
+	QAction *m_notebookNew;
+	QAction *m_notebookRename;
+	QAction *m_notebookEditHierarchy;
+	QAction *m_notebookDelete;
+
 	// TODO: https://forum.qt.io/topic/45262/disable-certain-rows-in-qtreeview
 	BasicTreeItem *m_no_notebooks_placedholder = nullptr;
 	BasicTreeItem *m_no_tags_placedholder = nullptr;
+
+	BasicTreeItem *m_currentContextIndex = nullptr;
 
 	void add_no_notebooks_placeholder();
 	void add_no_tags_placeholder();

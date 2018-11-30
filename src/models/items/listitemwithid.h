@@ -6,15 +6,17 @@
 
 class ListItemWithID : public QObject, public QListWidgetItem
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    ListItemWithID(QString label, int id);
-    int id() const;
+	ListItemWithID(QString label, int id);
+	int id() const;
 
 public slots:
-    void setID(int id);
+	void setLabel(QString label);
+	void setID(int id);
+
 private:
-    int m_id = LIST_ITEM_UNKNOWN;
+	int m_id = LIST_ITEM_UNKNOWN;
 };
 
 #endif // LISTITEMWITHID_H

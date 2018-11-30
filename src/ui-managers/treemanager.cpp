@@ -9,6 +9,7 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
 {
 	m_tree_model = new TreeModel;
 	m_tree_view->setModel(m_tree_model);
+	m_tree_view->setContextMenuPolicy(Qt::CustomContextMenu);
 
 	QFile styleFile( ":/style/DarkSolarized.qss" );
 	styleFile.open( QFile::ReadOnly );
@@ -37,6 +38,34 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
 	m_tree_model->root()->appendChild(m_trash);
 	m_tree_model->root()->appendChild(m_search);
 
+	// Context Menus
+	m_notebookContextMenu = new QMenu();
+
+	m_notebookNew = new QAction(tr("&New notebook"));
+	m_notebookContextMenu->addAction(m_notebookNew);
+	connect(m_notebookNew, &QAction::triggered,
+					this, &TreeManager::contextNewNotebook);
+
+	m_notebookContextMenu->addSeparator();
+
+	m_notebookRename = new QAction(tr("&Rename notebook"));
+	m_notebookContextMenu->addAction(m_notebookRename);
+	connect(m_notebookRename, &QAction::triggered,
+					this, &TreeManager::contextRenameNotebook);
+
+	m_notebookEditHierarchy = new QAction(tr("&Edit notebook hierarchy"));
+	m_notebookContextMenu->addAction(m_notebookEditHierarchy);
+	connect(m_notebookEditHierarchy, &QAction::triggered,
+					this, &TreeManager::contextEditNotebookHierarchy);
+
+	m_notebookDelete = new QAction(tr("&Delete notebook"));
+	m_notebookContextMenu->addAction(m_notebookDelete);
+	connect(m_notebookDelete, &QAction::triggered,
+					this, &TreeManager::contextDeleteNotebook);
+
+	connect(m_tree_view, &QTreeView::customContextMenuRequested,
+					this, &TreeManager::treeContextMenu);
+
 	// Set the current selection to the first item in the treeview..which is "All Notes"
 	// Explanation: https://stackoverflow.com/questions/15817429/how-to-get-list-of-visible-qmodelindex-in-qabstractitemview
 	QModelIndex all_notes_index = m_tree_model->index(0, 0);
@@ -50,6 +79,8 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
 					this, &TreeManager::tagAdded);
 	connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
 					this, &TreeManager::tagChanged);
+	connect(m_db->notebookDatabase(), &NotebookDatabase::notebookAdded,
+					this, &TreeManager::notebookAdded);
 
 	// Load databases
 	loadNotebooksFromNotebookDatabase( m_db->notebookDatabase() );
@@ -58,6 +89,8 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
 
 TreeManager::~TreeManager()
 {
+	delete m_notebookContextMenu;
+	delete m_notebookNew;
 	delete m_tree_model;
 }
 
@@ -116,10 +149,9 @@ void TreeManager::clearChildren(BasicTreeItem *item)
 
 void TreeManager::clearNotebooks()
 {
-	for (int i = m_notebooks->childCount()-1; i >= 0; i--) {
-		clearChildren(m_notebooks->getChild(i));
-		delete m_notebooks->getChild(i);
-	}
+	int count = m_notebooks->childCount();
+	for (int i = 0; i < count; i++)
+		m_notebooks->removeChild(0);
 	update();
 }
 
@@ -136,13 +168,14 @@ void TreeManager::loadNotebookObjectAndChildren(Notebook *notebook, BasicTreeIte
 	}
 }
 
-void TreeManager::loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase)
+void TreeManager::loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase, bool expandAll)
 {
 	clearNotebooks();
 	for (int i = 0; i < notebookDatabase->size(); i++) {
 		loadNotebookObjectAndChildren(notebookDatabase->list()[i]);
 	}
-	m_tree_view->expandAll();
+	if (expandAll)
+		m_tree_view->expandAll();
 }
 
 QVector<BasicTreeItem *> TreeManager::tags() const
@@ -235,5 +268,65 @@ void TreeManager::tagAdded(Tag *tag)
 
 void TreeManager::tagChanged(Tag *tag)
 {
-	qDebug() << "Tag" << tag->title() << "modified";
+    qDebug() << "Tag" << tag->title() << "modified";
+}
+
+void TreeManager::notebookAdded(Notebook *notebook)
+{
+	qDebug() << "Notebook" << notebook->title() << "added";
+	// Inefficient! But it works for now
+	loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
+}
+
+void TreeManager::notebookChanged(Notebook *notebook)
+{
+	qDebug() << "Notebook" << notebook->title() << "modified";
+}
+
+void TreeManager::contextNewNotebook()
+{
+	m_db->notebookDatabase()->addNotebook(NOTEBOOK_DEFAULT_TITLE, m_currentContextIndex->object().notebook);
+}
+
+void TreeManager::contextDeleteNotebook()
+{
+
+}
+
+void TreeManager::contextRenameNotebook()
+{
+
+}
+
+void TreeManager::contextEditNotebookHierarchy()
+{
+
+}
+
+void TreeManager::treeContextMenu(const QPoint &point)
+{
+	QModelIndex index = m_tree_view->indexAt(point);
+	if ( !index.isValid() )
+		return;
+	BasicTreeItem *item = static_cast<BasicTreeItem*>(index.internalPointer());
+	m_currentContextIndex = item;
+	QPoint p = m_tree_view->viewport()->mapToGlobal(point);
+
+	if ( item == m_notebooks )
+		setContextEditingControlVisability(false);
+	else
+		setContextEditingControlVisability(true);
+
+	// Clicking a notebook or the "Notebooks" label
+	if ( item->isNotebook() || item == m_notebooks )
+		m_notebookContextMenu->exec(p);
+
+	//	if ( item->isTag() )
+}
+
+void TreeManager::setContextEditingControlVisability(bool visible)
+{
+  m_notebookRename->setVisible(visible);
+  m_notebookEditHierarchy->setVisible(visible);
+  m_notebookDelete->setVisible(visible);
 }

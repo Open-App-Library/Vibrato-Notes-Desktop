@@ -10,19 +10,19 @@ class NoteListModel : public QAbstractItemModel
 public:
 	NoteListModel(QListView *view);
 
-    QVector<NoteListItem*> noteItems() const;
+	QVector<NoteListItem*> noteItems() const;
 
 	void refresh(int row);
-    void clear();
+	void clear();
 	NoteListItem *prependItem(Note *note);
 	NoteListItem *appendItem(Note *note);
 
-    void noteDateChanged(NoteListItem *item);
+	void noteDateChanged(NoteListItem *item);
 
-    bool insertRows(int position, int rows,
-                    const QModelIndex &parent = QModelIndex()) override;
-    bool removeRows(int position, int rows,
-                    const QModelIndex &parent = QModelIndex()) override;
+	bool insertRows(int position, int rows,
+									const QModelIndex &parent = QModelIndex()) override;
+	bool removeRows(int position, int rows,
+									const QModelIndex &parent = QModelIndex()) override;
 
 	QVariant data(const QModelIndex &index, int role) const override;
 	Qt::ItemFlags flags(const QModelIndex &index) const override;
