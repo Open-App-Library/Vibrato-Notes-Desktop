@@ -59,6 +59,7 @@ void NoteListManager::clear()
 
 void NoteListManager::filterOutEverything(bool shouldFilterOutEverything)
 {
+	hideAddons();
   m_proxyModel->filterOutEverything(shouldFilterOutEverything);
 }
 
