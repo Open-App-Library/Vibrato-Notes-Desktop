@@ -7,16 +7,16 @@ Vibrato Notes Desktop Client
 
 `git clone https://gitlab.com/Open-App-Library/vibratonotes-desktop.git`
 
-2.) Pull submodules 
+2.) Pull submodules
 
-`git submodule update --init --recursive --remote`.
+`git submodule update --init --recursive --remote`
 
 3.) Compile MarkdownPanda
 
 - `cd src/text-editor/markdownpanda`
 - `sh build.sh`
 
-**Note**: Make sure this runs successfully.
+**Note**: Make sure compiling MarkdownPanda finishes successfully.
 
 3.) Open VibratoNotes-Desktop.pro in Qt Creator.
 
