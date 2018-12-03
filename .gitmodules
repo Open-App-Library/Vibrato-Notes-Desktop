@@ -1,6 +1,3 @@
-[submodule "breeze-icons"]
-	path = icons/breeze-icons
-	url = https://github.com/KDE/breeze-icons.git
 [submodule "src/text-editor"]
 	path = src/text-editor
 	url = git@gitlab.com:Open-App-Library/escriba.git
