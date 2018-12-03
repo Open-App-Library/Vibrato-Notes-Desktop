@@ -13,30 +13,30 @@
 
 class NoteDatabase : public QObject
 {
-	Q_OBJECT
+  Q_OBJECT
 public:
-	NoteDatabase();
+  NoteDatabase();
 
-	// Lists out the notes in the in-memory database
-	QList<Note*> list() const;
-	int          size() const;
+  // Lists out the notes in the in-memory database
+  QList<Note*> list() const;
+  int          size() const;
 
-	Note *addNote(Note *note);
-    Note *addDefaultNote(); // Takes note, sets certain fields to default values.
-	//p	Note *addNote(Note note);
+  Note *addNote(Note *note);
+  Note *addDefaultNote(); // Takes note, sets certain fields to default values.
+  //p Note *addNote(Note note);
 
-	void removeNote(int index);
-	void removeNote(Note *note);
-	void clearNotes();
+  void removeNote(int index);
+  void removeNote(Note *note);
+  void clearNotes();
 
-	void loadJSON(QJsonDocument jsonDocument);
+  void loadJSON(QJsonDocument jsonDocument);
 
-	void loadDummyNotes();
+  void loadDummyNotes();
 
 private:
-	QList<Note*> m_list;
+  QList<Note*> m_list;
 
-    QJsonValue get(QJsonObject obj, QString key);
+  QJsonValue get(QJsonObject obj, QString key);
 };
 
 #endif // NOTELIST_H

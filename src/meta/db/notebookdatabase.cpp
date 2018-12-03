@@ -164,6 +164,6 @@ void NotebookDatabase::loadJSON(QJsonDocument jsonDocument)
 void NotebookDatabase::loadDummyNotebooks()
 {
 	clearNotebooks();
-	QJsonDocument notebooks = fileToQJsonDocument(":/dummy/notebooks.json");
+	QJsonDocument notebooks = HelperIO::fileToQJsonDocument(":/dummy/notebooks.json");
 	loadJSON(notebooks);
 }

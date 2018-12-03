@@ -2,14 +2,16 @@
 #include <QDateTime>
 #include <QTimeZone>
 #include <QDebug>
+#include <helper-io.hpp>
 
-Note::Note(int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, int notebook, QVector<int> tags)
+Note::Note(int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, bool favorited,int notebook, QVector<int> tags)
 {
 	m_id = id;
 	m_title = title;
 	m_text  = text;
 	m_date_created = date_created;
 	m_date_modified = date_modified;
+	m_favorited = favorited;
 	m_notebook = notebook;
 	m_tags = tags;
 	connect(this, &Note::noteChanged,
@@ -125,7 +127,7 @@ QString Note::date_modified_str()
 		unit = "month";
 		if ( months_since > 1 )
 			unit.append('s');
-		return QString("%1 %2 ago").arg(numberToString(months_since, true), unit);
+		return QString("%1 %2 ago").arg(HelperIO::numberToString(months_since, true), unit);
 	}
 	else if ( td_sec >= secs_in_hour ) {
 		unit = "hour";
@@ -138,7 +140,7 @@ QString Note::date_modified_str()
 	amount = td_sec / diviser;
 	if ( amount > 1 )
 		unit.append('s');
-	return QString("%1 %2 ago").arg(numberToString(amount, true), unit);
+	return QString("%1 %2 ago").arg(HelperIO::numberToString(amount, true), unit);
 }
 
 QString Note::date_modified_str_informative()
@@ -153,6 +155,20 @@ void Note::setDate_modified(const QDateTime &date_modified)
 	m_date_modified = date_modified;
 	emit noteChanged( this );
 	emit noteDateModifiedChanged( this );
+}
+
+bool Note::favorited() const
+{
+	return m_favorited;
+}
+
+void Note::setFavorited(bool favorited)
+{
+	if (m_favorited == favorited)
+		return;
+	m_favorited = favorited;
+	emit noteChanged( this );
+	emit noteFavoritedChanged( this );
 }
 
 int Note::notebook() const
@@ -192,48 +208,6 @@ QString Note::informativeDate(QDateTime date)
 	QString dateStr = date.toString("MMMM d, yyyy");
 	QString timeStr = date.toString("h:mA t");
 	return QString("%1 at %2").arg( dateStr, timeStr );
-}
-
-QString Note::numberToString(int number, bool capitalize)
-{
-	QString str;
-	switch (number) {
-	case 1:
-		str = "one";
-		break;
-	case 2:
-		str = "two";
-		break;
-	case 3:
-		str = "three";
-		break;
-	case 4:
-		str = "four";
-		break;
-	case 5:
-		str = "five";
-		break;
-	case 6:
-		str = "six";
-		break;
-	case 7:
-		str = "seven";
-		break;
-	case 8:
-		str = "eight";
-		break;
-	case 9:
-		str = "nine";
-		break;
-	case 10:
-		str = "ten";
-		break;
-	default:
-		return QString("%1").arg(number);
-	}
-	if ( capitalize )
-		str[0] = str[0].toUpper();
-	return str;
 }
 
 bool compareTwoDateTimes(QDateTime t1, QDateTime t2, char comparisonSymbol) {

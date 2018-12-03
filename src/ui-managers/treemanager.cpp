@@ -21,7 +21,7 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
 	m_notebooks = new BasicTreeItem( tr("Notebooks") );
 	m_tags      = new BasicTreeItem( tr("Tags") );
 	m_trash     = new BasicTreeItem( tr("Trash (6)") );
-	m_search    = new BasicTreeItem( tr("Search results for \"Test\"") );
+	BasicTreeItem *m_search = new BasicTreeItem( tr("Search results for \"Test\"") );
 
 	m_all_notes->setIcon( IconUtils::requestDarkIcon("document-new") );
 	m_favorites->setIcon( IconUtils::requestDarkIcon("draw-star") );
@@ -226,12 +226,17 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
 
 		if (item == m_all_notes)
 			{   // Selected all notes label
-				m_note_list_manager->clearFilter();
+				m_note_list_manager->showAllNotesView();
+			}
+
+		else if (item == m_favorites)
+			{   // Selected all notes label
+				m_note_list_manager->showFavoritesView();
 			}
 
 		else if ( item == m_notebooks )
 			{   // Selected notebooks label
-				m_note_list_manager->clearFilter();
+				m_note_list_manager->filterOutEverything();
 			}
 
 		else if ( item->isNotebook() )
@@ -242,7 +247,7 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
 
 		else if ( item == m_tags)
 			{   // Selected tags label
-
+				m_note_list_manager->filterOutEverything();
 			}
 
 		else if ( item->isTag() )
@@ -251,8 +256,14 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
 				m_note_list_manager->showTagView(tag);
 			}
 
+		else if ( item == m_trash )
+			{
+				m_note_list_manager->showTrashView();
+			}
+
 		else
 			{   // Selected something else. Clear for safety.
+				m_note_list_manager->filterOutEverything();
 				qWarning("Selected something weird in the tree list :S");
 			}
 	} else {

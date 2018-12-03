@@ -25,6 +25,8 @@ public:
 	bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 	bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
     void clearFilter(bool invalidate=true);
+
+	void filterOutEverything(bool shouldFilterOutEverything=true);
 	void addNotebookToFilter(Notebook *notebook);
 	void addTagToFilter(Tag *tag);
 
@@ -35,6 +37,7 @@ private:
 	QListView *m_view;
 	int m_sortingMethod=DateModified;
 
+	bool m_filter_out_everything=false;
 	QVector<Notebook*> m_notebook_filter;
 	QVector<Tag*> m_tag_filter;
 

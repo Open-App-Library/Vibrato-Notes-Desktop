@@ -93,7 +93,7 @@ void TagDatabase::loadJSON(QJsonDocument jsonDocument)
 void TagDatabase::loadDummyTags()
 {
 	clearTags();
-	QJsonDocument Tags = fileToQJsonDocument(":/dummy/tags.json");
+	QJsonDocument Tags = HelperIO::fileToQJsonDocument(":/dummy/tags.json");
 	loadJSON(Tags);
 }
 

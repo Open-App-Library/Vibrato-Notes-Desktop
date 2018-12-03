@@ -37,6 +37,9 @@ void NoteListProxyModel::setSortingMethod(int sortingMethod)
 bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
 																					const QModelIndex &sourceParent) const
 {
+	if ( m_filter_out_everything )
+		return false;
+
 	QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
 	NoteListItem *item = static_cast<NoteListItem*>(index.internalPointer());
 
@@ -72,8 +75,15 @@ void NoteListProxyModel::clearFilter(bool invalidate)
 {
 	m_notebook_filter.clear();
 	m_tag_filter.clear();
+	m_filter_out_everything = false;
 	if ( invalidate )
 		invalidateFilter();
+}
+
+void NoteListProxyModel::filterOutEverything(bool shouldFilterOutEverything)
+{
+	m_filter_out_everything = shouldFilterOutEverything;
+	invalidateFilter();
 }
 
 void NoteListProxyModel::addNotebookToFilter(Notebook *notebook)

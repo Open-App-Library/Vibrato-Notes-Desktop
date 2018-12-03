@@ -24,6 +24,7 @@ public:
 	NoteListItem *add_note(Note *note);
 	void remove_note(int index);
 	void clear();
+	void filterOutEverything(bool shouldFilterOutEverything=true);
 	void loadNotesFromNoteDatabase();
 	void loadNotesFromNoteDatabase(NoteDatabase *noteDatabase);
 
@@ -34,8 +35,18 @@ public:
 	void addNotebookToFilter(Notebook *notebook);
 	void addTagToFilter(Tag *tag);
 
+	void showAllNotesView();
+	void showFavoritesView();
 	void showNotebookView(Notebook *notebook);
 	void showTagView(Tag *tag);
+	void showTrashView();
+  void showSearchView(QString searchQuery);
+
+	void setTitle(QString title);
+	void setMetrics(int count, QString objectTypeSingular, QString pluralOverride=QString("")); // objectTypeSingular - ex. "note", "notebook"
+  void hideTitle();
+	void hideMetrics();
+  void hideAddons();
 
 public slots:
 	void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
