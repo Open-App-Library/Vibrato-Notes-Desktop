@@ -285,7 +285,10 @@ void TreeManager::notebookChanged(Notebook *notebook)
 
 void TreeManager::contextNewNotebook()
 {
-	m_db->notebookDatabase()->addNotebook(NOTEBOOK_DEFAULT_TITLE, m_currentContextIndex->object().notebook);
+    if ( m_currentContextIndex->isNotebook() )
+        m_db->notebookDatabase()->addNotebook(NOTEBOOK_DEFAULT_TITLE, m_currentContextIndex->object().notebook);
+    else
+        m_db->notebookDatabase()->addNotebook(NOTEBOOK_DEFAULT_TITLE, nullptr);
 }
 
 void TreeManager::contextDeleteNotebook()
