@@ -51,8 +51,8 @@ public:
 public slots:
 	void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
 
-private slots:
-	void rowsInsertedInProxy(const QModelIndex & parent, int start, int end);
+// private slots:
+// 	void rowsInsertedInProxy(const QModelIndex & parent, int start, int end);
 
 
 signals:

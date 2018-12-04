@@ -8,35 +8,38 @@
 #define NOTE_LIST_ITEM_HEIGHT 90
 
 namespace Ui {
-	class NoteListItem;
+  class NoteListItem;
 }
 
 class NoteListItem : public QObject
 {
-	Q_OBJECT
+  Q_OBJECT
 public:
-	NoteListItem(Note *note);
-    ~NoteListItem();
-	Note *note();
-    void setNote(Note *note);
+  NoteListItem(Note *note);
+  ~NoteListItem();
+  Note *note();
+  void setNote(Note *note);
 
-    void setSelectedStyle(bool selected);
+  QWidget *widget();
+  void setWidget(QWidget *widget);
+
+  void setSelectedStyle(bool selected);
 
 private:
-    Ui::NoteListItem *m_ui_class;
-    QWidget *m_widget;
+  Ui::NoteListItem *m_ui_class;
+  QWidget *m_widget=nullptr;
 
-	Note *m_note;
+  Note *m_note;
 
-	QLabel *m_title_label;
-	QLabel *m_excerpt_label;
-    QLabel *m_date_created_label;
+  QLabel *m_title_label;
+  QLabel *m_excerpt_label;
+  QLabel *m_date_created_label;
 
 signals:
-    void noteDateChanged(NoteListItem *item);
+  void noteDateChanged(NoteListItem *item);
 
 public slots:
-    void noteDateChanged_slot(Note *note);
+  void noteDateChanged_slot(Note *note);
 
 };
 

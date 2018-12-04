@@ -59,7 +59,7 @@ void NoteListManager::clear()
 
 void NoteListManager::filterOutEverything(bool shouldFilterOutEverything)
 {
-	hideAddons();
+  hideAddons();
   m_proxyModel->filterOutEverything(shouldFilterOutEverything);
 }
 
@@ -79,9 +79,9 @@ void NoteListManager::loadNotesFromNoteDatabase(NoteDatabase *noteDatabase)
 void NoteListManager::openIndexInEditor(int index)
 {
   if ( m_proxyModel->rowCount() == 0 || index >= m_proxyModel->rowCount() )
-		return;
-	m_view->setCurrentIndex( m_proxyModel->index(index,0) );
-	m_escribaManager->setNote( m_proxyModel->item(index)->note() );
+    return;
+  m_view->setCurrentIndex( m_proxyModel->index(index,0) );
+  m_escribaManager->setNote( m_proxyModel->item(index)->note() );
 }
 
 void NoteListManager::clearFilter(bool invalidate)
@@ -96,26 +96,26 @@ void NoteListManager::addNotebookToFilter(Notebook *notebook)
 
 void NoteListManager::addTagToFilter(Tag *tag)
 {
-	m_proxyModel->addTagToFilter(tag);
+  m_proxyModel->addTagToFilter(tag);
 }
 
 void NoteListManager::showAllNotesView()
 {
-	hideAddons();
-	clearFilter();
+  hideAddons();
+  clearFilter();
 }
 
 void NoteListManager::showFavoritesView()
 {
-	setTitle("Favorites");
+  setTitle("Favorites");
 
-	int favCount = 0;
-	for ( Note *note : m_db->noteDatabase()->list() )
-		if ( note->favorited() )
-			favCount++;
-	setMetrics(favCount, "note");
+  int favCount = 0;
+  for ( Note *note : m_db->noteDatabase()->list() )
+    if ( note->favorited() )
+      favCount++;
+  setMetrics(favCount, "note");
 
-	// TODO: Apply favorites filter
+  // TODO: Apply favorites filter
 }
 
 void NoteListManager::showNotebookView(Notebook *notebook)
@@ -125,11 +125,11 @@ void NoteListManager::showNotebookView(Notebook *notebook)
   clearFilter(false);
   addNotebookToFilter(notebook);
 
-	// Set the title label
-	setTitle( notebook->title() );
+  // Set the title label
+  setTitle( notebook->title() );
 
-	// Set the metricsLabel to the amount of notes the notebook
-	// contains. It also checks with child notebook IDs.
+  // Set the metricsLabel to the amount of notes the notebook
+  // contains. It also checks with child notebook IDs.
   QVector<int> notebook_ids = {notebook->id()};
   QVector<Notebook*> children = notebook->recurseChildren();
   int noteCount = 0;
@@ -137,102 +137,101 @@ void NoteListManager::showNotebookView(Notebook *notebook)
     notebook_ids.append( child->id() );
   for (Note *note : m_db->noteDatabase()->list() )
     if ( notebook_ids.contains( note->notebook() ) )
-			noteCount++;
-	setMetrics(noteCount, "note");
+      noteCount++;
+  setMetrics(noteCount, "note");
 }
 
 void NoteListManager::showTagView(Tag *tag)
 {
-	clearFilter(false);
-	addTagToFilter(tag);
+  clearFilter(false);
+  addTagToFilter(tag);
 
-	setTitle( tag->title() );
+  setTitle( tag->title() );
 
-	int tagCount = 0;
-	for ( Note *note : m_db->noteDatabase()->list() )
-		if ( note->tags().contains(tag->id()) )
-			tagCount++;
-	setMetrics(tagCount, "note");
+  int tagCount = 0;
+  for ( Note *note : m_db->noteDatabase()->list() )
+    if ( note->tags().contains(tag->id()) )
+      tagCount++;
+  setMetrics(tagCount, "note");
 }
 
 void NoteListManager::showTrashView()
 {
-	hideMetrics();
-	setTitle("Trash");
+  hideMetrics();
+  setTitle("Trash");
 }
 
 void NoteListManager::showSearchView(QString searchQuery)
 {
-	hideMetrics();
-	setTitle("Search results for STRING");
+  hideMetrics();
+  setTitle("Search results for STRING");
 }
 
 void NoteListManager::setTitle(QString title)
 {
-	m_noteListAddonsUi->title->setText(title);
-	m_noteListAddons->show();
-	m_noteListAddonsUi->title->show();
+  m_noteListAddonsUi->title->setText(title);
+  m_noteListAddons->show();
+  m_noteListAddonsUi->title->show();
 }
 
 void NoteListManager::setMetrics(int count, QString objectTypeSingular, QString pluralOverride)
 {
-	QString objectString = objectTypeSingular;
-	if ( count > 1 || count == 0 ) {
-		if ( pluralOverride != QString("") )
-			objectString = pluralOverride;
-		else
-			objectString.append('s');
-	}
-	QString label = QString("%1 %2").arg(HelperIO::numberToString(count), objectString);
-	m_noteListAddons->show();
-	m_noteListAddonsUi->metricsLabel->show();
-	m_noteListAddonsUi->metricsLabel->setText(label);
+  QString objectString = objectTypeSingular;
+  if ( count > 1 || count == 0 ) {
+    if ( pluralOverride != QString("") )
+      objectString = pluralOverride;
+    else
+      objectString.append('s');
+  }
+  QString label = QString("%1 %2").arg(HelperIO::numberToString(count), objectString);
+  m_noteListAddons->show();
+  m_noteListAddonsUi->metricsLabel->show();
+  m_noteListAddonsUi->metricsLabel->setText(label);
 }
 
 void NoteListManager::hideTitle()
 {
-	m_noteListAddonsUi->title->hide();
+  m_noteListAddonsUi->title->hide();
 }
 
 void NoteListManager::hideMetrics()
 {
-	m_noteListAddonsUi->metricsLabel->hide();
+  m_noteListAddonsUi->metricsLabel->hide();
 }
 
 void NoteListManager::hideAddons()
 {
-	m_noteListAddons->hide();
+  m_noteListAddons->hide();
 }
 
 void NoteListManager::noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy)
 {
-	QModelIndex current = m_proxyModel->mapToSource(current_proxy);
-	QModelIndex previous = m_proxyModel->mapToSource(previous_proxy);
-	if (previous.isValid()) {
-		NoteListItem *prevItem = m_model->noteItems()[ previous.row() ];
-		prevItem->setSelectedStyle(false);
-	}
+  QModelIndex current = m_proxyModel->mapToSource(current_proxy);
+  QModelIndex previous = m_proxyModel->mapToSource(previous_proxy);
+  if ( previous.isValid() && previous_proxy.isValid() ) {
+    NoteListItem *prevItem = static_cast<NoteListItem*>(previous.internalPointer());
+    prevItem->setSelectedStyle(false);
+  }
 
-	if (current.isValid()) {
-		NoteListItem *curItem = m_model->noteItems()[ current.row() ];
-		curItem->setSelectedStyle(true);
-		emit selectedNote( curItem->note() );
-	}
+  if ( current.isValid() && current_proxy.isValid() ) {
+    NoteListItem *curItem = static_cast<NoteListItem*>(current.internalPointer());
+    curItem->setSelectedStyle(true);
+    emit selectedNote( curItem->note() );
+  }
 }
 
 // This is potentially a more efficient way to set indexWidgets
 // however it has a slight graphical bug when loading a lot of notes.
-void NoteListManager::rowsInsertedInProxy(const QModelIndex &parent, int start, int end)
-{
-	(void)parent;
+// void NoteListManager::rowsInsertedInProxy(const QModelIndex &parent, int start, int end)
+// {
+//   (void)parent;
 
-	for (int i = start; i <= end; i++) {
-		QModelIndex index = m_proxyModel->index(i,0);
-		QModelIndex sourceIndex = m_proxyModel->mapToSource(index);
-		if ( m_proxyModel->filterAcceptsRow(sourceIndex.row(), QModelIndex()) ) {
-			NoteListItem *item = static_cast<NoteListItem*>( sourceIndex.internalPointer() );
-			qDebug() << "Filter accepts row" << i;
-			m_view->setIndexWidget(index, new NoteListItemWidget( item->note() ));
-		}
-	}
-}
+//   for (int i = start; i <= end; i++) {
+//     QModelIndex index = m_proxyModel->index(i,0);
+//     QModelIndex sourceIndex = m_proxyModel->mapToSource(index);
+//     if ( m_proxyModel->filterAcceptsRow(sourceIndex.row(), QModelIndex()) ) {
+//       NoteListItem *item = static_cast<NoteListItem*>( sourceIndex.internalPointer() );
+//       m_view->setIndexWidget(index, new NoteListItemWidget( item->note() ));
+//     }
+//   }
+// }
