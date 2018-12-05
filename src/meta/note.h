@@ -37,7 +37,7 @@ public:
   void setFavorited(bool favorited);
 
   int  notebook() const;
-  void setNotebook(int id);
+  void setNotebook(int id, bool updateDateModified=true);
 
   QVector<int> tags() const;
   void setTags(const QVector<int> &value);
@@ -49,10 +49,10 @@ public:
   static bool byDateModifiedDesc(const Note *n1, const Note *n2);
 
 private slots:
-  void handleNoteChange(Note *note);
+  void handleNoteChange(Note *note, bool updateDateModified=true);
 
 signals:
-  void noteChanged(Note *note);
+  void noteChanged(Note *note, bool updateDateModified=true);
   void noteIdChanged(Note *note);
   void noteTitleChanged(Note *note);
   void noteTextChanged(Note *note);

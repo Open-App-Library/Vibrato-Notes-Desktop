@@ -11,67 +11,68 @@
 #include "../meta/filter/notefilter.h"
 #include <ui_notelist_addons.h>
 
+
 namespace Ui {
-	class NoteListAddonsWidget;
+  class NoteListAddonsWidget;
 }
 
 class NoteListManager : public QObject
 {
-	Q_OBJECT
+  Q_OBJECT
 public:
-	NoteListManager(CustomListView *view, QWidget *noteListAddons, EscribaManager *escribaManager, Database *db);
-	~NoteListManager();
-	NoteListItem *add_note(Note *note);
-	void remove_note(int index);
-	void clear();
-	void filterOutEverything(bool shouldFilterOutEverything=true);
-	void loadNotesFromNoteDatabase();
-	void loadNotesFromNoteDatabase(NoteDatabase *noteDatabase);
+  NoteListManager(CustomListView *view, QWidget *noteListAddons, EscribaManager *escribaManager, Database *db);
+  ~NoteListManager();
+  NoteListItem *add_note(Note *note);
+  void remove_note(int index);
+  void clear();
+  void filterOutEverything(bool shouldFilterOutEverything=true);
+  void loadNotesFromNoteDatabase();
+  void loadNotesFromNoteDatabase(NoteDatabase *noteDatabase);
 
-	void openIndexInEditor(int index);
+  void openIndexInEditor(int index);
 
-	// Filter controls
-	void clearFilter(bool invalidate=true);
-	void addNotebookToFilter(Notebook *notebook);
-	void addTagToFilter(Tag *tag);
+  // Filter controls
+  void clearFilter(bool invalidate=true);
+  void addNotebookToFilter(Notebook *notebook);
+  void addTagToFilter(Tag *tag);
 
-	void showAllNotesView();
-	void showFavoritesView();
-	void showNotebookView(Notebook *notebook);
-	void showTagView(Tag *tag);
-	void showTrashView();
+  void showAllNotesView();
+  void showFavoritesView();
+  void showNotebookView(Notebook *notebook);
+  void showTagView(Tag *tag);
+  void showTrashView();
   void showSearchView(QString searchQuery);
 
-	void setTitle(QString title);
-	void setMetrics(int count, QString objectTypeSingular, QString pluralOverride=QString("")); // objectTypeSingular - ex. "note", "notebook"
+  void setTitle(QString title);
+  void setMetrics(int count, QString objectTypeSingular, QString pluralOverride=QString("")); // objectTypeSingular - ex. "note", "notebook"
   void hideTitle();
-	void hideMetrics();
+  void hideMetrics();
   void hideAddons();
 
 public slots:
-	void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
+  void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
 
-// private slots:
-// 	void rowsInsertedInProxy(const QModelIndex & parent, int start, int end);
+  // private slots:
+  //    void rowsInsertedInProxy(const QModelIndex & parent, int start, int end);
 
 
 signals:
-	void selectedNote(Note *note);
+  void selectedNote(Note *note);
 
 private:
-	CustomListView *m_view;
-	Ui::NoteListAddonsWidget *m_noteListAddonsUi;
-	QWidget *m_noteListAddons;
+  CustomListView *m_view;
+  Ui::NoteListAddonsWidget *m_noteListAddonsUi;
+  QWidget *m_noteListAddons;
 
-	// m_model is the global list of notes
-	// m_proxyModel is the sorted & filtered list of notes, based on m_model.
-	NoteListModel *m_model;
-	NoteListProxyModel *m_proxyModel;
+  // m_model is the global list of notes
+  // m_proxyModel is the sorted & filtered list of notes, based on m_model.
+  NoteListModel *m_model;
+  NoteListProxyModel *m_proxyModel;
 
-	EscribaManager *m_escribaManager;
+  EscribaManager *m_escribaManager;
 
-	NoteFilter *m_filter;
-	Database *m_db;
+  NoteFilter *m_filter;
+  Database *m_db;
 };
 
 #endif // NOTELISTMANAGER_H
