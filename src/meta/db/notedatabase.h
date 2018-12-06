@@ -33,6 +33,14 @@ public:
 
   void loadDummyNotes();
 
+  void removeNotesWithNotebookID(int notebookID);
+  void removeNotesWithNotebookIDs(QVector<int> notebookIDs);
+  void setNotesWithNotebookIDToNewNotebook(int curNotebookID, int newNotebookID);
+  void setNotesWithNotebookIDsToNewNotebook(QVector<int> curNotebookIDs, int newNotebookID);
+
+signals:
+  void noteRemoved(int noteID);
+
 private:
   QList<Note*> m_list;
 

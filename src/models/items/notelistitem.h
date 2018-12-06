@@ -25,11 +25,14 @@ public:
 
   void setSelectedStyle(bool selected);
 
+  int id();
+
 private:
   Ui::NoteListItem *m_ui_class;
   QWidget *m_widget=nullptr;
 
   Note *m_note;
+  int m_id;
 
   QLabel *m_title_label;
   QLabel *m_excerpt_label;
@@ -38,6 +41,8 @@ private:
 signals:
   void noteDateChanged(NoteListItem *item);
 
+private slots:
+  void noteIDChanged(Note *note);
 public slots:
   void noteDateChanged_slot(Note *note);
 

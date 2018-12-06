@@ -10,53 +10,62 @@
 #include <ui_escribaaddons.h>
 
 namespace Ui {
-	class EscribaAddonsWidget;
+  class EscribaAddonsWidget;
 }
 
 class EscribaManager : public QObject
 {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	EscribaManager(Escriba *editor, Database *db);
+  EscribaManager(Escriba *editor, Database *db);
 
-    void updateTagsButtonCounter();
+  void updateTagsButtonCounter();
 
-	void setNote( Note *note );
-	Note *note();
+  void setNote( Note *note );
+
+  // Clear the note selection. Disable editor.
+  void deselect();
+
+  Note *note();
 
 public slots:
-	void contentChangedFromEditor(QString markdown);
-	void titleChangedFromEditor(QString title);
-    void addTag();
+  void contentChangedFromEditor(QString markdown);
+  void titleChangedFromEditor(QString title);
+  void addTag();
 
-    void openNotebookEditor();
-    void openTagsEditor();
+  void openNotebookEditor();
+  void openTagsEditor();
 
-    void focusEditor();
+  void focusEditor();
 
-    void noteChanged();
+  void noteChanged();
 
-    void updateNotebookWidget();
-    void updateDateWidgets();
+  void updateNotebookWidget(void);
+  void updateDateWidgets(void);
+
+private slots:
+  void aNoteWasRemoved(int noteID);
+  void noteIDChanged(Note *note);
 
 private:
-	Escriba  *m_editor;
-	Database *m_db;
-	Ui::EscribaAddonsWidget *m_addons_ui;
-	Note *m_curNote = nullptr;
+  Escriba  *m_editor;
+  Database *m_db;
+  Ui::EscribaAddonsWidget *m_addons_ui;
+  Note *m_curNote = nullptr;
+  int m_id=-1;
 
-	QLineEdit *m_titleWidget;
-    QLineEdit *m_tagsInputWidget;
-    QToolButton *m_tagsViewerWidget;
-	QToolButton *m_notebookWidget;
-	QToolButton *m_moreWidget;
-	QToolButton *m_trashWidget;
-	QLabel *m_dateCreatedWidget;
-	QLabel *m_dateModifiedWidget;
+  QLineEdit *m_titleWidget;
+  QLineEdit *m_tagsInputWidget;
+  QToolButton *m_tagsViewerWidget;
+  QToolButton *m_notebookWidget;
+  QToolButton *m_moreWidget;
+  QToolButton *m_trashWidget;
+  QLabel *m_dateCreatedWidget;
+  QLabel *m_dateModifiedWidget;
 
-    Note_EditNotebook *m_editNotebookDialog = nullptr;
-    Note_EditTags     *m_editTagsDialog = nullptr;
+  Note_EditNotebook *m_editNotebookDialog = nullptr;
+  Note_EditTags     *m_editTagsDialog = nullptr;
 };
 
 #endif

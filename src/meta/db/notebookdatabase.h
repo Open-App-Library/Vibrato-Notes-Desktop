@@ -2,12 +2,13 @@
 #define NOTEBOOKDATABASE_H
 #include <QVector>
 #include "../notebook.h"
+#include "notedatabase.h"
 
 class NotebookDatabase : public QObject
 {
   Q_OBJECT
 public:
-  NotebookDatabase();
+  NotebookDatabase(NoteDatabase *noteDatabase);
   QVector<Notebook *> list() const;
   int               size() const;
   QVector<Notebook *> listRecursively() const;
@@ -39,15 +40,20 @@ private slots:
   void notebookChildrenChanged_slot(Notebook *notebook);
 signals:
   void notebookAdded(Notebook *notebook);
-  void notebookRemoved(int notebookID);
+  void notebooksRemoved(QVector<int> notebookIDs);
   void notebookChanged(Notebook *notebook);
   void notebookIDChanged(Notebook *notebook);
   void notebookTitleChanged(Notebook *notebook);
   void notebookParentChanged(Notebook *notebook);
   void notebookChildrenChanged(Notebook *notebook);
 
+  // NotebookDatabase listens to these signals and acts accordingly
+  void shouldDeleteNotesInNotebooks(QVector<int> notebookIDs);
+  void shouldSetNotesInNotebookToDefaultNotebooks(QVector<int> notebookIDs);
+
 private:
   QVector<Notebook*> m_list;
+  NoteDatabase *m_noteDatabase;
 
 };
 

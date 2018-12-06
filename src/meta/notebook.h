@@ -5,6 +5,7 @@
 #include <QObject>
 
 #define NOTEBOOK_DEFAULT_TITLE "Untitled Notebook"
+#define NOTEBOOK_DEFAULT_NOTEBOOK_ID -1
 
 class Notebook : public QObject
 {

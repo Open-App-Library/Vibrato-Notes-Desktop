@@ -1,10 +1,15 @@
 #include "notelistmodel.h"
+#include <QDebug>
 
-NoteListModel::NoteListModel(QListView *view) : QAbstractItemModel()
+NoteListModel::NoteListModel(QListView *view, NoteDatabase *noteDatabase) : QAbstractItemModel()
 {
   m_view = view;
   QString style = QString("QListView:item::active  { color: white; } QListView:item { height: %1 }").arg( NOTE_LIST_ITEM_HEIGHT );
   m_view->setStyleSheet(style);
+  m_noteDatabase = noteDatabase;
+
+  connect(m_noteDatabase, &NoteDatabase::noteRemoved,
+          this, &NoteListModel::removeNoteItemWithID);
 }
 
 QVector<NoteListItem *> NoteListModel::noteItems() const
@@ -145,4 +150,11 @@ QModelIndex NoteListModel::parent(const QModelIndex &index) const
 int NoteListModel::rowCount(const QModelIndex &parent) const
 {
   return m_noteItems.length();
+}
+
+void NoteListModel::removeNoteItemWithID(int noteID) {
+  for (int i=0; i<m_noteItems.length(); i++) {
+    if ( m_noteItems.at(i)->id() == noteID)
+      removeRow(i);
+  }
 }

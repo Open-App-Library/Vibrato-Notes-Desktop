@@ -13,6 +13,7 @@ BasicTreeItem::BasicTreeItem(Notebook *notebook, BasicTreeItem *parent)
   m_object = nortObject;
   updateLabel();
   m_parentItem = parent;
+  m_id = notebook->id();
 }
 
 BasicTreeItem::BasicTreeItem(Tag *tag, BasicTreeItem *parent)
@@ -23,6 +24,7 @@ BasicTreeItem::BasicTreeItem(Tag *tag, BasicTreeItem *parent)
   m_object = nortObject;
   updateLabel();
   m_parentItem = parent;
+  m_id = tag->id();
 }
 
 BasicTreeItem::BasicTreeItem(const QString label, BasicTreeItem *parent)

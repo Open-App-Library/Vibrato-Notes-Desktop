@@ -64,7 +64,7 @@ public slots:
   void tagChanged(Tag *tag);
 
   void notebookAdded(Notebook *notebook);
-  void notebookRemoved(int notebookID);
+  void notebooksRemoved(QVector<int> notebookIDs);
   void notebookChanged(Notebook *notebook);
 
   void contextNewNotebook();

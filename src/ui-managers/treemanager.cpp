@@ -81,8 +81,8 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
           this, &TreeManager::tagChanged);
   connect(m_db->notebookDatabase(), &NotebookDatabase::notebookAdded,
           this, &TreeManager::notebookAdded);
-  connect(m_db->notebookDatabase(), &NotebookDatabase::notebookRemoved,
-          this, &TreeManager::notebookRemoved);
+  connect(m_db->notebookDatabase(), &NotebookDatabase::notebooksRemoved,
+          this, &TreeManager::notebooksRemoved);
 
   // Load databases
   loadNotebooksFromNotebookDatabase( m_db->notebookDatabase() );
@@ -275,33 +275,42 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
 
 void TreeManager::tagAdded(Tag *tag)
 {
-  qDebug() << "Tag" << tag->title() << "added";
   addTag(tag);
 }
 
 void TreeManager::tagChanged(Tag *tag)
 {
-  qDebug() << "Tag" << tag->title() << "modified";
+
 }
 
 void TreeManager::notebookAdded(Notebook *notebook)
 {
-  qDebug() << "Notebook" << notebook->title() << "added";
   // Inefficient! But it works for now
   loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
 }
 
-void TreeManager::notebookRemoved(int notebookID)
+void TreeManager::notebooksRemoved(QVector<int> notebookIDs)
 {
   // Lazy way. Re-draws notebook tree. The proper way would be to simply remove a single BasicTreeItem.
-  // TODO: Implement TreeManager::notebookRemoved the proper way!
+  // TODO: Implement TreeManager::notebooksRemoved the proper way!
+  bool wasViewingDeletedNotebook = false;
+  if ( m_curItem->isNotebook() &&
+       notebookIDs.contains( m_curItem->id() ) )
+    {
+      wasViewingDeletedNotebook = true;
+    }
+
   loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
-  qDebug("reloaded notebook");
+
+  if ( wasViewingDeletedNotebook ) {
+    QModelIndex all_notes_index = m_tree_model->index(0, 0);
+    m_tree_view->setCurrentIndex( all_notes_index );
+  }
 }
 
 void TreeManager::notebookChanged(Notebook *notebook)
 {
-  qDebug() << "Notebook" << notebook->title() << "modified";
+
 }
 
 void TreeManager::contextNewNotebook()

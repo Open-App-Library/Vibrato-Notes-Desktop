@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->setupUi(this);
 
   m_notes     = new NoteDatabase;
-  m_notebooks = new NotebookDatabase;
+  m_notebooks = new NotebookDatabase(m_notes);
   m_tags      = new TagDatabase;
   m_db        = new Database(m_notes, m_notebooks, m_tags);
 

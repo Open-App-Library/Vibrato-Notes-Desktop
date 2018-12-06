@@ -5,9 +5,10 @@
 
 #include <QDebug>
 
-NoteListProxyModel::NoteListProxyModel(QListView *view) :
+NoteListProxyModel::NoteListProxyModel(QListView *view, Database *db) :
   QSortFilterProxyModel(),
-  m_view(view)
+  m_view(view),
+  m_db(db)
 {
   setDynamicSortFilter(true);
 }
@@ -61,6 +62,9 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
     passed_tag_check = true;
 
   for ( Notebook *n : m_notebook_filter ) {
+    // If notebook is not in notebookDatabase (probably deleted), skip this index.
+    if (!m_db->notebookDatabase()->listRecursively().contains(n))
+      continue;
     QVector<Notebook*> childNotebooks = n->recurseChildren();
     QVector<int> notebookIds = {n->id()};
     for (Notebook *child : childNotebooks)

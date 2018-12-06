@@ -11,12 +11,14 @@ NoteListItem::NoteListItem(Note *note) :
             this, &NoteListItem::noteDateChanged_slot);
     connect(note, &Note::noteDateModifiedChanged,
             this, &NoteListItem::noteDateChanged_slot);
+    connect(note, &Note::noteIdChanged,
+            this, &NoteListItem::noteIDChanged);
   }
 }
 
 NoteListItem::~NoteListItem()
 {
-  delete m_ui_class;
+  //delete m_ui_class;
   m_note = nullptr;
 }
 
@@ -28,10 +30,13 @@ Note *NoteListItem::note()
 void NoteListItem::setNote(Note *note)
 {
   m_note = note;
+  m_id = note->id();
   connect(note, &Note::noteDateCreatedChanged,
           this, &NoteListItem::noteDateChanged_slot);
   connect(note, &Note::noteDateModifiedChanged,
           this, &NoteListItem::noteDateChanged_slot);
+  connect(note, &Note::noteIdChanged,
+          this, &NoteListItem::noteIDChanged);
 }
 
 QWidget *NoteListItem::widget()
@@ -54,8 +59,16 @@ void NoteListItem::setSelectedStyle(bool selected)
     m_widget->setStyleSheet("color: initial");
 }
 
+int NoteListItem::id() {
+  return m_id;
+}
+
 void NoteListItem::noteDateChanged_slot(Note *note)
 {
   (void)note; // Ignore compiler warning
   emit noteDateChanged(this);
+}
+
+void NoteListItem::noteIDChanged(Note* note) {
+  m_id = note->id();
 }

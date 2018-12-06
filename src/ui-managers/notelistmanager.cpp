@@ -19,8 +19,8 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
   m_noteListAddonsUi->description->hide();
 
   m_filter = new NoteFilter( m_db );
-  m_model = new NoteListModel(view);
-  m_proxyModel = new NoteListProxyModel(view);
+  m_model = new NoteListModel(view, m_db->noteDatabase());
+  m_proxyModel = new NoteListProxyModel(view, m_db);
   m_proxyModel->setSourceModel(m_model);
   m_proxyModel->sort(0, Qt::DescendingOrder);
 
@@ -101,14 +101,15 @@ void NoteListManager::addTagToFilter(Tag *tag)
 
 void NoteListManager::showAllNotesView()
 {
+  m_curViewType = View_AllNotes;
   hideAddons();
   clearFilter();
 }
 
 void NoteListManager::showFavoritesView()
 {
+  m_curViewType = View_Favorites;
   setTitle("Favorites");
-
   int favCount = 0;
   for ( Note *note : m_db->noteDatabase()->list() )
     if ( note->favorited() )
@@ -120,6 +121,8 @@ void NoteListManager::showFavoritesView()
 
 void NoteListManager::showNotebookView(Notebook *notebook)
 {
+  m_curViewType = View_Notebook;
+  m_curViewType_ItemID = notebook->id();
   if ( notebook == nullptr )
     return;
   clearFilter(false);
@@ -143,6 +146,8 @@ void NoteListManager::showNotebookView(Notebook *notebook)
 
 void NoteListManager::showTagView(Tag *tag)
 {
+  m_curViewType = View_Tag;
+  m_curViewType_ItemID = tag->id();
   clearFilter(false);
   addTagToFilter(tag);
 
@@ -157,12 +162,14 @@ void NoteListManager::showTagView(Tag *tag)
 
 void NoteListManager::showTrashView()
 {
+  m_curViewType = View_Trash;
   hideMetrics();
   setTitle("Trash");
 }
 
 void NoteListManager::showSearchView(QString searchQuery)
 {
+  m_curViewType = View_Search;
   hideMetrics();
   setTitle("Search results for STRING");
 }

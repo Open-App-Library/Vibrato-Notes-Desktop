@@ -6,9 +6,9 @@
 #include <helper-io.hpp>
 #include <QMessageBox>
 
-NotebookDatabase::NotebookDatabase()
+NotebookDatabase::NotebookDatabase(NoteDatabase *noteDatabase) :
+  m_noteDatabase(noteDatabase)
 {
-
 }
 
 QVector<Notebook *> NotebookDatabase::list() const
@@ -85,7 +85,9 @@ void NotebookDatabase::removeNotebook(int notebookID)
 
 void NotebookDatabase::removeNotebook(Notebook *notebook)
 {
-  if (notebook->id() == -1) {
+  // If the user is trying to delete the default notebook, open a warning message and return.
+  QVector<int> the_ids = {notebook->id()};
+  if (notebook->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID) {
     QMessageBox::warning(nullptr,
                          "Cannot delete 'Default Notebook'",
                          "You just tried to delete the default notebook. You may not delete this notebook as it acts as a 'fallback' notebook for notes without a notebook.");
@@ -95,40 +97,51 @@ void NotebookDatabase::removeNotebook(Notebook *notebook)
   QString title= "Delete notes too?";
   QString msg  = "You have requested to delete your '"+notebook->title()+"' notebook. Would you like to delete all of its notes?";
 
-  if ( notebook->children().length() > 0 )
+  // If notebook has children, attach a warning message that the children notebooks will also be deleted.
+  if ( notebook->children().length() > 0 ) {
     msg+="<br><br><strong>WARNING!</strong> This notebook also contains child notebooks. Those will be deleted as well.";
+    for (Notebook* child : notebook->recurseChildren() ) {
+      the_ids.append(child->id());
+    }
+  }
 
+  // Open a message dialog
   QMessageBox::StandardButton prompt;
   prompt = QMessageBox::question(nullptr, title, msg,
                                  QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+
+  // If user clicks cancel or presses 'x' button on Window, cancel the whole operation.
   if ( prompt == QMessageBox::Cancel )
     return;
 
-  if ( prompt == QMessageBox::Yes ) {
-    // Delete notes too.
-    qDebug("Deleting notes too...");
-  } else {
-    // Assign notes to 'Default Notebook'
-    qDebug("Assigning notes to default notebook");
-  }
+  if ( prompt == QMessageBox::Yes ) // Delete notes in notebooks
+    m_noteDatabase->removeNotesWithNotebookIDs(the_ids);
+  else // Assign notes to 'Default Notebook' instead.
+    m_noteDatabase->setNotesWithNotebookIDsToNewNotebook(the_ids, NOTEBOOK_DEFAULT_NOTEBOOK_ID);
 
+  // If notebook does not have parent, delete from main m_list.
   if ( !notebook->parent() ) {
     for (int i=0; i < m_list.length(); i++)
       if ( m_list.at(i) == notebook )
         m_list.removeAt(i);
   }
+  // Otherwise, remove the notebook from its parent notebook.
   else
     notebook->parent()->removeChild(notebook);
 
+  // Free memory and emit a notebooksRemoved event.
   delete notebook;
-  emit notebookRemoved( notebook->id() );
+  emit notebooksRemoved( the_ids );
 }
 
 void NotebookDatabase::clearNotebooks()
 {
   for (int i = m_list.size()-1; i >= 0; i--) {
     Notebook *notebook = m_list[i];
-    emit notebookRemoved( notebook->id() );
+    QVector<int> the_ids = {notebook->id()};
+    for ( Notebook *child : notebook->recurseChildren() )
+      the_ids.append( child->id() );
+    emit notebooksRemoved( the_ids );
     delete notebook;
     m_list.removeAt(i);
   }

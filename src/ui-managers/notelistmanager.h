@@ -22,6 +22,9 @@ class NoteListManager : public QObject
 public:
   NoteListManager(CustomListView *view, QWidget *noteListAddons, EscribaManager *escribaManager, Database *db);
   ~NoteListManager();
+
+  enum viewingModes {View_AllNotes, View_Favorites, View_Notebook, View_Tag, View_Trash, View_Search};
+
   NoteListItem *add_note(Note *note);
   void remove_note(int index);
   void clear();
@@ -52,10 +55,6 @@ public:
 public slots:
   void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
 
-  // private slots:
-  //    void rowsInsertedInProxy(const QModelIndex & parent, int start, int end);
-
-
 signals:
   void selectedNote(Note *note);
 
@@ -70,6 +69,9 @@ private:
   NoteListProxyModel *m_proxyModel;
 
   EscribaManager *m_escribaManager;
+
+  int m_curViewType=View_AllNotes;
+  int m_curViewType_ItemID;
 
   NoteFilter *m_filter;
   Database *m_db;
