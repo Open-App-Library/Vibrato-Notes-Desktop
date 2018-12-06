@@ -4,6 +4,7 @@
 #include <QJsonArray>
 #include "notebookdatabase.h"
 #include <helper-io.hpp>
+#include <QMessageBox>
 
 NotebookDatabase::NotebookDatabase()
 {
@@ -84,12 +85,40 @@ void NotebookDatabase::removeNotebook(int notebookID)
 
 void NotebookDatabase::removeNotebook(Notebook *notebook)
 {
+  if (notebook->id() == -1) {
+    QMessageBox::warning(nullptr,
+                         "Cannot delete 'Default Notebook'",
+                         "You just tried to delete the default notebook. You may not delete this notebook as it acts as a 'fallback' notebook for notes without a notebook.");
+    return;
+  }
+
+  QString title= "Delete notes too?";
+  QString msg  = "You have requested to delete your '"+notebook->title()+"' notebook. Would you like to delete all of its notes?";
+
+  if ( notebook->children().length() > 0 )
+    msg+="<br><br><strong>WARNING!</strong> This notebook also contains child notebooks. Those will be deleted as well.";
+
+  QMessageBox::StandardButton prompt;
+  prompt = QMessageBox::question(nullptr, title, msg,
+                                 QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+  if ( prompt == QMessageBox::Cancel )
+    return;
+
+  if ( prompt == QMessageBox::Yes ) {
+    // Delete notes too.
+    qDebug("Deleting notes too...");
+  } else {
+    // Assign notes to 'Default Notebook'
+    qDebug("Assigning notes to default notebook");
+  }
+
   if ( !notebook->parent() ) {
     for (int i=0; i < m_list.length(); i++)
       if ( m_list.at(i) == notebook )
         m_list.removeAt(i);
   }
-  else notebook->parent()->removeChild(notebook);
+  else
+    notebook->parent()->removeChild(notebook);
 
   delete notebook;
   emit notebookRemoved( notebook->id() );
