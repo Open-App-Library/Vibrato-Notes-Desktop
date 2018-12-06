@@ -81,6 +81,8 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
           this, &TreeManager::tagChanged);
   connect(m_db->notebookDatabase(), &NotebookDatabase::notebookAdded,
           this, &TreeManager::notebookAdded);
+  connect(m_db->notebookDatabase(), &NotebookDatabase::notebookRemoved,
+          this, &TreeManager::notebookRemoved);
 
   // Load databases
   loadNotebooksFromNotebookDatabase( m_db->notebookDatabase() );
@@ -289,6 +291,14 @@ void TreeManager::notebookAdded(Notebook *notebook)
   loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
 }
 
+void TreeManager::notebookRemoved(int notebookID)
+{
+  // Lazy way. Re-draws notebook tree. The proper way would be to simply remove a single BasicTreeItem.
+  // TODO: Implement TreeManager::notebookRemoved the proper way!
+  loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
+  qDebug("reloaded notebook");
+}
+
 void TreeManager::notebookChanged(Notebook *notebook)
 {
   qDebug() << "Notebook" << notebook->title() << "modified";
@@ -305,7 +315,7 @@ void TreeManager::contextNewNotebook()
 void TreeManager::contextDeleteNotebook()
 {
   if ( m_currentContextIndex->isNotebook() )
-    m_currentContextIndex->object().notebook->deleteNotebook();
+    m_db->notebookDatabase()->removeNotebook(m_currentContextIndex->object().notebook);
 }
 
 void TreeManager::contextRenameNotebook()

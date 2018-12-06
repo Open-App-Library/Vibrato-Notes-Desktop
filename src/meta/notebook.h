@@ -28,8 +28,6 @@ public:
   void addChild(Notebook *child);
   void removeChild(Notebook *child);
 
-  void deleteNotebook();
-
 signals:
   void notebookChanged(Notebook *notebook);
   void notebookIDChanged(Notebook *notebook);

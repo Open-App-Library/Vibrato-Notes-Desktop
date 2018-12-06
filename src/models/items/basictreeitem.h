@@ -7,52 +7,60 @@
 
 typedef union
 {
-	Notebook *notebook;
-	Tag      *tag;
+  Notebook *notebook;
+  Tag      *tag;
 } NotebookOrTag;
 
-class BasicTreeItem
+class BasicTreeItem : public QObject
 {
+  Q_OBJECT
 public:
-	explicit BasicTreeItem(const QString label, BasicTreeItem *parent = nullptr);
-	explicit BasicTreeItem(Notebook *notebook, BasicTreeItem *parent = nullptr);
-	explicit BasicTreeItem(Tag *tag, BasicTreeItem *parent = nullptr);
-	~BasicTreeItem();
+  explicit BasicTreeItem(const QString label, BasicTreeItem *parent = nullptr);
+  explicit BasicTreeItem(Notebook *notebook, BasicTreeItem *parent = nullptr);
+  explicit BasicTreeItem(Tag *tag, BasicTreeItem *parent = nullptr);
+  ~BasicTreeItem();
 
-	bool isNotebook() const;
-	bool isTag() const;
-	bool isOther() const;
+  bool isNotebook() const;
+  bool isTag() const;
+  bool isOther() const;
 
-	QString   label() const;
-	void      setLabel(QString label);
-	void      updateLabel();
+  int id() const;
 
-	QIcon icon() const;
-	void setIcon(QIcon icon);
+  QString   label() const;
+  void      setLabel(QString label);
+  void      updateLabel();
 
-	NotebookOrTag object() const;
-	void setObjectNotebook(Notebook *notebook);
-	void setObjectTag(Tag *tag);
+  QIcon icon() const;
+  void setIcon(QIcon icon);
 
-	BasicTreeItem *getChild(int index) const;
-	BasicTreeItem *appendChild(BasicTreeItem *child);
-	void removeChild(int index);
-	QVector<BasicTreeItem*> children() const;
-	QVector<BasicTreeItem*> recurseChildren() const;
-	int childCount() const;
+  NotebookOrTag object() const;
+  void setObjectNotebook(Notebook *notebook);
+  void setObjectTag(Tag *tag);
 
-	BasicTreeItem *parentItem();
-	void           setParent(BasicTreeItem *parent);
+  BasicTreeItem *getChild(int index) const;
+  BasicTreeItem *appendChild(BasicTreeItem *child);
+  void removeChild(int index);
+  QVector<BasicTreeItem*> children() const;
+  QVector<BasicTreeItem*> recurseChildren() const;
+  int childCount() const;
 
-	int row() const;
+  BasicTreeItem *parentItem();
+  void           setParent(BasicTreeItem *parent);
+
+  int row() const;
+
+private slots:
+  void notebookIDChanged(Notebook *notebook);
+  void tagIDChanged(Tag *tag);
 
 private:
-	QString m_label;
-	QIcon m_icon;
-	short m_type; // either TYPE_NOTEBOOK or TYPE_TAG
-	NotebookOrTag m_object;
-	QVector<BasicTreeItem*> m_childItems;
-	BasicTreeItem *m_parentItem;
+  int m_id; // Grab ID of notebook or tag without accessing object. This is a safety feature.
+  QString m_label;
+  QIcon m_icon;
+  short m_type; // either TYPE_NOTEBOOK or TYPE_TAG
+  NotebookOrTag m_object;
+  QVector<BasicTreeItem*> m_childItems;
+  BasicTreeItem *m_parentItem;
 };
 
 #endif // BASICTREEITEM_H

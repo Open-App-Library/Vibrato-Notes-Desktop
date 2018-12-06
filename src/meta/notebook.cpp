@@ -86,9 +86,3 @@ void Notebook::removeChild(Notebook *child)
   emit notebookChildrenChanged(this);
   emit notebookChanged(this);
 }
-
-void Notebook::deleteNotebook()
-{
-  emit deletingNotebook();
-  delete this;
-}
