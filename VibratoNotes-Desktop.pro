@@ -46,11 +46,11 @@ SOURCES += \
     $$PWD/ui/note_editnotebook.cpp \
     $$PWD/src/models/items/treeitemwithid.cpp \
     $$PWD/src/iconutils.cpp \
-    ui/note_edittags.cpp \
-    src/models/items/listitemwithid.cpp \
-    src/models/sortfilter/notelistproxymodel.cpp \
-    src/models/items/notelistitemwidget.cpp \
-    ui/edittags.cpp
+    $$PWD/ui/note_edittags.cpp \
+    $$PWD/src/models/items/listitemwithid.cpp \
+    $$PWD/src/models/sortfilter/notelistproxymodel.cpp \
+    $$PWD/src/models/items/notelistitemwidget.cpp \
+    $$PWD/ui/edittags.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -78,11 +78,11 @@ HEADERS += \
     $$PWD/src/models/items/treeitemwithid.h \
     $$PWD/src/iconutils.h \
     $$PWD/include/helper-io.hpp \
-    ui/note_edittags.h \
-    src/models/items/listitemwithid.h \
-    src/models/sortfilter/notelistproxymodel.h \
-    src/models/items/notelistitemwidget.h \
-    ui/edittags.h
+    $$PWD/ui/note_edittags.h \
+    $$PWD/src/models/items/listitemwithid.h \
+    $$PWD/src/models/sortfilter/notelistproxymodel.h \
+    $$PWD/src/models/items/notelistitemwidget.h \
+    $$PWD/ui/edittags.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview

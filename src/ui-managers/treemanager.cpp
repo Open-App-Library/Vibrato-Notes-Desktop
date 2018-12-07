@@ -10,6 +10,7 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
   m_tree_model = new TreeModel;
   m_tree_view->setModel(m_tree_model);
   m_tree_view->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_tree_view->setEditTriggers(QTreeView::EditKeyPressed);
 
   QFile styleFile( ":/style/DarkSolarized.qss" );
   styleFile.open( QFile::ReadOnly );
@@ -329,7 +330,8 @@ void TreeManager::contextDeleteNotebook()
 
 void TreeManager::contextRenameNotebook()
 {
-
+  if ( m_currentContextModelIndex.isValid() )
+    m_tree_view->edit(m_currentContextModelIndex);
 }
 
 void TreeManager::contextEditNotebookHierarchy()
@@ -343,6 +345,7 @@ void TreeManager::treeContextMenu(const QPoint &point)
   if ( !index.isValid() )
     return;
   BasicTreeItem *item = static_cast<BasicTreeItem*>(index.internalPointer());
+  m_currentContextModelIndex = index;
   m_currentContextIndex = item;
   QPoint p = m_tree_view->viewport()->mapToGlobal(point);
 

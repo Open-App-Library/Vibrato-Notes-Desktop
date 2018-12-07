@@ -47,12 +47,14 @@ public slots:
 private slots:
   void aNoteWasRemoved(int noteID);
   void noteIDChanged(Note *note);
+  void notebookChanged(Notebook *notebook);
 
 private:
   Escriba  *m_editor;
   Database *m_db;
   Ui::EscribaAddonsWidget *m_addons_ui;
-  Note *m_curNote = nullptr;
+  Note *m_curNote=nullptr;
+  Notebook *m_curNotebook=nullptr;
   int m_id=-1;
 
   QLineEdit *m_titleWidget;

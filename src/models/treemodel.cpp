@@ -6,105 +6,132 @@
 #include <QIcon>
 
 TreeModel::TreeModel(QObject *parent) :
-    QAbstractItemModel(parent),
-    m_rootItem( new BasicTreeItem("User Data") )
+  QAbstractItemModel(parent),
+  m_rootItem( new BasicTreeItem("User Data") )
 {
-    // TreeModel Constructor
+  // TreeModel Constructor
 }
 
 TreeModel::~TreeModel()
 {
-    delete m_rootItem;
+  delete m_rootItem;
 }
 
 BasicTreeItem *TreeModel::root() const
 {
-    return m_rootItem;
+  return m_rootItem;
 }
 
 int TreeModel::columnCount(const QModelIndex &parent) const
 {
-    (void) parent; // This line does nothing. Just silences compiler warning for unused parameter
-    return 1; // One column only
+  (void) parent; // This line does nothing. Just silences compiler warning for unused parameter
+  return 1; // One column only
 }
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
-    // Safety check
-    if ( !index.isValid() )
-        return QVariant();
-    if ( role != Qt::DisplayRole && role != Qt::DecorationRole ) // Fallback
-        return QVariant();
+  // Safety check
+  if ( !index.isValid() ||
+       (role != Qt::DisplayRole &&
+        role != Qt::DecorationRole &&
+        role != Qt::EditRole) )
+    return QVariant();
 
-    // Get the BasicTreeItem object from the index
+  // Get the BasicTreeItem object from the index
+  BasicTreeItem *item = static_cast<BasicTreeItem*>(index.internalPointer());
+
+  // If requesting icon, return icon if exists
+  if ( role == Qt::DecorationRole ) // Set Icon
+    return item->icon();
+
+  return item->label();
+}
+
+bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (role != Qt::EditRole)
+        return false;
+
     BasicTreeItem *item = static_cast<BasicTreeItem*>(index.internalPointer());
 
-    // If requesting icon, return icon if exists
-    if ( role == Qt::DecorationRole ) // Set Icon
-        return item->icon();
+    if ( item->isNotebook() )
+      item->object().notebook->setTitle(value.toString());
+    else if ( item->isTag() )
+      item->object().tag->setTitle(value.toString());
+    else return false;
 
-    return item->label();
+    item->setLabel(value.toString());
+
+    emit dataChanged(index, index);
+    return true;
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid())
-        return nullptr;
+  if (!index.isValid())
+    return nullptr;
 
-    return QAbstractItemModel::flags(index);
+  BasicTreeItem *item = static_cast<BasicTreeItem*>(index.internalPointer());
+
+  Qt::ItemFlags flags = QAbstractItemModel::flags(index);
+
+  if ( item->isNotebook() || item->isNotebook() )
+    flags |= Qt::ItemIsEditable;
+
+  return flags;
 }
 
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
-    (void) section; (void) orientation; (void) role; // This line stops 'unused variable' compiler warnings
-    return QVariant(tr("User Data"));
+  (void) section; (void) orientation; (void) role; // This line stops 'unused variable' compiler warnings
+  return QVariant(tr("User Data"));
 }
 
 QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
-            const
+  const
 {
-    if (!hasIndex(row, column, parent))
-        return QModelIndex();
+  if (!hasIndex(row, column, parent))
+    return QModelIndex();
 
-    BasicTreeItem *parentItem;
+  BasicTreeItem *parentItem;
 
-    if (!parent.isValid())
-        parentItem = m_rootItem;
-    else
-        parentItem = static_cast<BasicTreeItem*>(parent.internalPointer());
+  if (!parent.isValid())
+    parentItem = m_rootItem;
+  else
+    parentItem = static_cast<BasicTreeItem*>(parent.internalPointer());
 
-    BasicTreeItem *childItem = parentItem->getChild(row);
-    if (childItem)
-        return createIndex(row, column, childItem);
-    else
-        return QModelIndex();
+  BasicTreeItem *childItem = parentItem->getChild(row);
+  if (childItem)
+    return createIndex(row, column, childItem);
+  else
+    return QModelIndex();
 }
 
 QModelIndex TreeModel::parent(const QModelIndex &index) const
 {
-    if (!index.isValid())
-        return QModelIndex();
+  if (!index.isValid())
+    return QModelIndex();
 
-    BasicTreeItem *childItem = static_cast<BasicTreeItem*>(index.internalPointer());
-    BasicTreeItem *parentItem = childItem->parentItem();
+  BasicTreeItem *childItem = static_cast<BasicTreeItem*>(index.internalPointer());
+  BasicTreeItem *parentItem = childItem->parentItem();
 
-    if (parentItem == m_rootItem)
-        return QModelIndex();
+  if (parentItem == m_rootItem)
+    return QModelIndex();
 
-    return createIndex(parentItem->row(), 0, parentItem);
+  return createIndex(parentItem->row(), 0, parentItem);
 }
 
 int TreeModel::rowCount(const QModelIndex &parent) const
 {
-    BasicTreeItem *parentItem;
-    if (parent.column() > 0)
-        return 0;
+  BasicTreeItem *parentItem;
+  if (parent.column() > 0)
+    return 0;
 
-    if (!parent.isValid())
-        parentItem = m_rootItem;
-    else
-        parentItem = static_cast<BasicTreeItem*>(parent.internalPointer());
+  if (!parent.isValid())
+    parentItem = m_rootItem;
+  else
+    parentItem = static_cast<BasicTreeItem*>(parent.internalPointer());
 
-    return parentItem->childCount();
+  return parentItem->childCount();
 }

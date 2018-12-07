@@ -15,17 +15,17 @@
   </property>
   <property name="styleSheet">
    <string notr="true">#notebooksLabel {
-	padding: 5px;
-	padding-bottom: 5px;
+  padding: 5px;
+  padding-bottom: 5px;
 }
 
 QSplitter::handle {
-/*	border-width: 100px;*/
+/*  border-width: 100px;*/
 }
 
 /*
 Escriba QTextEdit, Escriba QPlainTextEdit{
-	max-width: 750px;
+  max-width: 750px;
 }
 */</string>
   </property>
@@ -180,27 +180,27 @@ Escriba QTextEdit, Escriba QPlainTextEdit{
          <widget class="QFrame" name="theSidebar">
           <property name="styleSheet">
            <string notr="true">.QFrame {
-	border: 0;
+  border: 0;
 }
 QTreeView, QListView, QToolButton, #notebookFrame, #tagFrame {
-	background-color: palette(light);
+  background-color: palette(light);
 }
 QToolButton {
-	border: 0;
-	padding: 6 0;
+  border: 0;
+  padding: 6 0;
 }
 QToolButton:hover {
-	background-color: #6D6D6D;
+  background-color: #6D6D6D;
 }
 #notebookFrame, #tagFrame {
 }
 
 QTreeView::item {
-    padding: 6 0;
+    height: 35px;
 }
 QTreeView {
-	border: 0 !important;
-	margin: 0;
+  border: 0 !important;
+  margin: 0;
 }</string>
           </property>
           <layout class="QVBoxLayout" name="sidebar">
@@ -271,7 +271,7 @@ border-bottom: 0;
          <widget class="Escriba" name="noteEditingArea" native="true">
           <property name="styleSheet">
            <string notr="true">#noteEditingArea {
-	border: 0;
+  border: 0;
 }</string>
           </property>
          </widget>

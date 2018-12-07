@@ -56,6 +56,9 @@ void EscribaManager::updateTagsButtonCounter()
 
 void EscribaManager::setNote( Note *note )
 {
+  if ( note == m_curNote)
+    return;
+
   // Save current note and disconnect signal/slot
   if (m_curNote != nullptr) {
     m_curNote->setTitle( m_titleWidget->text() );
@@ -67,6 +70,10 @@ void EscribaManager::setNote( Note *note )
     disconnect(m_curNote, &Note::noteNotebookChanged,
                this, &EscribaManager::updateNotebookWidget);
   }
+
+  if ( m_curNotebook != nullptr )
+    disconnect(m_curNotebook, &Notebook::notebookChanged,
+            this, &EscribaManager::notebookChanged);
 
   if ( note == nullptr )
     return;
@@ -85,6 +92,13 @@ void EscribaManager::setNote( Note *note )
   m_titleWidget->setText(note->title());
   m_editor->setMarkdown(note->text());
   updateTagsButtonCounter();
+
+  // Setting up notebook
+  Notebook *notebook = m_db->notebookDatabase()->findNotebookWithID(m_curNote->notebook());
+  m_curNotebook = notebook;
+  if ( m_curNotebook != nullptr )
+    connect(m_curNotebook, &Notebook::notebookChanged,
+            this, &EscribaManager::notebookChanged);
 
   updateNotebookWidget();
   updateDateWidgets();
@@ -182,12 +196,11 @@ void EscribaManager::updateNotebookWidget(void)
 {
   // Adjust notebook selector widget
   if ( m_curNote != nullptr && m_curNote->notebook() > 0 ) {
-    Notebook *notebook = m_db->notebookDatabase()->findNotebookWithID(m_curNote->notebook());
-    if ( notebook != nullptr ) {
-      m_notebookWidget->setText( notebook->title() );
+    if ( m_curNotebook != nullptr ) {
+      m_notebookWidget->setText( m_curNotebook->title() );
       // If notebook has parents, append a nice little hierarchy indication
-      if ( notebook->parent() != nullptr ) {
-        Notebook *parent = notebook->parent();
+      if ( m_curNotebook->parent() != nullptr ) {
+        Notebook *parent = m_curNotebook->parent();
         while (parent != nullptr) {
           m_notebookWidget->setText( QString(parent->title() + " → ").append( m_notebookWidget->text() ) );
           parent = parent->parent();
@@ -220,4 +233,10 @@ void EscribaManager::aNoteWasRemoved(int noteID) {
 
 void EscribaManager::noteIDChanged(Note* note) {
   m_id = note->id();
+}
+
+void EscribaManager::notebookChanged(Notebook *notebook)
+{
+  (void)notebook;
+  updateNotebookWidget();
 }

@@ -11,7 +11,7 @@ class CustomListView : public QListView
 {
     Q_OBJECT
 public:
-    CustomListView(QWidget *parent = nullptr);
+    CustomListView(QWidget *parent=nullptr);
 
 public slots:
     void currentChanged(const QModelIndex &current, const QModelIndex &previous) override;

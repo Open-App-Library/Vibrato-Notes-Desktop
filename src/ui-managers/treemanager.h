@@ -98,6 +98,7 @@ private:
   BasicTreeItem *m_no_tags_placedholder = nullptr;
 
   BasicTreeItem *m_currentContextIndex = nullptr;
+  QModelIndex   m_currentContextModelIndex;
 
   void add_no_notebooks_placeholder();
   void add_no_tags_placeholder();
