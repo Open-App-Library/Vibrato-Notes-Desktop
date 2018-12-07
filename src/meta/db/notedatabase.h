@@ -27,6 +27,7 @@ public:
 
   void removeNote(int index);
   void removeNote(Note *note);
+  void removeNotes(QVector<Note*> notes);
   void clearNotes();
 
   void loadJSON(QJsonDocument jsonDocument);
@@ -35,8 +36,8 @@ public:
 
   void removeNotesWithNotebookID(int notebookID);
   void removeNotesWithNotebookIDs(QVector<int> notebookIDs);
-  void setNotesWithNotebookIDToNewNotebook(int curNotebookID, int newNotebookID);
-  void setNotesWithNotebookIDsToNewNotebook(QVector<int> curNotebookIDs, int newNotebookID);
+
+  QVector<Note*> findNotesWithNotebookIDs(QVector<int> notebookIDs);
 
 signals:
   void noteRemoved(int noteID);

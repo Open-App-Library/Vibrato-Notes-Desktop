@@ -55,6 +55,12 @@ void NoteDatabase::removeNote(Note *note)
   removeNote( index );
 }
 
+void NoteDatabase::removeNotes(QVector<Note*> notes)
+{
+  for (Note *note : notes)
+    removeNote(note);
+}
+
 void NoteDatabase::clearNotes()
 {
   for (int i = m_list.size()-1; i >= 0; i--) {
@@ -116,14 +122,11 @@ void NoteDatabase::removeNotesWithNotebookIDs(QVector<int> notebookIDs) {
       removeNote(note);
 }
 
-void NoteDatabase::setNotesWithNotebookIDToNewNotebook(int curNotebookID, int newNotebookID) {
-  for (Note *note : m_list)
-    if (note->notebook() == curNotebookID)
-      note->setNotebook(newNotebookID, false);
-}
-
-void NoteDatabase::setNotesWithNotebookIDsToNewNotebook(QVector<int> curNotebookIDs, int newNotebookID) {
-  for (Note *note : m_list)
-    if ( curNotebookIDs.contains(note->notebook()) )
-      note->setNotebook(newNotebookID, false);
+QVector<Note*> NoteDatabase::findNotesWithNotebookIDs(QVector<int> notebookIDs)
+{
+  QVector<Note*> notes;
+  for ( Note *note : m_list )
+    if ( notebookIDs.contains(note->notebook()) )
+      notes.append(note);
+  return notes;
 }

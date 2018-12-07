@@ -40,21 +40,42 @@ QVector<Notebook*> NotebookDatabase::listRecursively(const QVector<Notebook*> no
   return the_list;
 }
 
-int NotebookDatabase::getNewNotebookId()
+int NotebookDatabase::getUniqueNotebookId(int start, QVector<Notebook*> notebookList, Notebook *notebookToSync)
 {
-  // TODO: An actually effective way to safely get a new notebook value
-  // In the future I will add an effective. It will get an id by following
-  // these steps:
-  // 1.) If user is connected to cloud, try to get fresh ID from cloud.
-  // 2.) If not, use id of the list length + 1.
-  // 3.) Test if that id doesn't actually exist. If it does, increment by
-  //     one and try again.
-  return m_list.length()+1;
+  // If notebookList is empty AND we have at least one notebook availible.
+  if (notebookList.length() == 0 && list().length() > 0)
+    notebookList = listRecursively();
+
+  // Loop through notebook list. If ID == start (The current index we're testing)
+  // that means that the ID is NOT unique and we must find a new one. Increment
+  // by one!
+  for ( Notebook* n : notebookList )
+    if ( n->id() == start ) // Can't use this ID; it's taken.
+      return getUniqueNotebookId(start+1, notebookList);
+
+  // If we made it this far in the function, it means that the ID we are testing
+  // is indeed unique.
+  return start;
+}
+
+int NotebookDatabase::getUniqueNotebookId(Notebook *notebookToSync)
+{
+  // TODO: Create a graphic called 'The Sync Hash' that
+  //       explains how cloud-syncing works.
+
+  // Search for a unique notebook ID. S
+  // If you have notebook ID #1 and create a new notebook, the next ID will
+  // most likely be two. For this reason, we set the start index to search
+  // for a new ID to the list length + 1 as it is likely unused.
+  //   Tip: If the *notebookToSync parameter is passed, and the user has
+  //        connected the cloud.
+  QVector<Notebook*> notebookList = listRecursively();
+  return getUniqueNotebookId(notebookList.length()+1, notebookList, notebookToSync);
 }
 
 Notebook *NotebookDatabase::addNotebook(QString title, Notebook *parent, QVector<Notebook*> children)
 {
-  Notebook *notebook = new Notebook(getNewNotebookId(), title, parent, children);
+  Notebook *notebook = new Notebook(getUniqueNotebookId(), title, parent, children);
   if (parent != nullptr)
     parent->addChild(notebook);
   addNotebook(notebook);
@@ -86,38 +107,66 @@ void NotebookDatabase::removeNotebook(int notebookID)
 void NotebookDatabase::removeNotebook(Notebook *notebook)
 {
   // If the user is trying to delete the default notebook, open a warning message and return.
-  QVector<int> the_ids = {notebook->id()};
   if (notebook->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID) {
-    QMessageBox::warning(nullptr,
-                         "Cannot delete 'Default Notebook'",
-                         "You just tried to delete the default notebook. You may not delete this notebook as it acts as a 'fallback' notebook for notes without a notebook.");
+    QMessageBox::warning
+      (nullptr,
+       "Cannot delete 'Default Notebook'",
+       "You just tried to delete the default notebook. You may not delete this notebook as it acts as a 'fallback' notebook for notes without a notebook."
+       );
     return;
   }
 
+  QVector<int> the_ids = {notebook->id()};
+  QVector<Note*> effected_notes;
   QString title= "Delete notes too?";
   QString msg  = "You have requested to delete your '"+notebook->title()+"' notebook. Would you like to delete all of its notes?";
+  QString childNotebookMsg = "<strong>WARNING!</strong> This notebook also contains sub-notebooks. Those will be deleted as well.";
+  QMessageBox::StandardButton prompt;
+  int notebookChildCount = notebook->children().length();
 
   // If notebook has children, attach a warning message that the children notebooks will also be deleted.
-  if ( notebook->children().length() > 0 ) {
-    msg+="<br><br><strong>WARNING!</strong> This notebook also contains child notebooks. Those will be deleted as well.";
-    for (Notebook* child : notebook->recurseChildren() ) {
+  if ( notebookChildCount > 0 ) {
+    for (Notebook* child : notebook->recurseChildren() )
       the_ids.append(child->id());
-    }
   }
 
-  // Open a message dialog
-  QMessageBox::StandardButton prompt;
-  prompt = QMessageBox::question(nullptr, title, msg,
-                                 QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+  effected_notes = m_noteDatabase->findNotesWithNotebookIDs(the_ids);
+
+  // This block of code determines if we need to display a warning prompt to the user
+  // and if so, what data to prompt the user for.
+  // * If no notes have to be deleted and the notebook has no children, we DON'T prompt the
+  //   user and delete the notebook without warning.
+  // * If no notes have to be deleted and the ntoebook has children, we preset a warning
+  //   that children notebooks will be deleted.
+  // * If notes have to be deleted and the notebook has children, we will prompt the user
+  //   both about whether they want the notes deleted and that children will be deleted.
+  // * If notes have to be deleted and the notebook does not have children, we will only
+  //   prompt about notes having to be deleted.
+  if ( effected_notes.length() == 0 ) { // No notes in deleted notebook.
+    if ( notebookChildCount == 0) {
+      prompt = QMessageBox::Yes;
+    } else {
+      prompt = QMessageBox::question(nullptr, "Sub-Notebook deletion warning", childNotebookMsg + " Are you okay with that?",
+                                     QMessageBox::Yes|QMessageBox::Cancel);
+    }
+  } else {
+    if ( notebookChildCount > 0 )
+      msg += QString("<br><br>%1").arg( childNotebookMsg );
+    prompt = QMessageBox::question(nullptr, title, msg,
+                                   QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
+  }
 
   // If user clicks cancel or presses 'x' button on Window, cancel the whole operation.
   if ( prompt == QMessageBox::Cancel )
     return;
 
-  if ( prompt == QMessageBox::Yes ) // Delete notes in notebooks
-    m_noteDatabase->removeNotesWithNotebookIDs(the_ids);
+  // If prompt is 'Yes', delete notes. Otherwise, just set their notebook ID to the 'Default Notebook'.
+  if ( prompt == QMessageBox::Yes ) {
+    m_noteDatabase->removeNotes(effected_notes);
+  }
   else // Assign notes to 'Default Notebook' instead.
-    m_noteDatabase->setNotesWithNotebookIDsToNewNotebook(the_ids, NOTEBOOK_DEFAULT_NOTEBOOK_ID);
+    for ( Note *note : effected_notes )
+      note->setNotebook(NOTEBOOK_DEFAULT_NOTEBOOK_ID, false);
 
   // If notebook does not have parent, delete from main m_list.
   if ( !notebook->parent() ) {
