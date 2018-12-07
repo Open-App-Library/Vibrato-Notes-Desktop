@@ -23,41 +23,41 @@
 #include "userwindow.h"
 
 namespace Ui {
-	class MainWindow;
+  class MainWindow;
 }
 
 class MainWindow : public QMainWindow
 {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	explicit MainWindow(QWidget *parent = nullptr);
-	~MainWindow();
-	void closeEvent (QCloseEvent *event);
+  explicit MainWindow(QWidget *parent = nullptr);
+  ~MainWindow();
+  void closeEvent (QCloseEvent *event);
 
-	void loadDummyData();
+  void loadDummyData();
 
-	void selectedNoteChanged(Note *n);
+  void selectedNoteChanged(Note *n);
 
 private:
-	Ui::MainWindow *ui;
-	UserWindow m_user_window;
-	EscribaManager  *m_escriba_manager;
-	NoteListManager *m_note_list_manager;
-	TreeManager     *m_tree_manager;
+  Ui::MainWindow *ui;
+  UserWindow m_user_window;
+  EscribaManager  *m_escriba_manager;
+  NoteListManager *m_note_list_manager;
+  TreeManager     *m_tree_manager;
 
-	// Where we store user data
-	Database         *m_db; // Contains all three databases below
-	NoteDatabase     *m_notes;
-	NotebookDatabase *m_notebooks;
-	TagDatabase      *m_tags;
+  // Where we store user data
+  Database         *m_db; // Contains all three databases below
+  NoteDatabase     *m_notes;
+  NotebookDatabase *m_notebooks;
+  TagDatabase      *m_tags;
 
 public slots:
-	void userButtonClicked();
-	void addNewNote();
-    void view_default();
-    void view_minimal();
-    void view_focus();
+  void userButtonClicked();
+  void addNewNote();
+  void view_default();
+  void view_minimal();
+  void view_focus();
 };
 
 #endif // NOTES_H

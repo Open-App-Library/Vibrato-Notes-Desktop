@@ -9,6 +9,8 @@
 NotebookDatabase::NotebookDatabase(NoteDatabase *noteDatabase) :
   m_noteDatabase(noteDatabase)
 {
+  addNotebook(new Notebook(NOTEBOOK_DEFAULT_NOTEBOOK_ID,
+                           "Default Notebook"));
 }
 
 QVector<Notebook *> NotebookDatabase::list() const
@@ -76,6 +78,8 @@ int NotebookDatabase::getUniqueNotebookId(Notebook *notebookToSync)
 Notebook *NotebookDatabase::addNotebook(QString title, Notebook *parent, QVector<Notebook*> children)
 {
   Notebook *notebook = new Notebook(getUniqueNotebookId(), title, parent, children);
+  if (parent != nullptr && parent->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID)
+    return nullptr;
   if (parent != nullptr)
     parent->addChild(notebook);
   addNotebook(notebook);
@@ -187,6 +191,8 @@ void NotebookDatabase::clearNotebooks()
 {
   for (int i = m_list.size()-1; i >= 0; i--) {
     Notebook *notebook = m_list[i];
+    if (notebook->id() == -1)
+      continue;
     QVector<int> the_ids = {notebook->id()};
     for ( Notebook *child : notebook->recurseChildren() )
       the_ids.append( child->id() );

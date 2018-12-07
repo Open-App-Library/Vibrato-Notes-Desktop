@@ -46,6 +46,7 @@ public slots:
 
 private slots:
   void aNoteWasRemoved(int noteID);
+  void notebooksRemoved(QVector<int> notebookIDs);
   void noteIDChanged(Note *note);
   void notebookChanged(Notebook *notebook);
 
@@ -56,6 +57,7 @@ private:
   Note *m_curNote=nullptr;
   Notebook *m_curNotebook=nullptr;
   int m_id=-1;
+  int m_notebook_id=NOTEBOOK_DEFAULT_NOTEBOOK_ID;
 
   QLineEdit *m_titleWidget;
   QLineEdit *m_tagsInputWidget;

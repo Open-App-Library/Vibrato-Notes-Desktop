@@ -9,9 +9,9 @@
 #ifndef TREEMANAGER_H
 #define TREEMANAGER_H
 #include <QObject>
-#include <QTreeView>
 #include <QDebug>
 #include <QMenu>
+#include "../models/views/customtreeview.h"
 #include "../models/items/basictreeitem.h"
 #include "../models/treemodel.h"
 #include "../meta/db/notebookdatabase.h"
@@ -22,7 +22,7 @@ class TreeManager : public QObject
 {
   Q_OBJECT
 public:
-  explicit TreeManager(QTreeView *treeView, NoteListManager *noteListManager, Database *db, QObject *parent=nullptr);
+  explicit TreeManager(CustomTreeView *treeView, NoteListManager *noteListManager, Database *db, QObject *parent=nullptr);
   ~TreeManager();
 
   enum TreeItemTypes {TreeType_AllNotes, TreeType_Notebooks, TreeType_Notebook, TreeType_Tags, TreeType_Tag, TreeType_Other};
@@ -74,7 +74,7 @@ public slots:
 
 private:
   TreeModel       *m_tree_model;
-  QTreeView       *m_tree_view;
+  CustomTreeView  *m_tree_view;
   NoteListManager *m_note_list_manager;
   Database *m_db;
 

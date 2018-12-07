@@ -220,7 +220,7 @@ QTreeView {
             <number>0</number>
            </property>
            <item>
-            <widget class="QTreeView" name="TheTree">
+            <widget class="CustomTreeView" name="TheTree">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                <horstretch>0</horstretch>
@@ -246,7 +246,7 @@ QTreeView {
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="layoutWidget">
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
             <widget class="QWidget" name="noteListAddons" native="true"/>
@@ -487,6 +487,11 @@ border-bottom: 0;
    <class>CustomListView</class>
    <extends>QListView</extends>
    <header location="global">customlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CustomTreeView</class>
+   <extends>QTreeView</extends>
+   <header location="global">customtreeview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

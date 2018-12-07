@@ -50,7 +50,8 @@ SOURCES += \
     $$PWD/src/models/items/listitemwithid.cpp \
     $$PWD/src/models/sortfilter/notelistproxymodel.cpp \
     $$PWD/src/models/items/notelistitemwidget.cpp \
-    $$PWD/ui/edittags.cpp
+    $$PWD/ui/edittags.cpp \
+    src/models/views/customtreeview.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -82,7 +83,8 @@ HEADERS += \
     $$PWD/src/models/items/listitemwithid.h \
     $$PWD/src/models/sortfilter/notelistproxymodel.h \
     $$PWD/src/models/items/notelistitemwidget.h \
-    $$PWD/ui/edittags.h
+    $$PWD/ui/edittags.h \
+    src/models/views/customtreeview.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview

@@ -1,7 +1,7 @@
 #include "treemanager.h"
 #include "../../iconutils.h"
 
-TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, Database *db, QObject *parent) :
+TreeManager::TreeManager(CustomTreeView *treeView, NoteListManager *noteListManager, Database *db, QObject *parent) :
   QObject(parent),
   m_tree_view(treeView),
   m_note_list_manager(noteListManager),
@@ -10,7 +10,6 @@ TreeManager::TreeManager(QTreeView *treeView, NoteListManager *noteListManager, 
   m_tree_model = new TreeModel;
   m_tree_view->setModel(m_tree_model);
   m_tree_view->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_tree_view->setEditTriggers(QTreeView::EditKeyPressed);
 
   QFile styleFile( ":/style/DarkSolarized.qss" );
   styleFile.open( QFile::ReadOnly );
@@ -316,7 +315,7 @@ void TreeManager::notebookChanged(Notebook *notebook)
 
 void TreeManager::contextNewNotebook()
 {
-  if ( m_currentContextIndex->isNotebook() )
+  if ( m_currentContextIndex->isNotebook() && m_currentContextIndex->object().notebook->id() != NOTEBOOK_DEFAULT_NOTEBOOK_ID )
     m_db->notebookDatabase()->addNotebook(NOTEBOOK_DEFAULT_TITLE, m_currentContextIndex->object().notebook);
   else
     m_db->notebookDatabase()->addNotebook(NOTEBOOK_DEFAULT_TITLE, nullptr);
@@ -347,12 +346,18 @@ void TreeManager::treeContextMenu(const QPoint &point)
   BasicTreeItem *item = static_cast<BasicTreeItem*>(index.internalPointer());
   m_currentContextModelIndex = index;
   m_currentContextIndex = item;
+
   QPoint p = m_tree_view->viewport()->mapToGlobal(point);
 
   if ( item == m_notebooks )
     setContextEditingControlVisability(false);
   else
     setContextEditingControlVisability(true);
+
+  if ( item->isNotebook() && item->object().notebook->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID ) {
+    m_notebookRename->setVisible(false);
+    m_notebookEditHierarchy->setVisible(false);
+  }
 
   // Clicking a notebook or the "Notebooks" label
   if ( item->isNotebook() || item == m_notebooks )

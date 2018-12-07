@@ -20,6 +20,8 @@ public:
   explicit BasicTreeItem(Tag *tag, BasicTreeItem *parent = nullptr);
   ~BasicTreeItem();
 
+  enum TypeOfItem {Type_Notebook, Type_Tag};
+
   bool isNotebook() const;
   bool isTag() const;
   bool isOther() const;
@@ -57,7 +59,7 @@ private:
   int m_id; // Grab ID of notebook or tag without accessing object. This is a safety feature.
   QString m_label;
   QIcon m_icon;
-  short m_type; // either TYPE_NOTEBOOK or TYPE_TAG
+  int m_type; // either TYPE_NOTEBOOK or TYPE_TAG
   NotebookOrTag m_object;
   QVector<BasicTreeItem*> m_childItems;
   BasicTreeItem *m_parentItem;

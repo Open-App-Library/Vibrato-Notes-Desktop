@@ -44,6 +44,8 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db) :
           this, &EscribaManager::openTagsEditor);
   connect(m_db->noteDatabase(), &NoteDatabase::noteRemoved,
           this, &EscribaManager::aNoteWasRemoved);
+  connect(m_db->notebookDatabase(), &NotebookDatabase::notebooksRemoved,
+          this, &EscribaManager::notebooksRemoved);
 
   // Deselect by default
   deselect();
@@ -96,9 +98,12 @@ void EscribaManager::setNote( Note *note )
   // Setting up notebook
   Notebook *notebook = m_db->notebookDatabase()->findNotebookWithID(m_curNote->notebook());
   m_curNotebook = notebook;
-  if ( m_curNotebook != nullptr )
+
+  if ( m_curNotebook != nullptr ) {
+    m_notebook_id = m_curNotebook->id();
     connect(m_curNotebook, &Notebook::notebookChanged,
             this, &EscribaManager::notebookChanged);
+  } else m_notebook_id = NOTEBOOK_DEFAULT_NOTEBOOK_ID;
 
   updateNotebookWidget();
   updateDateWidgets();
@@ -231,12 +236,17 @@ void EscribaManager::aNoteWasRemoved(int noteID) {
   }
 }
 
+void EscribaManager::notebooksRemoved(QVector<int> notebookIDs) {
+  if ( notebookIDs.contains( m_notebook_id ))
+    m_curNotebook = nullptr;
+}
+
 void EscribaManager::noteIDChanged(Note* note) {
   m_id = note->id();
 }
 
 void EscribaManager::notebookChanged(Notebook *notebook)
 {
-  (void)notebook;
+  m_notebook_id = notebook->id();
   updateNotebookWidget();
 }

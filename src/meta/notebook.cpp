@@ -15,6 +15,9 @@ int Notebook::id() const
 
 void Notebook::setId(int id)
 {
+  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID ||
+       id   == NOTEBOOK_DEFAULT_NOTEBOOK_ID)
+    return;
   m_id = id;
   emit notebookIDChanged(this);
   emit notebookChanged(this);
@@ -27,6 +30,8 @@ QString Notebook::title() const
 
 void Notebook::setTitle(const QString &title)
 {
+  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
+    return;
   m_title = title;
   emit notebookTitleChanged(this);
   emit notebookChanged(this);
@@ -39,6 +44,8 @@ Notebook *Notebook::parent() const
 
 void Notebook::setParent(Notebook *parent)
 {
+  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
+    return;
   m_parent = parent;
   emit notebookParentChanged(this);
   emit notebookChanged(this);
@@ -65,6 +72,8 @@ QVector<Notebook *> Notebook::recurseChildren(Notebook* parent) const
 
 void Notebook::setChildren(const QVector<Notebook *> &children)
 {
+  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
+    return;
   m_children = children;
   emit notebookChildrenChanged(this);
   emit notebookChanged(this);
@@ -72,6 +81,8 @@ void Notebook::setChildren(const QVector<Notebook *> &children)
 
 void Notebook::addChild(Notebook *child)
 {
+  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
+    return;
   m_children.append(child);
   child->setParent(this);
   emit notebookChildrenChanged(this);
@@ -80,6 +91,8 @@ void Notebook::addChild(Notebook *child)
 
 void Notebook::removeChild(Notebook *child)
 {
+  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
+    return;
   int index = m_children.indexOf(child);
   child->setParent(nullptr);
   m_children.removeAt(index);
