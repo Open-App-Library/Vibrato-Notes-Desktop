@@ -3,11 +3,12 @@
 #include <QAbstractItemView>
 #include "../meta/db/notedatabase.h"
 #include <helper-io.hpp>
+#include "escribamanager.h"
 
-NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, EscribaManager *escribaManager, Database *db) :
+NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, Database *db, Manager *manager) :
   m_view(view),
   m_noteListAddons(noteListAddons),
-  m_escribaManager(escribaManager),
+  m_manager(manager),
   m_db(db)
 {
   m_noteListAddonsUi = new Ui::NoteListAddonsWidget;
@@ -41,9 +42,14 @@ NoteListManager::~NoteListManager()
   delete m_noteListAddonsUi;
 }
 
-NoteListItem *NoteListManager::add_note(Note *note)
+NoteListItem *NoteListManager::add_note(Note *note, bool switchToNewNote)
 {
-  NoteListItem *i = m_model->prependItem(note);
+  NoteListItem *i = m_model->appendItem(note);
+
+  if ( switchToNewNote ) {
+
+  }
+
   return i;
 }
 
@@ -81,7 +87,7 @@ void NoteListManager::openIndexInEditor(int index)
   if ( m_proxyModel->rowCount() == 0 || index >= m_proxyModel->rowCount() )
     return;
   m_view->setCurrentIndex( m_proxyModel->index(index,0) );
-  m_escribaManager->setNote( m_proxyModel->item(index)->note() );
+  m_manager->escribaManager()->setNote( m_proxyModel->item(index)->note() );
 }
 
 void NoteListManager::clearFilter(bool invalidate)
@@ -106,6 +112,12 @@ void NoteListManager::showAllNotesView()
   clearFilter();
 }
 
+void NoteListManager::disconnectCurrentView() {
+  if ( m_curViewType == View_Notebook && m_curViewType_Notebook != nullptr )
+    disconnect(m_curViewType_Notebook, &Notebook::notebookChanged,
+            this, &NoteListManager::showNotebookView);
+}
+
 void NoteListManager::showFavoritesView()
 {
   m_curViewType = View_Favorites;
@@ -121,10 +133,17 @@ void NoteListManager::showFavoritesView()
 
 void NoteListManager::showNotebookView(Notebook *notebook)
 {
-  m_curViewType = View_Notebook;
-  m_curViewType_ItemID = notebook->id();
+  disconnectCurrentView();
+
   if ( notebook == nullptr )
     return;
+
+  m_curViewType = View_Notebook;
+  m_curViewType_ItemID = notebook->id();
+  m_curViewType_Notebook = notebook;
+  connect(notebook, &Notebook::notebookChanged,
+          this, &NoteListManager::showNotebookView);
+
   clearFilter(false);
   addNotebookToFilter(notebook);
 
@@ -146,6 +165,7 @@ void NoteListManager::showNotebookView(Notebook *notebook)
 
 void NoteListManager::showTagView(Tag *tag)
 {
+  disconnectCurrentView();
   m_curViewType = View_Tag;
   m_curViewType_ItemID = tag->id();
   clearFilter(false);
@@ -162,6 +182,7 @@ void NoteListManager::showTagView(Tag *tag)
 
 void NoteListManager::showTrashView()
 {
+  disconnectCurrentView();
   m_curViewType = View_Trash;
   hideMetrics();
   setTitle("Trash");
@@ -169,6 +190,7 @@ void NoteListManager::showTrashView()
 
 void NoteListManager::showSearchView(QString searchQuery)
 {
+  disconnectCurrentView();
   m_curViewType = View_Search;
   hideMetrics();
   setTitle("Search results for STRING");
@@ -225,6 +247,13 @@ void NoteListManager::noteListItemChanged(const QModelIndex &current_proxy, cons
     curItem->setSelectedStyle(true);
     emit selectedNote( curItem->note() );
   }
+}
+
+void NoteListManager::notebookDeleted(int notebookID) {
+  // If the current notebook gets deleted, set the value to nullptr for safety.
+  if (m_curViewType == View_Notebook &&
+      m_curViewType_ItemID == notebookID)
+    m_curViewType_Notebook = nullptr;
 }
 
 // This is potentially a more efficient way to set indexWidgets

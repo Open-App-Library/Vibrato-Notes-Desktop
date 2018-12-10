@@ -16,13 +16,14 @@
 #include "../models/treemodel.h"
 #include "../meta/db/notebookdatabase.h"
 #include "../meta/db/database.h"
+#include "manager.h"
 #include "notelistmanager.h"
 
 class TreeManager : public QObject
 {
   Q_OBJECT
 public:
-  explicit TreeManager(CustomTreeView *treeView, NoteListManager *noteListManager, Database *db, QObject *parent=nullptr);
+  explicit TreeManager(CustomTreeView *treeView, Database *db, Manager *manager);
   ~TreeManager();
 
   enum TreeItemTypes {TreeType_AllNotes, TreeType_Notebooks, TreeType_Notebook, TreeType_Tags, TreeType_Tag, TreeType_Other};
@@ -45,6 +46,8 @@ public:
 
   void loadNotebookObjectAndChildren(Notebook *notebook, BasicTreeItem *parent=nullptr);
   void loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase, bool expandAll=true);
+
+  void gotoAllNotesTab();
 
   // Tag functions
   QVector<BasicTreeItem*> tags() const;
@@ -75,7 +78,7 @@ public slots:
 private:
   TreeModel       *m_tree_model;
   CustomTreeView  *m_tree_view;
-  NoteListManager *m_note_list_manager;
+  Manager *m_manager;
   Database *m_db;
 
   BasicTreeItem *m_curItem;

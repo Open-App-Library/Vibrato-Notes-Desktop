@@ -8,6 +8,7 @@
 #include "../../ui/note_editnotebook.h"
 #include "../../ui/note_edittags.h"
 #include <ui_escribaaddons.h>
+#include "../ui-managers/manager.h"
 
 namespace Ui {
   class EscribaAddonsWidget;
@@ -18,7 +19,7 @@ class EscribaManager : public QObject
   Q_OBJECT
 
 public:
-  EscribaManager(Escriba *editor, Database *db);
+  EscribaManager(Escriba *editor, Database *db, Manager *manager);
 
   void updateTagsButtonCounter();
 
@@ -53,6 +54,7 @@ private slots:
 private:
   Escriba  *m_editor;
   Database *m_db;
+  Manager *m_manager;
   Ui::EscribaAddonsWidget *m_addons_ui;
   Note *m_curNote=nullptr;
   Notebook *m_curNotebook=nullptr;

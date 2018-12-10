@@ -1,10 +1,9 @@
 #include "treemanager.h"
 #include "../../iconutils.h"
 
-TreeManager::TreeManager(CustomTreeView *treeView, NoteListManager *noteListManager, Database *db, QObject *parent) :
-  QObject(parent),
+TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manager) :
   m_tree_view(treeView),
-  m_note_list_manager(noteListManager),
+  m_manager(manager),
   m_db(db)
 {
   m_tree_model = new TreeModel;
@@ -65,12 +64,6 @@ TreeManager::TreeManager(CustomTreeView *treeView, NoteListManager *noteListMana
 
   connect(m_tree_view, &QTreeView::customContextMenuRequested,
           this, &TreeManager::treeContextMenu);
-
-  // Set the current selection to the first item in the treeview..which is "All Notes"
-  // Explanation: https://stackoverflow.com/questions/15817429/how-to-get-list-of-visible-qmodelindex-in-qabstractitemview
-  QModelIndex all_notes_index = m_tree_model->index(0, 0);
-  m_tree_view->setCurrentIndex( all_notes_index );
-  treeItemChanged(all_notes_index, QModelIndex());
 
   // Signal Connections
   connect(m_tree_view->selectionModel(), &QItemSelectionModel::currentChanged,
@@ -180,6 +173,16 @@ void TreeManager::loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDa
     m_tree_view->expandAll();
 }
 
+void TreeManager::gotoAllNotesTab()
+{
+  // Set the current selection to the first item in the treeview..which is "All Notes"
+  // Explanation: https://stackoverflow.com/questions/15817429/how-to-get-list-of-visible-qmodelindex-in-qabstractitemview
+  QModelIndex all_notes_index = m_tree_model->index(0, 0);
+  m_tree_view->setCurrentIndex( all_notes_index );
+  treeItemChanged(all_notes_index, QModelIndex());
+
+}
+
 QVector<BasicTreeItem *> TreeManager::tags() const
 {
   return m_tags->children();
@@ -228,44 +231,44 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
 
     if (item == m_all_notes)
       {   // Selected all notes label
-        m_note_list_manager->showAllNotesView();
+        m_manager->noteListManager()->showAllNotesView();
       }
 
     else if (item == m_favorites)
       {   // Selected all notes label
-        m_note_list_manager->showFavoritesView();
+        m_manager->noteListManager()->showFavoritesView();
       }
 
     else if ( item == m_notebooks )
       {   // Selected notebooks label
-        m_note_list_manager->filterOutEverything();
+        m_manager->noteListManager()->filterOutEverything();
       }
 
     else if ( item->isNotebook() )
       {   // Selected a notebook
         Notebook *notebook = item->object().notebook;
-        m_note_list_manager->showNotebookView(notebook);
+        m_manager->noteListManager()->showNotebookView(notebook);
       }
 
     else if ( item == m_tags)
       {   // Selected tags label
-        m_note_list_manager->filterOutEverything();
+        m_manager->noteListManager()->filterOutEverything();
       }
 
     else if ( item->isTag() )
       {   // Selected a tag
         Tag *tag = item->object().tag;
-        m_note_list_manager->showTagView(tag);
+        m_manager->noteListManager()->showTagView(tag);
       }
 
     else if ( item == m_trash )
       {
-        m_note_list_manager->showTrashView();
+        m_manager->noteListManager()->showTrashView();
       }
 
     else
       {   // Selected something else. Clear for safety.
-        m_note_list_manager->filterOutEverything();
+        m_manager->noteListManager()->filterOutEverything();
         qWarning("Selected something weird in the tree list :S");
       }
   } else {

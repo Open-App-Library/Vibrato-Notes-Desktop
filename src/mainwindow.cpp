@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QVariant>
+#include "ui-managers/treemanager.h"
+#include "ui-managers/notelistmanager.h"
+#include "ui-managers/escribamanager.h"
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -17,9 +20,13 @@ MainWindow::MainWindow(QWidget *parent) :
   m_notebooks->loadDummyNotebooks();
   m_tags->loadDummyTags();
 
-  m_escriba_manager   = new EscribaManager(ui->noteEditingArea, m_db);
-  m_note_list_manager = new NoteListManager(ui->noteList, ui->noteListAddons, m_escriba_manager, m_db);
-  m_tree_manager      = new TreeManager(ui->TheTree, m_note_list_manager, m_db);
+  m_manager   = new Manager;
+  m_tree_manager      = new TreeManager(ui->TheTree, m_db, m_manager);
+  m_note_list_manager = new NoteListManager(ui->noteList, ui->noteListAddons, m_db, m_manager);
+  m_escriba_manager   = new EscribaManager(ui->noteEditingArea, m_db, m_manager);
+  m_manager->setManagers(m_tree_manager, m_note_list_manager, m_escriba_manager);
+
+  m_tree_manager->gotoAllNotesTab();
 
   m_note_list_manager->loadNotesFromNoteDatabase(m_notes);
 
@@ -117,7 +124,9 @@ void MainWindow::userButtonClicked()
 
 void MainWindow::addNewNote()
 {
-  m_note_list_manager->add_note( m_notes->addDefaultNote() );
+  m_note_list_manager->add_note( m_notes->addDefaultNote(), true ); // Create a new note
+  m_tree_manager->gotoAllNotesTab(); // Go to the All Notes tab.
+  m_note_list_manager->openIndexInEditor(0); // Select the first note (Newest note)
 }
 
 void MainWindow::view_default()

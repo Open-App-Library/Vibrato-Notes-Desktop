@@ -82,6 +82,9 @@ void NoteDatabase::loadJSON(QJsonDocument jsonDocument)
     QDateTime date_modified = QDateTime::fromString(get(val, "date_modified").toString(), Qt::ISODate);
     bool favorited = get(val, "favorited").toBool();
     int notebook = get(val, "notebook").toInt();
+    // Set invalid notebooks to default notebook ID (-1)
+    if (notebook <= 0)
+      notebook = NOTEBOOK_DEFAULT_NOTEBOOK_ID;
     QVector<int> tags = {};
 
     // Setting Tags

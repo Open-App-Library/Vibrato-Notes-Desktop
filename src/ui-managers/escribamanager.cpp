@@ -15,9 +15,10 @@
 //    }
 //    m_tagsWidget->setText(tagsStr);
 
-EscribaManager::EscribaManager(Escriba *editor, Database *db) :
+EscribaManager::EscribaManager(Escriba *editor, Database *db, Manager *manager) :
   m_editor(editor),
   m_db(db),
+  m_manager(manager),
   m_addons_ui(new Ui::EscribaAddonsWidget)
 {
   m_addons_ui->setupUi( editor->addonsArea() );

@@ -1,7 +1,6 @@
 #ifndef NOTELISTMANAGER_H
 #define NOTELISTMANAGER_H
 #include <QVector>
-#include "escribamanager.h"
 #include "../sortfilter/notelistproxymodel.h"
 #include "../models/views/customlistview.h"
 #include "../models/notelistmodel.h"
@@ -9,8 +8,8 @@
 #include "../meta/note.h"
 #include "../meta/db/database.h"
 #include "../meta/filter/notefilter.h"
+#include "manager.h"
 #include <ui_notelist_addons.h>
-
 
 namespace Ui {
   class NoteListAddonsWidget;
@@ -20,12 +19,12 @@ class NoteListManager : public QObject
 {
   Q_OBJECT
 public:
-  NoteListManager(CustomListView *view, QWidget *noteListAddons, EscribaManager *escribaManager, Database *db);
+  NoteListManager(CustomListView *view, QWidget *noteListAddons, Database *db, Manager *manager);
   ~NoteListManager();
 
   enum viewingModes {View_AllNotes, View_Favorites, View_Notebook, View_Tag, View_Trash, View_Search};
 
-  NoteListItem *add_note(Note *note);
+  NoteListItem *add_note(Note *note, bool switchToNewNote=false);
   void remove_note(int index);
   void clear();
   void filterOutEverything(bool shouldFilterOutEverything=true);
@@ -39,6 +38,7 @@ public:
   void addNotebookToFilter(Notebook *notebook);
   void addTagToFilter(Tag *tag);
 
+  void disconnectCurrentView();
   void showAllNotesView();
   void showFavoritesView();
   void showNotebookView(Notebook *notebook);
@@ -55,6 +55,9 @@ public:
 public slots:
   void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
 
+private slots:
+  void notebookDeleted(int notebookID);
+
 signals:
   void selectedNote(Note *note);
 
@@ -62,16 +65,17 @@ private:
   CustomListView *m_view;
   Ui::NoteListAddonsWidget *m_noteListAddonsUi;
   QWidget *m_noteListAddons;
+  Manager *m_manager;
 
   // m_model is the global list of notes
   // m_proxyModel is the sorted & filtered list of notes, based on m_model.
   NoteListModel *m_model;
   NoteListProxyModel *m_proxyModel;
 
-  EscribaManager *m_escribaManager;
 
   int m_curViewType=View_AllNotes;
   int m_curViewType_ItemID;
+  Notebook *m_curViewType_Notebook=nullptr;
 
   NoteFilter *m_filter;
   Database *m_db;

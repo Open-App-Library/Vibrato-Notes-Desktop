@@ -36,6 +36,7 @@ SOURCES += \
     $$PWD/src/meta/db/tagdatabase.cpp \
     $$PWD/src/models/treemodel.cpp \
     $$PWD/src/models/items/basictreeitem.cpp \
+    $$PWD/src/ui-managers/manager.cpp \
     $$PWD/src/ui-managers/treemanager.cpp \
     $$PWD/src/ui-managers/escribamanager.cpp \
     $$PWD/src/meta/filter/notefilter.cpp \
@@ -68,6 +69,7 @@ HEADERS += \
     $$PWD/include/helper-io.hpp \
     $$PWD/src/models/treemodel.h \
     $$PWD/src/models/items/basictreeitem.h \
+    $$PWD/src/ui-managers/manager.h \
     $$PWD/src/ui-managers/treemanager.h \
     $$PWD/src/ui-managers/escribamanager.h \
     $$PWD/src/meta/filter/notefilter.h \

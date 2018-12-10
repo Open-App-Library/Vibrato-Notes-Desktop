@@ -1,0 +1,5 @@
+* Vibrato Weekly Accomplishments December 10 - December 14
+** Created a 'Manager' class to hold all of the UI Managers. This makes it easy to access each of the UI Manager instances in all of the UI Manager classes.
+** Made the 'New Note' feature.
+** Made the notelist sidebar properly refresh when a notebook is renamed.
+** Fixed bug where imported notebooks in 'Default Notebook' weren't properly set.

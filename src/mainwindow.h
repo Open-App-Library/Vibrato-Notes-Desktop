@@ -17,9 +17,7 @@
 #include "meta/db/notedatabase.h"
 #include "meta/db/notebookdatabase.h"
 #include "meta/db/tagdatabase.h"
-#include "ui-managers/notelistmanager.h"
-#include "ui-managers/treemanager.h"
-#include "ui-managers/escribamanager.h"
+#include "ui-managers/manager.h"
 #include "userwindow.h"
 
 namespace Ui {
@@ -42,6 +40,8 @@ public:
 private:
   Ui::MainWindow *ui;
   UserWindow m_user_window;
+
+  Manager         *m_manager;
   EscribaManager  *m_escriba_manager;
   NoteListManager *m_note_list_manager;
   TreeManager     *m_tree_manager;
