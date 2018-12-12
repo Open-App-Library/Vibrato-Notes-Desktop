@@ -133,3 +133,11 @@ QVector<Note*> NoteDatabase::findNotesWithNotebookIDs(QVector<int> notebookIDs)
       notes.append(note);
   return notes;
 }
+
+bool NoteDatabase::noteWithIDExists(int noteID) const
+{
+  for (Note *note : m_list)
+    if (note->id() == noteID)
+      return true;
+  return false;
+}

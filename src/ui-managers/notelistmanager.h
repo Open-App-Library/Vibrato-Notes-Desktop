@@ -24,7 +24,7 @@ public:
 
   enum viewingModes {View_AllNotes, View_Favorites, View_Notebook, View_Tag, View_Trash, View_Search};
 
-  NoteListItem *add_note(Note *note, bool switchToNewNote=false);
+  NoteListItem *add_note(Note *note);
   void remove_note(int index);
   void clear();
   void filterOutEverything(bool shouldFilterOutEverything=true);
@@ -52,8 +52,11 @@ public:
   void hideMetrics();
   void hideAddons();
 
+  void deselect();
+
 public slots:
   void noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy);
+  void ensureCurrentNoteIsSelected();
 
 private slots:
   void notebookDeleted(int notebookID);

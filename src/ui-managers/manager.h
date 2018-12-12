@@ -15,6 +15,9 @@ public:
 
   void setManagers(TreeManager *treeManager, NoteListManager *noteListManager, EscribaManager *escribaManager);
 
+signals:
+  void ready();
+
 private:
   TreeManager *m_treeManager;
   NoteListManager *m_noteListManager;

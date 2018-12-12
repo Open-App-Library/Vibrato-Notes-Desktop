@@ -30,7 +30,10 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
   connect(m_view, &CustomListView::selectedItemChanged,
           this, &NoteListManager::noteListItemChanged);
 
-  // commented out for now. This is potentially a more efficient way to set indexWidgets
+  connect(m_proxyModel, &NoteListProxyModel::invalidatedFilter,
+          this, &NoteListManager::ensureCurrentNoteIsSelected);
+
+  // commented outff for now. This is potentially a more efficient way to set indexWidgets
   // however it has a slight graphical bug when loading a lot of notes.
   //    connect(m_proxyModel, &QSortFilterProxyModel::rowsInserted,
   //            this, &NoteListManager::rowsInsertedInProxy);
@@ -42,14 +45,9 @@ NoteListManager::~NoteListManager()
   delete m_noteListAddonsUi;
 }
 
-NoteListItem *NoteListManager::add_note(Note *note, bool switchToNewNote)
+NoteListItem *NoteListManager::add_note(Note *note)
 {
   NoteListItem *i = m_model->appendItem(note);
-
-  if ( switchToNewNote ) {
-
-  }
-
   return i;
 }
 
@@ -107,6 +105,7 @@ void NoteListManager::addTagToFilter(Tag *tag)
 
 void NoteListManager::showAllNotesView()
 {
+  deselect();
   m_curViewType = View_AllNotes;
   hideAddons();
   clearFilter();
@@ -120,6 +119,7 @@ void NoteListManager::disconnectCurrentView() {
 
 void NoteListManager::showFavoritesView()
 {
+  deselect();
   m_curViewType = View_Favorites;
   setTitle("Favorites");
   int favCount = 0;
@@ -133,6 +133,7 @@ void NoteListManager::showFavoritesView()
 
 void NoteListManager::showNotebookView(Notebook *notebook)
 {
+  deselect();
   disconnectCurrentView();
 
   if ( notebook == nullptr )
@@ -141,6 +142,7 @@ void NoteListManager::showNotebookView(Notebook *notebook)
   m_curViewType = View_Notebook;
   m_curViewType_ItemID = notebook->id();
   m_curViewType_Notebook = notebook;
+
   connect(notebook, &Notebook::notebookChanged,
           this, &NoteListManager::showNotebookView);
 
@@ -165,6 +167,7 @@ void NoteListManager::showNotebookView(Notebook *notebook)
 
 void NoteListManager::showTagView(Tag *tag)
 {
+  deselect();
   disconnectCurrentView();
   m_curViewType = View_Tag;
   m_curViewType_ItemID = tag->id();
@@ -182,6 +185,7 @@ void NoteListManager::showTagView(Tag *tag)
 
 void NoteListManager::showTrashView()
 {
+  deselect();
   disconnectCurrentView();
   m_curViewType = View_Trash;
   hideMetrics();
@@ -190,6 +194,7 @@ void NoteListManager::showTrashView()
 
 void NoteListManager::showSearchView(QString searchQuery)
 {
+  deselect();
   disconnectCurrentView();
   m_curViewType = View_Search;
   hideMetrics();
@@ -233,10 +238,18 @@ void NoteListManager::hideAddons()
   m_noteListAddons->hide();
 }
 
+void NoteListManager::deselect()
+{
+  m_view->clearSelection();
+  m_view->setCurrentIndex(QModelIndex());
+}
+
 void NoteListManager::noteListItemChanged(const QModelIndex &current_proxy, const QModelIndex &previous_proxy)
 {
   QModelIndex current = m_proxyModel->mapToSource(current_proxy);
   QModelIndex previous = m_proxyModel->mapToSource(previous_proxy);
+  if ( current == previous )
+    return;
   if ( previous.isValid() && previous_proxy.isValid() ) {
     NoteListItem *prevItem = static_cast<NoteListItem*>(previous.internalPointer());
     prevItem->setSelectedStyle(false);
@@ -246,6 +259,20 @@ void NoteListManager::noteListItemChanged(const QModelIndex &current_proxy, cons
     NoteListItem *curItem = static_cast<NoteListItem*>(current.internalPointer());
     curItem->setSelectedStyle(true);
     emit selectedNote( curItem->note() );
+  }
+}
+
+void NoteListManager::ensureCurrentNoteIsSelected()
+{
+  deselect();
+  Note *note = m_manager->escribaManager()->note();
+  for (int i=0; i<m_proxyModel->rowCount(); i++) {
+    QModelIndex index = m_proxyModel->index(i, 0);
+    QModelIndex sourceIndex = m_proxyModel->mapToSource(index);
+    NoteListItem *curItem = static_cast<NoteListItem*>(sourceIndex.internalPointer());
+    if ( curItem->note() == note ) {
+      m_view->setCurrentIndex(index);
+    }
   }
 }
 

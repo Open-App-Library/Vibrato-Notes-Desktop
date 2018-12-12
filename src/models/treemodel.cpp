@@ -7,7 +7,7 @@
 
 TreeModel::TreeModel(QObject *parent) :
   QAbstractItemModel(parent),
-  m_rootItem( new BasicTreeItem("User Data") )
+  m_rootItem( new BasicTreeItem("Vibrato Tree") )
 {
   // TreeModel Constructor
 }
@@ -134,4 +134,19 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     parentItem = static_cast<BasicTreeItem*>(parent.internalPointer());
 
   return parentItem->childCount();
+}
+
+QModelIndex TreeModel::getItem(BasicTreeItem *item, QModelIndex parent) {
+  for (int i=0; i<rowCount(parent); i++) {
+    QModelIndex curIndex = index(i,0, parent);
+    if ( !curIndex.isValid() )
+      continue;
+    BasicTreeItem *curItem = static_cast<BasicTreeItem*>(curIndex.internalPointer());
+    if ( curItem == item )
+      return curIndex;
+    QModelIndex childrenCheck = getItem(item, curIndex);
+    if ( childrenCheck != QModelIndex() )
+      return childrenCheck;
+  }
+  return QModelIndex();
 }

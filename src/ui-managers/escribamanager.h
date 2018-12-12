@@ -23,12 +23,14 @@ public:
 
   void updateTagsButtonCounter();
 
+  Note *note();
   void setNote( Note *note );
 
   // Clear the note selection. Disable editor.
   void deselect();
 
-  Note *note();
+signals:
+  void selectedNewNote(Note *note);
 
 public slots:
   void contentChangedFromEditor(QString markdown);
@@ -50,6 +52,7 @@ private slots:
   void notebooksRemoved(QVector<int> notebookIDs);
   void noteIDChanged(Note *note);
   void notebookChanged(Notebook *notebook);
+  void noteNotebookChanged(Note *note);
 
 private:
   Escriba  *m_editor;

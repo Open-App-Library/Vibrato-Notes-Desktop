@@ -57,13 +57,19 @@ void EscribaManager::updateTagsButtonCounter()
   m_tagsViewerWidget->setText( QString("Manage Tags (%1)").arg( m_curNote->tags().count() ) );
 }
 
+Note *EscribaManager::note()
+{
+  return m_curNote;
+}
+
 void EscribaManager::setNote( Note *note )
 {
   if ( note == m_curNote)
     return;
 
   // Save current note and disconnect signal/slot
-  if (m_curNote != nullptr) {
+  bool curNoteExists = m_db->noteDatabase()->noteWithIDExists(m_id) && m_id != -1;
+  if (m_curNote != nullptr && curNoteExists ) {
     m_curNote->setTitle( m_titleWidget->text() );
     m_curNote->setText( m_editor->toMarkdown() );
     disconnect(m_curNote, &Note::noteChanged,
@@ -71,7 +77,10 @@ void EscribaManager::setNote( Note *note )
     disconnect(m_curNote, &Note::noteIdChanged,
                this, &EscribaManager::noteIDChanged);
     disconnect(m_curNote, &Note::noteNotebookChanged,
-               this, &EscribaManager::updateNotebookWidget);
+               this, &EscribaManager::noteNotebookChanged);
+  } else if (!curNoteExists) {
+    m_curNote = nullptr;
+    m_id = -1;
   }
 
   if ( m_curNotebook != nullptr )
@@ -89,7 +98,7 @@ void EscribaManager::setNote( Note *note )
   connect(m_curNote, &Note::noteChanged,
           this, &EscribaManager::noteChanged);
   connect(m_curNote, &Note::noteNotebookChanged,
-          this, &EscribaManager::updateNotebookWidget);
+          this, &EscribaManager::noteNotebookChanged);
   connect(m_curNote, &Note::noteIdChanged,
           this, &EscribaManager::noteIDChanged);
   m_titleWidget->setText(note->title());
@@ -112,6 +121,8 @@ void EscribaManager::setNote( Note *note )
   QString created = "<strong>Created:</strong> %1";
   QString modified = "<strong>Modified:</strong> %1";
   //m_dateCreatedWidget->setText( created.arg( m_curNote->date_created().toString() ) );
+
+  emit selectedNewNote(note);
 }
 
 void EscribaManager::deselect() {
@@ -119,11 +130,6 @@ void EscribaManager::deselect() {
   m_titleWidget->setText("Untitled");
   m_editor->setMarkdown("");
   m_editor->setDisabled(true);
-}
-
-Note *EscribaManager::note()
-{
-  return m_curNote;
 }
 
 void EscribaManager::contentChangedFromEditor(QString markdown)
@@ -163,7 +169,7 @@ void EscribaManager::openNotebookEditor()
   }
 
   if (m_editNotebookDialog == nullptr) {
-    m_editNotebookDialog = new Note_EditNotebook(m_db, m_curNote);
+    m_editNotebookDialog = new Note_EditNotebook(m_db, m_manager, m_curNote);
   }
 
   m_editNotebookDialog->show();
@@ -232,7 +238,9 @@ void EscribaManager::updateDateWidgets(void)
 
 void EscribaManager::aNoteWasRemoved(int noteID) {
   if ( m_id == noteID ) {
+    m_id = -1;
     m_curNote = nullptr; // Set to nullptr since note is deleted.
+    m_curNotebook = nullptr;
     deselect();
   }
 }
@@ -249,5 +257,10 @@ void EscribaManager::noteIDChanged(Note* note) {
 void EscribaManager::notebookChanged(Notebook *notebook)
 {
   m_notebook_id = notebook->id();
+  updateNotebookWidget();
+}
+
+void EscribaManager::noteNotebookChanged(Note *note) {
+  m_curNotebook = m_db->notebookDatabase()->findNotebookWithID( note->notebook() );
   updateNotebookWidget();
 }

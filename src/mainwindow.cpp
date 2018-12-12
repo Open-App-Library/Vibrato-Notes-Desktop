@@ -112,8 +112,6 @@ void MainWindow::loadDummyData()
 
 void MainWindow::selectedNoteChanged(Note *n)
 {
-  //  QVariant vark(QVector<int>, list);
-  //  ui->noteEditingArea->setMarkdown(n->title(), n->text(), const_cast<n);
   m_escriba_manager->setNote(n);
 }
 
@@ -124,7 +122,7 @@ void MainWindow::userButtonClicked()
 
 void MainWindow::addNewNote()
 {
-  m_note_list_manager->add_note( m_notes->addDefaultNote(), true ); // Create a new note
+  m_note_list_manager->add_note( m_notes->addDefaultNote() ); // Create a new note
   m_tree_manager->gotoAllNotesTab(); // Go to the All Notes tab.
   m_note_list_manager->openIndexInEditor(0); // Select the first note (Newest note)
 }

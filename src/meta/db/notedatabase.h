@@ -39,6 +39,8 @@ public:
 
   QVector<Note*> findNotesWithNotebookIDs(QVector<int> notebookIDs);
 
+  bool noteWithIDExists(int noteID) const;
+
 signals:
   void noteRemoved(int noteID);
 

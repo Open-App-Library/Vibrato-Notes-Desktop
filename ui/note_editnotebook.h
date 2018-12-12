@@ -3,6 +3,7 @@
 #include <QDialog>
 #include <QPushButton>
 #include <QTreeWidget>
+#include "../../ui-managers/manager.h"
 #include "../../meta/note.h"
 #include "../../meta/db/database.h"
 #include "../../models/items/treeitemwithid.h"
@@ -16,7 +17,7 @@ class Note_EditNotebook : public QDialog
   Q_OBJECT
 
 public:
-  explicit Note_EditNotebook(Database *db, Note *note, QWidget *parent = nullptr);
+  explicit Note_EditNotebook(Database *db, Manager *manager, Note *note, QWidget *parent = nullptr);
   ~Note_EditNotebook();
 
   Note *note();
@@ -36,6 +37,7 @@ private slots:
 
 private:
   Ui::Note_EditNotebook *ui;
+  Manager *m_manager;
 
   void updateTitle();
 

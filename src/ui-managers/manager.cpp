@@ -20,4 +20,5 @@ void Manager::setManagers(TreeManager *treeManager, NoteListManager *noteListMan
   m_treeManager = treeManager;
   m_noteListManager = noteListManager;
   m_escribaManager = escribaManager;
+  emit ready();
 }

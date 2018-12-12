@@ -183,6 +183,20 @@ void TreeManager::gotoAllNotesTab()
 
 }
 
+QVector<BasicTreeItem*> TreeManager::recurseNotebooks(BasicTreeItem *parent)
+{
+  QVector<BasicTreeItem*> children;
+  if ( parent != nullptr )
+    children.append(parent);
+  else
+    parent = m_notebooks;
+
+  for ( BasicTreeItem *child : parent->children() )
+    children.append( recurseNotebooks(child) );
+
+  return children;
+}
+
 QVector<BasicTreeItem *> TreeManager::tags() const
 {
   return m_tags->children();
@@ -374,4 +388,18 @@ void TreeManager::setContextEditingControlVisability(bool visible)
   m_notebookRename->setVisible(visible);
   m_notebookEditHierarchy->setVisible(visible);
   m_notebookDelete->setVisible(visible);
+}
+
+void TreeManager::openNotebookWithID(int notebookID)
+{
+  for (BasicTreeItem *item : recurseNotebooks() ) {
+    if ( item->object().notebook->id() == notebookID ) {
+      QModelIndex index = m_tree_model->getItem(item);
+      if (index.isValid())
+        m_tree_view->setCurrentIndex(index);
+      else
+        qWarning() << "Unable to set current index of tree to notebook id" << notebookID;
+      return;
+    }
+  }
 }

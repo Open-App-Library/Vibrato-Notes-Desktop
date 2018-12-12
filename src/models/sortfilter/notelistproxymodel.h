@@ -14,6 +14,7 @@
 
 class NoteListProxyModel : public QSortFilterProxyModel
 {
+  Q_OBJECT
 public:
   NoteListProxyModel(QListView *view, Database *db);
 
@@ -21,6 +22,8 @@ public:
 
   enum SortingMethods {DateCreated, DateModified};
   void setSortingMethod(int sortingMethod);
+
+  void invalidateFilter();
 
   // Filtering functions
   bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
@@ -33,6 +36,8 @@ public:
 
   NoteListItem *item(int row);
 
+signals:
+  void invalidatedFilter();
 
 private:
   QListView *m_view;

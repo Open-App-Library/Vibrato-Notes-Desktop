@@ -1,12 +1,14 @@
 #include "note_editnotebook.h"
 #include "ui_note_editnotebook.h"
 #include "../../meta/db/notebookdatabase.h"
+#include "../../ui-managers/treemanager.h"
 
 #include <QDebug>
 
-Note_EditNotebook::Note_EditNotebook(Database *db, Note *note, QWidget *parent) :
+Note_EditNotebook::Note_EditNotebook(Database *db, Manager *manager, Note *note, QWidget *parent) :
   QDialog(parent),
   ui(new Ui::Note_EditNotebook),
+  m_manager(manager),
   m_db(db),
   m_note(note)
 {
@@ -72,7 +74,9 @@ void Note_EditNotebook::selectNotebook()
   int curId = m_note->notebook();
   int id = sel->id();
   if ( curId != id ) {
+    m_manager->noteListManager()->deselect();
     m_note->setNotebook(id);
+    m_manager->treeManager()->openNotebookWithID(id);
     emit notebookChanged();
   }
 }
@@ -114,9 +118,9 @@ void Note_EditNotebook::loadNotesNotebooks()
   isResettingTree = true;
   clearTree();
   // First add the 'Default Notebook' selection
-  m_defaultNotebookItem = new TreeItemWithID("Default Notebook", -1);
-  m_notebookTree->addTopLevelItem(m_defaultNotebookItem);
-  m_treeItems.append(m_defaultNotebookItem);
+  // m_defaultNotebookItem = new TreeItemWithID("Defaultsss Notebook", -1);
+  // m_notebookTree->addTopLevelItem(m_defaultNotebookItem);
+  // m_treeItems.append(m_defaultNotebookItem);
 
   // Now add everything else
   QVector<Notebook*> notebooks = m_db->notebookDatabase()->list();

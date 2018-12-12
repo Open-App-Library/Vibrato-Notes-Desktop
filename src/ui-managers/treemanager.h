@@ -49,6 +49,8 @@ public:
 
   void gotoAllNotesTab();
 
+  QVector<BasicTreeItem*> recurseNotebooks(BasicTreeItem *parent=nullptr);
+
   // Tag functions
   QVector<BasicTreeItem*> tags() const;
   BasicTreeItem          *addTag(Tag *tag);
@@ -61,6 +63,9 @@ public:
   void treeItemChanged(const QModelIndex &current, const QModelIndex &previous);
 
   void treeContextMenu(const QPoint &point);
+
+  // Navigation
+  void openNotebookWithID(int notebookID);
 
 public slots:
   void tagAdded(Tag *tag);

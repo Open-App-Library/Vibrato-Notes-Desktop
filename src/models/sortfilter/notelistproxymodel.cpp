@@ -40,6 +40,12 @@ void NoteListProxyModel::setSortingMethod(int sortingMethod)
   m_sortingMethod = sortingMethod;
 }
 
+void NoteListProxyModel::invalidateFilter()
+{
+  QSortFilterProxyModel::invalidateFilter();
+  emit invalidatedFilter();
+}
+
 bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
                                           const QModelIndex &sourceParent) const
 {
