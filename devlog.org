@@ -1,9 +1,14 @@
-* Devlog
+#+title: Devlog: Vibrato Weekly Accomplishments
+
+
 
 This file tracks the weekly development progress on Vibrato Notes - new features, bug fixes, and more.
 
-** Vibrato Weekly Accomplishments December 10 - December 14
-*** Created a 'Manager' class to hold all of the UI Managers. This makes it easy to access each of the UI Manager instances in all of the UI Manager classes.
-*** Made the 'New Note' feature.
-*** Made the notelist sidebar properly refresh when a notebook is renamed.
-*** Fixed bug where imported notebooks in 'Default Notebook' weren't properly set.
+* December 9 - December 15
+** Added various tag operations (add tag, delete tag, rename tag)
+** Created a 'Manager' class to hold all of the UI Managers. This makes it easy to access each of the UI Manager instances in all of the UI Manager classes.
+** Improved the ux of the 'New Note' feature.
+** Made the notelist sidebar properly refresh when a notebook is renamed.
+** Fixed bug where imported notebooks in 'Default Notebook' weren't properly set.
+* December 16 - December 22
+** Polished tagging functions
