@@ -1,7 +1,5 @@
 #+title: Devlog: Vibrato Weekly Accomplishments
 
-
-
 This file tracks the weekly development progress on Vibrato Notes - new features, bug fixes, and more.
 
 * December 9 - December 15
