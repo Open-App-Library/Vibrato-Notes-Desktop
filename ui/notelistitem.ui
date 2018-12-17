@@ -139,7 +139,7 @@ QToolButton {
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="toolButton">
+      <widget class="QToolButton" name="favoriteButton">
        <property name="styleSheet">
         <string notr="true">border-radius: 1;
 border: 0;
@@ -147,10 +147,6 @@ background-color: none;</string>
        </property>
        <property name="text">
         <string>Favorite this note</string>
-       </property>
-       <property name="icon">
-        <iconset theme="draw-star">
-         <normaloff>.</normaloff>.</iconset>
        </property>
        <property name="iconSize">
         <size>

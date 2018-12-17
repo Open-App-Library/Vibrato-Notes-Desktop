@@ -54,13 +54,30 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
 
   QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
   NoteListItem *item = static_cast<NoteListItem*>(index.internalPointer());
+  Note *note = item->note();
 
-  int curNotebookId = item->note()->notebook();
-  QVector<int> tagIds = item->note()->tags();
+  int curNotebookId = note->notebook();
+  QVector<int> tagIds = note->tags();
 
+  bool passed_favorite_check = false;
   bool passed_notebook_check = false;
   bool passed_tag_check      = false;
 
+  ////////////////////////
+  /// FAVORITES FILTER ///
+  ////////////////////////
+  if ( m_favorites_filter == FavoritesFilterDisabled )
+    passed_favorite_check = true;
+  else if ( m_favorites_filter == FavoritesOnly )
+    passed_favorite_check = note->favorited() ? true : false;
+  else if ( m_favorites_filter == FavoritesExclude )
+    passed_favorite_check = note->favorited() ? false : true;
+  if ( !passed_favorite_check )
+    return false;
+
+  ///////////////////////
+  /// NOTEBOOK FILTER ///
+  ///////////////////////
   if ( m_notebook_filter.length() == 0 )
     passed_notebook_check = true;
 
@@ -78,12 +95,20 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
     if ( notebookIds.contains(curNotebookId) )
       passed_notebook_check = true;
   }
+  if ( !passed_notebook_check )
+    return false;
 
+  //////////////////
+  /// TAG FILTER ///
+  //////////////////
   for ( Tag *t : m_tag_filter )
     if ( tagIds.contains(t->id()) )
       passed_tag_check = true;
 
-  return passed_notebook_check && passed_tag_check;
+  if ( !passed_tag_check )
+    return false;
+
+  return true;
 }
 
 void NoteListProxyModel::clearFilter(bool invalidate)
@@ -91,6 +116,7 @@ void NoteListProxyModel::clearFilter(bool invalidate)
   m_notebook_filter.clear();
   m_tag_filter.clear();
   m_filter_out_everything = false;
+  m_favorites_filter = FavoritesFilterDisabled;
   if ( invalidate )
     invalidateFilter();
 }
@@ -113,6 +139,10 @@ void NoteListProxyModel::addTagToFilter(Tag *tag)
   invalidateFilter();
 }
 
+void NoteListProxyModel::setFavoritesFilterMode(int filterMode) {
+  m_favorites_filter = filterMode;
+  invalidateFilter();
+}
 
 bool NoteListProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {

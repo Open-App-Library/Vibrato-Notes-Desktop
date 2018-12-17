@@ -10,3 +10,4 @@ This file tracks the weekly development progress on Vibrato Notes - new features
 ** Fixed bug where imported notebooks in 'Default Notebook' weren't properly set.
 * December 16 - December 22
 ** Polished tagging functions
+** Added "favorite note" functionality!

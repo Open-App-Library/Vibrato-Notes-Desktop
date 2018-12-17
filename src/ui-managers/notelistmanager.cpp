@@ -133,13 +133,14 @@ void NoteListManager::showFavoritesView()
   deselect();
   m_curViewType = View_Favorites;
   setTitle("Favorites");
+
   int favCount = 0;
   for ( Note *note : m_db->noteDatabase()->list() )
     if ( note->favorited() )
       favCount++;
-  setMetrics(favCount, "note");
-
-  // TODO: Apply favorites filter
+  setMetrics(favCount, "favorite note");
+  clearFilter(false);
+  m_proxyModel->setFavoritesFilterMode(NoteListProxyModel::FavoritesOnly);
 }
 
 void NoteListManager::showNotebookView(Notebook *notebook)

@@ -167,7 +167,6 @@ void Note::setFavorited(bool favorited)
   if (m_favorited == favorited)
     return;
   m_favorited = favorited;
-  emit noteChanged( this );
   emit noteFavoritedChanged( this );
 }
 

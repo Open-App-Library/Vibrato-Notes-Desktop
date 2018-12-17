@@ -21,6 +21,10 @@ public:
   QVariant data(const QModelIndex &index, int role) const override;
 
   enum SortingMethods {DateCreated, DateModified};
+  // With this enum, you can choose whether you want the favorites filter disable,
+  // to display favorites only or exclude favorites.
+  enum FavoritesMethods {FavoritesFilterDisabled, FavoritesOnly, FavoritesExclude};
+
   void setSortingMethod(int sortingMethod);
 
   void invalidateFilter();
@@ -33,6 +37,7 @@ public:
   void filterOutEverything(bool shouldFilterOutEverything=true);
   void addNotebookToFilter(Notebook *notebook);
   void addTagToFilter(Tag *tag);
+  void setFavoritesFilterMode(int filterMode);
 
   NoteListItem *item(int row);
 
@@ -47,6 +52,7 @@ private:
   bool m_filter_out_everything=false;
   QVector<Notebook*> m_notebook_filter;
   QVector<Tag*> m_tag_filter;
+  int m_favorites_filter;
 
 };
 

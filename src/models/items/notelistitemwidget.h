@@ -2,34 +2,44 @@
 #define NOTELISTITEMWIDGET_H
 #include "../../meta/note.h"
 #include <QLabel>
+#include <QToolButton>
 
 namespace Ui {
-    class NoteListItem;
+  class NoteListItem;
 }
 
 class NoteListItemWidget : public QWidget
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    NoteListItemWidget(Note *note);
-    ~NoteListItemWidget();
+  NoteListItemWidget(Note *note);
+  ~NoteListItemWidget();
 
-    void setNote(Note *note);
+  Note *note() const;
+  void setNote(Note *note);
 
-    void updateLabels();
-    void setSelectedStyle(bool selected);
+  void updateLabels();
+  void updateTitleLabel();
+  void updateExcerptWidget();
+  void updateDateLabel();
+  void updateFavoriteButton();
 
-    Note *note() const;
+  void setSelectedStyle(bool selected);
+
+  void toggleFavorited();
+
 private:
-    Ui::NoteListItem *m_ui_class;
+  Ui::NoteListItem *m_ui_class;
 
-    Note *m_note;
+  Note *m_note;
 
-    QLabel *m_title_label;
-    QLabel *m_excerpt_label;
-    QLabel *m_date_created_label;
+  QLabel *m_title_label;
+  QLabel *m_excerpt_label;
+  QLabel *m_date_created_label;
+  QToolButton *m_favoriteButton;
+
 private slots:
-    void noteDateChanged(Note *note);
+  void noteDateChanged(Note *note);
 };
 
 #endif // NOTELISTITEMWIDGET_H
