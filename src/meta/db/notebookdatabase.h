@@ -15,8 +15,8 @@ public:
   QVector<Notebook *> listRecursively(const QVector<Notebook*> notebookList) const;
 
   // Functions that will help return a new ID that is unused.
-  int getUniqueNotebookId(int start, QVector<Notebook*> notebookList={}, Notebook *notebookToSync=nullptr);
-  int getUniqueNotebookId(Notebook *notebookToSync=nullptr);
+  int getUniqueNotebookID(int start, QVector<Notebook*> notebookList={}, Notebook *notebookToSync=nullptr);
+  int getUniqueNotebookID(Notebook *notebookToSync=nullptr);
 
   Notebook *addNotebook(QString title="New Notebook", Notebook *parent=nullptr, QVector<Notebook*> children={});
   void addNotebook(Notebook *notebook);

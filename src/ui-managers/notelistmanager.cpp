@@ -33,6 +33,12 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
   connect(m_proxyModel, &NoteListProxyModel::invalidatedFilter,
           this, &NoteListManager::ensureCurrentNoteIsSelected);
 
+  connect(m_db->notebookDatabase(), &NotebookDatabase::notebooksRemoved,
+          this, &NoteListManager::notebooksDeleted);
+
+  connect(m_db->tagDatabase(), &TagDatabase::tagRemoved,
+          this, &NoteListManager::tagDeleted);
+
   // commented outff for now. This is potentially a more efficient way to set indexWidgets
   // however it has a slight graphical bug when loading a lot of notes.
   //    connect(m_proxyModel, &QSortFilterProxyModel::rowsInserted,
@@ -112,9 +118,14 @@ void NoteListManager::showAllNotesView()
 }
 
 void NoteListManager::disconnectCurrentView() {
+  // If in a notebook view and the current notebook is not null, disconnect it.
   if ( m_curViewType == View_Notebook && m_curViewType_Notebook != nullptr )
     disconnect(m_curViewType_Notebook, &Notebook::notebookChanged,
             this, &NoteListManager::showNotebookView);
+  // If in a tag view and the current tag is not null, disconnect it.
+  else if ( m_curViewType == View_Tag && m_curViewType_Tag != nullptr )
+    disconnect(m_curViewType_Tag, &Tag::tagChanged,
+               this, &NoteListManager::showTagView);
 }
 
 void NoteListManager::showFavoritesView()
@@ -169,8 +180,17 @@ void NoteListManager::showTagView(Tag *tag)
 {
   deselect();
   disconnectCurrentView();
+
+  if ( tag == nullptr )
+    return;
+
   m_curViewType = View_Tag;
   m_curViewType_ItemID = tag->id();
+  m_curViewType_Tag = tag;
+
+  connect(tag, &Tag::tagChanged,
+          this, &NoteListManager::showTagView);
+
   clearFilter(false);
   addTagToFilter(tag);
 
@@ -276,11 +296,17 @@ void NoteListManager::ensureCurrentNoteIsSelected()
   }
 }
 
-void NoteListManager::notebookDeleted(int notebookID) {
+void NoteListManager::notebooksDeleted(QVector<int> notebookIDs) {
   // If the current notebook gets deleted, set the value to nullptr for safety.
-  if (m_curViewType == View_Notebook &&
-      m_curViewType_ItemID == notebookID)
+  if ( m_curViewType == View_Notebook &&
+      notebookIDs.contains(m_curViewType_ItemID) )
     m_curViewType_Notebook = nullptr;
+}
+
+void NoteListManager::tagDeleted(int tagID) {
+  if ( m_curViewType == View_Tag &&
+       m_curViewType_ItemID == tagID )
+    m_curViewType_Tag = nullptr;
 }
 
 // This is potentially a more efficient way to set indexWidgets

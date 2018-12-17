@@ -59,7 +59,8 @@ public slots:
   void ensureCurrentNoteIsSelected();
 
 private slots:
-  void notebookDeleted(int notebookID);
+  void notebooksDeleted(QVector<int> notebookIDs);
+  void tagDeleted(int tagID);
 
 signals:
   void selectedNote(Note *note);
@@ -79,6 +80,7 @@ private:
   int m_curViewType=View_AllNotes;
   int m_curViewType_ItemID;
   Notebook *m_curViewType_Notebook=nullptr;
+  Tag *m_curViewType_Tag=nullptr;
 
   NoteFilter *m_filter;
   Database *m_db;

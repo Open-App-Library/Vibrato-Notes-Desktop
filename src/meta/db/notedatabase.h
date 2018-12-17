@@ -37,6 +37,8 @@ public:
   void removeNotesWithNotebookID(int notebookID);
   void removeNotesWithNotebookIDs(QVector<int> notebookIDs);
 
+  void removeTagFromNotes(int tagID);
+
   QVector<Note*> findNotesWithNotebookIDs(QVector<int> notebookIDs);
 
   bool noteWithIDExists(int noteID) const;

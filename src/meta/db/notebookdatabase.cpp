@@ -42,8 +42,8 @@ QVector<Notebook*> NotebookDatabase::listRecursively(const QVector<Notebook*> no
   return the_list;
 }
 
-int NotebookDatabase::getUniqueNotebookId(int start, QVector<Notebook*> notebookList, Notebook *notebookToSync)
-{
+int NotebookDatabase::getUniqueNotebookID(int start, QVector<Notebook*> notebookList, Notebook *notebookToSync)
+ {
   // If notebookList is empty AND we have at least one notebook availible.
   if (notebookList.length() == 0 && list().length() > 0)
     notebookList = listRecursively();
@@ -53,31 +53,31 @@ int NotebookDatabase::getUniqueNotebookId(int start, QVector<Notebook*> notebook
   // by one!
   for ( Notebook* n : notebookList )
     if ( n->id() == start ) // Can't use this ID; it's taken.
-      return getUniqueNotebookId(start+1, notebookList);
+      return getUniqueNotebookID(start+1, notebookList);
 
   // If we made it this far in the function, it means that the ID we are testing
   // is indeed unique.
   return start;
 }
 
-int NotebookDatabase::getUniqueNotebookId(Notebook *notebookToSync)
+int NotebookDatabase::getUniqueNotebookID(Notebook *notebookToSync)
 {
   // TODO: Create a graphic called 'The Sync Hash' that
   //       explains how cloud-syncing works.
 
-  // Search for a unique notebook ID. S
+  // Search for a unique notebook ID.
   // If you have notebook ID #1 and create a new notebook, the next ID will
   // most likely be two. For this reason, we set the start index to search
   // for a new ID to the list length + 1 as it is likely unused.
   //   Tip: If the *notebookToSync parameter is passed, and the user has
   //        connected the cloud.
   QVector<Notebook*> notebookList = listRecursively();
-  return getUniqueNotebookId(notebookList.length()+1, notebookList, notebookToSync);
+  return getUniqueNotebookID(notebookList.length()+1, notebookList, notebookToSync);
 }
 
 Notebook *NotebookDatabase::addNotebook(QString title, Notebook *parent, QVector<Notebook*> children)
 {
-  Notebook *notebook = new Notebook(getUniqueNotebookId(), title, parent, children);
+  Notebook *notebook = new Notebook(getUniqueNotebookID(), title, parent, children);
   if (parent != nullptr && parent->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID)
     return nullptr;
   if (parent != nullptr)

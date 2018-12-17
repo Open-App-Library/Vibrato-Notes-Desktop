@@ -5,6 +5,7 @@
 
 #ifndef DATABASE_H
 #define DATABASE_H
+#include <QObject>
 #include "notedatabase.h"
 #include "notebookdatabase.h"
 #include "tagdatabase.h"
@@ -15,8 +16,9 @@ typedef struct {
     TagDatabase      *tagDatabase;
 } DatabaseObject;
 
-class Database
+class Database : QObject
 {
+  Q_OBJECT
 public:
     Database(NoteDatabase *noteDatabase, NotebookDatabase *notebookDatabase, TagDatabase *tagDatabase);
     NoteDatabase     *noteDatabase()     const;

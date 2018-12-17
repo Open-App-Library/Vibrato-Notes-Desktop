@@ -37,7 +37,16 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   m_tree_model->root()->appendChild(m_trash);
   m_tree_model->root()->appendChild(m_search);
 
-  // Context Menus
+  ////////////////////////////////////
+  // START: CONTEXT MENUS
+  ////////////////////////////////////
+
+  // Treeview context requested signal
+  connect(m_tree_view, &QTreeView::customContextMenuRequested,
+          this, &TreeManager::treeContextMenu);
+
+  // Notebook context menu
+
   m_notebookContextMenu = new QMenu();
 
   m_notebookNew = new QAction(tr("&New notebook"));
@@ -62,14 +71,37 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   connect(m_notebookDelete, &QAction::triggered,
           this, &TreeManager::contextDeleteNotebook);
 
-  connect(m_tree_view, &QTreeView::customContextMenuRequested,
-          this, &TreeManager::treeContextMenu);
+  // Tag context menu
+  m_tagContextMenu = new QMenu();
+
+  m_tagNew = new QAction(tr("&New tag"));
+  m_tagContextMenu->addAction(m_tagNew);
+  connect(m_tagNew, &QAction::triggered,
+          this, &TreeManager::contextNewTag);
+
+  m_tagContextMenu->addSeparator();
+
+  m_tagRename = new QAction(tr("&Rename tag"));
+  m_tagContextMenu->addAction(m_tagRename);
+  connect(m_tagRename, &QAction::triggered,
+          this, &TreeManager::contextRenameTag);
+
+  m_tagDelete = new QAction(tr("&Delete tag"));
+  m_tagContextMenu->addAction(m_tagDelete);
+  connect(m_tagDelete, &QAction::triggered,
+          this, &TreeManager::contextDeleteTag);
+
+  ////////////////////////////////////
+  // END: CONTEXT MENUS
+  ////////////////////////////////////
 
   // Signal Connections
   connect(m_tree_view->selectionModel(), &QItemSelectionModel::currentChanged,
           this, &TreeManager::treeItemChanged);
   connect(m_db->tagDatabase(), &TagDatabase::tagAdded,
           this, &TreeManager::tagAdded);
+  connect(m_db->tagDatabase(), &TagDatabase::tagRemoved,
+          this, &TreeManager::tagRemoved);
   connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
           this, &TreeManager::tagChanged);
   connect(m_db->notebookDatabase(), &NotebookDatabase::notebookAdded,
@@ -219,10 +251,9 @@ void TreeManager::removeTag(BasicTreeItem *item)
 
 void TreeManager::clearTags()
 {
-  for (int i = m_tags->childCount()-1; i >= 0; i--) {
-    clearChildren(m_notebooks->getChild(i));
-    delete m_notebooks->getChild(i);
-  }
+  int count = m_tags->childCount();
+  for (int i = 0; i < count; i++)
+    m_tags->removeChild(0);
   update();
 }
 
@@ -292,7 +323,33 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
 
 void TreeManager::tagAdded(Tag *tag)
 {
-  addTag(tag);
+  BasicTreeItem *item = addTag(tag);
+
+  // If user wants to open a notebook for editing
+  if ( m_openNewTagForEditing ) {
+    // Get the model index of the item and open it for editing
+    QModelIndex index = m_tree_model->getItem(item);
+    m_tree_view->edit(index);
+
+    // Reset openNewNotebookForEditing to false.
+    m_openNewTagForEditing = false;
+  }
+}
+
+void TreeManager::tagRemoved(int tagID) {
+  bool wasViewingDeletedTag = false;
+  if ( m_curItem->isTag() &&
+       m_curItem->id() == tagID )
+    {
+      wasViewingDeletedTag = true;
+    }
+
+  loadTagsFromTagDatabase(m_db->tagDatabase());
+
+  if ( wasViewingDeletedTag ) {
+    QModelIndex all_notes_index = m_tree_model->index(0, 0);
+    m_tree_view->setCurrentIndex( all_notes_index );
+  }
 }
 
 void TreeManager::tagChanged(Tag *tag)
@@ -304,6 +361,25 @@ void TreeManager::notebookAdded(Notebook *notebook)
 {
   // Inefficient! But it works for now
   loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
+
+  // If user wants to open a notebook for editing
+  if ( m_openNewNotebookForEditing ) {
+    // Get BasicTreeItems of all notebooks
+    QVector<BasicTreeItem*> notebooks = m_notebooks->recurseChildren();
+    // Loop through them
+    for (BasicTreeItem *item : notebooks) {
+      // If the notebook object of the item IS the newly added notebook then...
+      if (item->isNotebook() &&
+          item->object().notebook == notebook) {
+        // ...find the qmodelindex and open for editing!
+        QModelIndex index = m_tree_model->getItem(item);
+        m_tree_view->edit(index);
+        break;
+      }
+    }
+    // Reset openNewNotebookForEditing to false.
+    m_openNewNotebookForEditing = false;
+  }
 }
 
 void TreeManager::notebooksRemoved(QVector<int> notebookIDs)
@@ -332,6 +408,10 @@ void TreeManager::notebookChanged(Notebook *notebook)
 
 void TreeManager::contextNewNotebook()
 {
+  // Make sure the next notebook is opened for editing (Renaming)
+  m_openNewNotebookForEditing = true;
+
+  // Add notebook to notebook database
   if ( m_currentContextIndex->isNotebook() && m_currentContextIndex->object().notebook->id() != NOTEBOOK_DEFAULT_NOTEBOOK_ID )
     m_db->notebookDatabase()->addNotebook(NOTEBOOK_DEFAULT_TITLE, m_currentContextIndex->object().notebook);
   else
@@ -355,6 +435,27 @@ void TreeManager::contextEditNotebookHierarchy()
 
 }
 
+void TreeManager::contextNewTag()
+{
+  // Make sure the next tag is opened for editing (Renaming)
+  m_openNewTagForEditing = true;
+
+  // Add tag to tag database
+  m_db->tagDatabase()->addTag(TAG_DEFAULT_TITLE);
+}
+
+void TreeManager::contextDeleteTag()
+{
+  if ( m_currentContextIndex->isTag() )
+    m_db->tagDatabase()->removeTag(m_currentContextIndex->object().tag);
+}
+
+void TreeManager::contextRenameTag()
+{
+  if ( m_currentContextModelIndex.isValid() )
+    m_tree_view->edit(m_currentContextModelIndex);
+}
+
 void TreeManager::treeContextMenu(const QPoint &point)
 {
   QModelIndex index = m_tree_view->indexAt(point);
@@ -364,30 +465,39 @@ void TreeManager::treeContextMenu(const QPoint &point)
   m_currentContextModelIndex = index;
   m_currentContextIndex = item;
 
-  QPoint p = m_tree_view->viewport()->mapToGlobal(point);
+  QPoint p = m_tree_view->viewport()->mapToGlobal(point); // Pass this as an arg when executing context menu
 
-  if ( item == m_notebooks )
-    setContextEditingControlVisability(false);
-  else
-    setContextEditingControlVisability(true);
+  if ( item == m_notebooks || item->isNotebook() ) {
+    bool showEditingControls;
+    if ( item == m_notebooks )
+      showEditingControls = false;
+    else
+      showEditingControls = true;
 
-  if ( item->isNotebook() && item->object().notebook->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID ) {
-    m_notebookRename->setVisible(false);
-    m_notebookEditHierarchy->setVisible(false);
-  }
+    m_notebookRename->setVisible(showEditingControls);
+    m_notebookEditHierarchy->setVisible(showEditingControls);
+    m_notebookDelete->setVisible(showEditingControls);
 
-  // Clicking a notebook or the "Notebooks" label
-  if ( item->isNotebook() || item == m_notebooks )
+    // Don't allow editing of default notebook
+    if ( item->isNotebook() && item->object().notebook->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID ) {
+      m_notebookRename->setVisible(false);
+      m_notebookEditHierarchy->setVisible(false);
+    }
+
     m_notebookContextMenu->exec(p);
+  }
+  else if ( item == m_tags || item->isTag() ) {
+    bool showEditingControls;
+    if ( item == m_tags )
+      showEditingControls = false;
+    else
+      showEditingControls = true;
 
-  //  if ( item->isTag() )
-}
+    m_tagRename->setVisible(showEditingControls);
+    m_tagDelete->setVisible(showEditingControls);
 
-void TreeManager::setContextEditingControlVisability(bool visible)
-{
-  m_notebookRename->setVisible(visible);
-  m_notebookEditHierarchy->setVisible(visible);
-  m_notebookDelete->setVisible(visible);
+    m_tagContextMenu->exec(p);
+  }
 }
 
 void TreeManager::openNotebookWithID(int notebookID)

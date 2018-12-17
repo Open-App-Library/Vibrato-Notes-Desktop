@@ -125,6 +125,19 @@ void NoteDatabase::removeNotesWithNotebookIDs(QVector<int> notebookIDs) {
       removeNote(note);
 }
 
+void NoteDatabase::removeTagFromNotes(int tagID) {
+  // Loop through each note's list of tags.
+  // If note contains the deleted tag,
+  // Remove the tag from the note.
+  for (Note *note : m_list) {
+    if ( note->tags().contains(tagID) ) {
+      QVector<int> newTagList = note->tags();
+      newTagList.removeAll(tagID);
+      note->setTags( newTagList );
+    }
+  }
+}
+
 QVector<Note*> NoteDatabase::findNotesWithNotebookIDs(QVector<int> notebookIDs)
 {
   QVector<Note*> notes;

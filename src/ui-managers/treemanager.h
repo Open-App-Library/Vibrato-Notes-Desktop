@@ -69,6 +69,7 @@ public:
 
 public slots:
   void tagAdded(Tag *tag);
+  void tagRemoved(int tagID);
   void tagChanged(Tag *tag);
 
   void notebookAdded(Notebook *notebook);
@@ -79,6 +80,10 @@ public slots:
   void contextDeleteNotebook();
   void contextRenameNotebook();
   void contextEditNotebookHierarchy();
+
+  void contextNewTag();
+  void contextDeleteTag();
+  void contextRenameTag();
 
 private:
   TreeModel       *m_tree_model;
@@ -94,12 +99,21 @@ private:
   BasicTreeItem *m_tags;
   BasicTreeItem *m_trash;
 
-  void setContextEditingControlVisability(bool visible);
+  // Will open newly-created notebook or tag for editing (Renaming) after notebookAdded or tagAdded slot called.
+  bool m_openNewNotebookForEditing=false;
+  bool m_openNewTagForEditing=false;
+
   QMenu *m_notebookContextMenu;
   QAction *m_notebookNew;
   QAction *m_notebookRename;
   QAction *m_notebookEditHierarchy;
   QAction *m_notebookDelete;
+
+  QMenu *m_tagContextMenu;
+  QAction *m_tagNew;
+  QAction *m_tagRename;
+  QAction *m_tagDelete;
+  //  QAction *m_
 
   // TODO: https://forum.qt.io/topic/45262/disable-certain-rows-in-qtreeview
   BasicTreeItem *m_no_notebooks_placedholder = nullptr;

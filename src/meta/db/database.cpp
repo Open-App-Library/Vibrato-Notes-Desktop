@@ -1,13 +1,12 @@
 #include "database.h"
 
-
-
 Database::Database(NoteDatabase *noteDatabase, NotebookDatabase *notebookDatabase, TagDatabase *tagDatabase) :
     m_note_database(noteDatabase),
     m_notebook_database(notebookDatabase),
     m_tag_database(tagDatabase)
 {
-
+  connect(m_tag_database, &TagDatabase::tagRemoved,
+          m_note_database, &NoteDatabase::removeTagFromNotes);
 }
 
 NoteDatabase *Database::noteDatabase() const
@@ -27,11 +26,7 @@ TagDatabase *Database::tagDatabase() const
 
 void Database::addTagToNote(Note *note, QString tagString)
 {
-    tagString = tagString.trimmed();
-    if ( tagString.isEmpty() )
-        return;
-    Tag *tag = m_tag_database->findTagWithNameOrCreate( tagString );
-    // If tag is not already added, add it.
-    if ( note->tags().indexOf(tag->id()) == -1 )
-        note->setTags( note->tags() << tag->id());
+  Tag *tag = m_tag_database->addTag(tagString);
+  if ( note->tags().indexOf(tag->id()) == -1 )
+    note->setTags( note->tags() << tag->id());
 }

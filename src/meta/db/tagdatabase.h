@@ -7,36 +7,44 @@
 
 class TagDatabase : public QObject
 {
-	Q_OBJECT
+  Q_OBJECT
 public:
-	TagDatabase();
-	QVector<Tag*> list() const;
-	int           size() const;
+  TagDatabase();
+  QVector<Tag*> list() const;
+  int getUniqueTagID(int start, QVector<Tag*> tagList, Tag *tagToSync=nullptr);
+  int getUniqueTagID(Tag *tagToSync=nullptr);
+  int           size() const;
 
-	void addTag(Tag *tag);
-	Tag *addTag(int id, QString title);
+  void addTag(Tag *tag);
+  // These addTag functions with a 'title' argument will first check if there is already
+  // an existing tag object availible with the same string as 'title'. (case-insensitive,
+  // leading and trailing whitespace removed.)
+  Tag *addTag(QString title);
+  Tag *addTag(int id, QString title);
 
-	void removeTag(int index);
-	void clearTags();
+  void removeTag(int index);
+  void removeTag(Tag *tag);
+  void clearTags();
 
-	Tag *findTagWithID(int id);
-	Tag *findTagWithName(QString name);
-	Tag *findTagWithNameOrCreate(QString name);
+  Tag *findTagWithID(int id);
+  Tag *findTagWithName(QString name);
+  // *DEPRECATED*
+  // Tag *findTagWithNameOrCreate(QString name);
 
-	void loadJSON(QJsonDocument jsonDocument);
+  void loadJSON(QJsonDocument jsonDocument);
 
-	void loadDummyTags();
+  void loadDummyTags();
 
 private slots:
-	void tagChanged_slot(Tag *tag);
+  void tagChanged_slot(Tag *tag);
 
 signals:
-	void tagAdded(Tag *tag);
-	void tagChanged(Tag *tag);
+  void tagAdded(Tag *tag);
+  void tagRemoved(int tagID);
+  void tagChanged(Tag *tag);
 
 private:
-	QVector<Tag*> m_list;
-
+  QVector<Tag*> m_list;
 };
 
 #endif // TAGDATABASE_H

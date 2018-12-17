@@ -49,21 +49,21 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
 
 bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (role != Qt::EditRole)
-        return false;
+  if (role != Qt::EditRole)
+    return false;
 
-    BasicTreeItem *item = static_cast<BasicTreeItem*>(index.internalPointer());
+  BasicTreeItem *item = static_cast<BasicTreeItem*>(index.internalPointer());
 
-    if ( item->isNotebook() )
-      item->object().notebook->setTitle(value.toString());
-    else if ( item->isTag() )
-      item->object().tag->setTitle(value.toString());
-    else return false;
+  if ( item->isNotebook() )
+    item->object().notebook->setTitle(value.toString());
+  else if ( item->isTag() )
+    item->object().tag->setTitle(value.toString());
+  else return false;
 
-    item->setLabel(value.toString());
+  item->setLabel(value.toString());
 
-    emit dataChanged(index, index);
-    return true;
+  emit dataChanged(index, index);
+  return true;
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
@@ -75,7 +75,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 
   Qt::ItemFlags flags = QAbstractItemModel::flags(index);
 
-  if ( item->isNotebook() || item->isNotebook() )
+  if ( item->isNotebook() || item->isTag() )
     flags |= Qt::ItemIsEditable;
 
   return flags;
@@ -133,7 +133,9 @@ int TreeModel::rowCount(const QModelIndex &parent) const
   else
     parentItem = static_cast<BasicTreeItem*>(parent.internalPointer());
 
-  return parentItem->childCount();
+  if (parentItem != nullptr)
+    return parentItem->childCount();
+  return 0;
 }
 
 QModelIndex TreeModel::getItem(BasicTreeItem *item, QModelIndex parent) {
