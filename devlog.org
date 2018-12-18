@@ -11,6 +11,7 @@ This file tracks the weekly development progress on Vibrato Notes - new features
 * December 16 - December 22
 ** Polished tagging functions
 ** Added "favorite note" functionality!
+** Added solid yellow star icon to indicate favorited notes (resources/icons/vibrato-default/icons/vibrato-draw-star-solid.svg)
 ** Added "favorite note" icon to the Escriba text editor toolbar
 ** Made favorites view update when you un-favorite a note
 ** Updated the Note class to utilize the updateModifiedDate boolean
