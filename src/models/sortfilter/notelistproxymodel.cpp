@@ -121,6 +121,18 @@ void NoteListProxyModel::clearFilter(bool invalidate)
     invalidateFilter();
 }
 
+QVector<Notebook*> NoteListProxyModel::notebookFilter() const {
+  return m_notebook_filter;
+}
+
+QVector<Tag*> NoteListProxyModel::tagFilter() const {
+  return m_tag_filter;
+}
+
+int NoteListProxyModel::favoritesFilter() const {
+  return m_favorites_filter;
+}
+
 void NoteListProxyModel::filterOutEverything(bool shouldFilterOutEverything)
 {
   m_filter_out_everything = shouldFilterOutEverything;

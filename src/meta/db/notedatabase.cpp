@@ -24,6 +24,8 @@ int NoteDatabase::size() const
 Note *NoteDatabase::addNote(Note *note)
 {
   m_list.prepend(note);
+  connect(note, &Note::noteFavoritedChanged,
+          this, &NoteDatabase::handleNoteFavoritedChanged);
   return note;
 }
 
@@ -43,9 +45,12 @@ Note *NoteDatabase::addDefaultNote()
 
 void NoteDatabase::removeNote(int index)
 {
-  int id = m_list[index]->id();
-  delete m_list[index];
+  Note *note = m_list[index];
+  int id = note->id();
+  disconnect(note, &Note::noteFavoritedChanged,
+             this, &NoteDatabase::noteFavoritedChanged);
   m_list.removeAt(index);
+  delete note;
   emit noteRemoved(id);
 }
 
@@ -95,8 +100,7 @@ void NoteDatabase::loadJSON(QJsonDocument jsonDocument)
     }
 
     Note *note = new Note(id, title, text, date_created, date_modified, favorited, notebook, tags);
-
-    m_list.append(note);
+    addNote(note);
   }
 }
 
@@ -153,4 +157,8 @@ bool NoteDatabase::noteWithIDExists(int noteID) const
     if (note->id() == noteID)
       return true;
   return false;
+}
+
+void NoteDatabase::handleNoteFavoritedChanged(Note* note) {
+  emit noteFavoritedChanged(note);
 }

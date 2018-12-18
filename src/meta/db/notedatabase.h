@@ -45,6 +45,10 @@ public:
 
 signals:
   void noteRemoved(int noteID);
+  void noteFavoritedChanged(Note *note);
+
+private slots:
+  void handleNoteFavoritedChanged(Note *note);
 
 private:
   QList<Note*> m_list;

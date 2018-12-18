@@ -61,6 +61,7 @@ public slots:
 private slots:
   void notebooksDeleted(QVector<int> notebookIDs);
   void tagDeleted(int tagID);
+  void favoritedChanged();
 
 signals:
   void selectedNote(Note *note);

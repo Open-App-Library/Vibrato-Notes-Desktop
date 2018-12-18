@@ -22,7 +22,7 @@ public:
   void updateTitleLabel();
   void updateExcerptWidget();
   void updateDateLabel();
-  void updateFavoriteButton();
+  void updateFavoriteButton(void);
 
   void setSelectedStyle(bool selected);
 

@@ -24,8 +24,8 @@ public:
   void    setText(const QString text);
 
   QDateTime date_created() const;
-  QString date_created_str(); // ex. January 26, 1965
-  QString date_created_str_informative(); // ex. January 26, 1965 at 12:30pm EST
+  QString date_created_str() const; // ex. January 26, 1965
+  QString date_created_str_informative() const; // ex. January 26, 1965 at 12:30pm EST
   void setDate_created(const QDateTime &date_created);
 
   QDateTime date_modified() const;
@@ -72,7 +72,7 @@ private:
   int        m_notebook;
   QVector<int> m_tags;
 
-  QString informativeDate(QDateTime date);
+  QString informativeDate(QDateTime date) const;
 
   // TODO: Implement user (shows ID of note owner)
   // TODO: Implement shared_with

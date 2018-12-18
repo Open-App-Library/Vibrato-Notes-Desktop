@@ -18,6 +18,8 @@ NoteListItemWidget::NoteListItemWidget( Note *note ) : m_note(note)
           this, &NoteListItemWidget::noteDateChanged);
   connect(note, &Note::noteDateModifiedChanged,
           this, &NoteListItemWidget::noteDateChanged);
+  connect(note, &Note::noteFavoritedChanged,
+          this, &NoteListItemWidget::updateFavoriteButton);
   connect(m_favoriteButton, &QToolButton::clicked,
           this, &NoteListItemWidget::toggleFavorited);
 }
@@ -38,6 +40,8 @@ void NoteListItemWidget::setNote(Note *note)
              this, &NoteListItemWidget::noteDateChanged);
   disconnect(m_note, &Note::noteDateModifiedChanged,
              this, &NoteListItemWidget::noteDateChanged);
+  disconnect(m_note, &Note::noteFavoritedChanged,
+             this, &NoteListItemWidget::updateFavoriteButton);
 
   m_note = note;
 
@@ -45,6 +49,8 @@ void NoteListItemWidget::setNote(Note *note)
           this, &NoteListItemWidget::noteDateChanged);
   connect(m_note, &Note::noteDateModifiedChanged,
           this, &NoteListItemWidget::noteDateChanged);
+  connect(m_note, &Note::noteFavoritedChanged,
+          this, &NoteListItemWidget::updateFavoriteButton);
 
   updateLabels();
 }
@@ -80,12 +86,11 @@ void NoteListItemWidget::noteDateChanged(Note *note)
   updateLabels();
 }
 
-void NoteListItemWidget::updateFavoriteButton() {
-  if ( m_note->favorited() ) {
+void NoteListItemWidget::updateFavoriteButton(void) {
+  if ( m_note->favorited() )
     m_favoriteButton->setIcon( QIcon::fromTheme("vibrato-draw-star-solid") );
-  } else {
+  else
     m_favoriteButton->setIcon( QIcon::fromTheme("vibrato-draw-star") );
-  }
   m_favoriteButton->setChecked( m_note->favorited() );
 }
 

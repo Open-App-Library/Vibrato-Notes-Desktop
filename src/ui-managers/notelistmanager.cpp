@@ -39,6 +39,9 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
   connect(m_db->tagDatabase(), &TagDatabase::tagRemoved,
           this, &NoteListManager::tagDeleted);
 
+  connect(m_db->noteDatabase(), &NoteDatabase::noteFavoritedChanged,
+          this, &NoteListManager::favoritedChanged);
+
   // commented outff for now. This is potentially a more efficient way to set indexWidgets
   // however it has a slight graphical bug when loading a lot of notes.
   //    connect(m_proxyModel, &QSortFilterProxyModel::rowsInserted,
@@ -308,6 +311,13 @@ void NoteListManager::tagDeleted(int tagID) {
   if ( m_curViewType == View_Tag &&
        m_curViewType_ItemID == tagID )
     m_curViewType_Tag = nullptr;
+}
+
+void NoteListManager::favoritedChanged() {
+  int favFilterMode = m_proxyModel->favoritesFilter();
+  if ( favFilterMode == NoteListProxyModel::FavoritesOnly ||
+       favFilterMode == NoteListProxyModel::FavoritesExclude )
+    m_proxyModel->invalidate();
 }
 
 // This is potentially a more efficient way to set indexWidgets

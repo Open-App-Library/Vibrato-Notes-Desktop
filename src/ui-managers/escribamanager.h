@@ -29,6 +29,8 @@ public:
   // Clear the note selection. Disable editor.
   void deselect();
 
+  void toggleFavorited();
+
 signals:
   void selectedNewNote(Note *note);
 
@@ -46,6 +48,7 @@ public slots:
 
   void updateNotebookWidget(void);
   void updateDateWidgets(void);
+  void updateFavoriteButton(void);
 
 private slots:
   void aNoteWasRemoved(int noteID);
@@ -68,6 +71,7 @@ private:
   QLineEdit *m_tagsInputWidget;
   QToolButton *m_tagsViewerWidget;
   QToolButton *m_notebookWidget;
+  QToolButton *m_favoriteButton;
   QToolButton *m_moreWidget;
   QToolButton *m_trashWidget;
   QLabel *m_dateCreatedWidget;

@@ -28,7 +28,7 @@ void Note::setId(int id)
   if (m_id == id)
     return;
   m_id = id;
-  // emit noteChanged( this );
+  emit noteChanged( this, false );
   emit noteIdChanged( this );
 }
 
@@ -39,10 +39,12 @@ QString Note::title() const
 
 void Note::setTitle(const QString title)
 {
-  if (!QString::compare(m_title, title)) // if m_table and title are same, exit
+  QString titleCleaned = title.trimmed();
+  if (!QString::compare(m_title, titleCleaned)) // if m_table and title are same, exit
     return;
-  m_title = title;
+  m_title = titleCleaned;
   emit noteChanged( this );
+  emit noteTitleChanged( this );
 }
 
 QString Note::text() const
@@ -52,9 +54,10 @@ QString Note::text() const
 
 void Note::setText(const QString text)
 {
-  if (!QString::compare(m_text.trimmed(), text.trimmed())) // If m_text and text are the same, exit
+  QString textCleaned = text.trimmed();
+  if (!QString::compare(m_text, textCleaned)) // If m_text and text are the same, exit
     return;
-  m_text = text;
+  m_text = textCleaned;
   emit noteChanged( this );
   emit noteTextChanged( this );
 }
@@ -64,12 +67,12 @@ QDateTime Note::date_created() const
   return m_date_created;
 }
 
-QString Note::date_created_str()
+QString Note::date_created_str() const
 {
   return m_date_created.toString("MMMM d, yyyy");
 }
 
-QString Note::date_created_str_informative()
+QString Note::date_created_str_informative() const
 {
   return informativeDate( m_date_created );
 }
@@ -79,7 +82,7 @@ void Note::setDate_created(const QDateTime &date_created)
   if (!QString::compare(m_date_created.toString(), date_created.toString())) // If dates are same, exit
     return;
   m_date_created = date_created;
-  emit noteChanged( this );
+  emit noteChanged( this, false );
   emit noteDateCreatedChanged( this );
 }
 
@@ -153,7 +156,7 @@ void Note::setDate_modified(const QDateTime &date_modified)
   if (!QString::compare(m_date_modified.toString(), date_modified.toString())) // If dates are same, exit
     return;
   m_date_modified = date_modified;
-  emit noteChanged( this );
+  emit noteChanged( this, false );
   emit noteDateModifiedChanged( this );
 }
 
@@ -167,6 +170,7 @@ void Note::setFavorited(bool favorited)
   if (m_favorited == favorited)
     return;
   m_favorited = favorited;
+  emit noteChanged( this, false );
   emit noteFavoritedChanged( this );
 }
 
@@ -180,9 +184,8 @@ void Note::setNotebook(int id, bool updateDateModified)
   if (m_notebook == id)
     return;
   m_notebook = id;
+  emit noteChanged( this, updateDateModified );
   emit noteNotebookChanged( this );
-  if (updateDateModified)
-    emit noteChanged( this );
 }
 
 QVector<int> Note::tags() const
@@ -199,12 +202,11 @@ void Note::setTags(const QVector<int> &tags)
 
 void Note::handleNoteChange(Note *note, bool updateDateModified)
 {
-  (void) note; // Ignore compiler warning of unused variable
-  if (updateDateModified)
-    setDate_modified( QDateTime::currentDateTime() );
+  if ( updateDateModified )
+    note->setDate_modified( QDateTime::currentDateTime() );
 }
 
-QString Note::informativeDate(QDateTime date)
+QString Note::informativeDate(QDateTime date) const
 {
   QString dateStr = date.toString("MMMM d, yyyy");
   QString timeStr = date.toString("h:mA t");

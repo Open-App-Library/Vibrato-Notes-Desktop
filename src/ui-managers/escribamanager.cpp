@@ -2,19 +2,6 @@
 #include <QDebug>
 #include "../models/items/treeitemwithid.h"
 
-// Parse tags string (saving thing for when I'm ready to implement)
-//    QString tagsStr;
-//    for (int i = 0; i < note->tags().length(); i++) {
-//            int tagID = note->tags().at(i);
-//      Tag *tag = m_db->tagDatabase()->findTagWithID(tagID);
-//      if (tag != nullptr) {
-//                tagsStr.append(tag->title());
-//                if (i < note->tags().length()-1)
-//                    tagsStr.append(", ");
-//      }
-//    }
-//    m_tagsWidget->setText(tagsStr);
-
 EscribaManager::EscribaManager(Escriba *editor, Database *db, Manager *manager) :
   m_editor(editor),
   m_db(db),
@@ -26,6 +13,7 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db, Manager *manager) 
   m_tagsInputWidget     = m_addons_ui->f_noteTagsInput;
   m_tagsViewerWidget     = m_addons_ui->f_noteTagsViewer;
   m_notebookWidget = m_addons_ui->f_noteNotebook;
+  m_favoriteButton = m_addons_ui->f_favoriteButton;
   m_trashWidget    = m_addons_ui->f_noteTrash;
   m_moreWidget     = m_addons_ui->f_noteMore;
   m_dateCreatedWidget = m_addons_ui->f_noteDateCreated;
@@ -41,6 +29,8 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db, Manager *manager) 
           this, &EscribaManager::addTag);
   connect(m_notebookWidget, &QToolButton::clicked,
           this, &EscribaManager::openNotebookEditor);
+  connect(m_favoriteButton, &QToolButton::clicked,
+          this, &EscribaManager::toggleFavorited);
   connect(m_tagsViewerWidget, &QToolButton::clicked,
           this, &EscribaManager::openTagsEditor);
   connect(m_db->noteDatabase(), &NoteDatabase::noteRemoved,
@@ -78,6 +68,8 @@ void EscribaManager::setNote( Note *note )
                this, &EscribaManager::noteIDChanged);
     disconnect(m_curNote, &Note::noteNotebookChanged,
                this, &EscribaManager::noteNotebookChanged);
+    disconnect(m_curNote, &Note::noteFavoritedChanged,
+               this, &EscribaManager::updateFavoriteButton);
   } else if (!curNoteExists) {
     m_curNote = nullptr;
     m_id = -1;
@@ -101,6 +93,8 @@ void EscribaManager::setNote( Note *note )
           this, &EscribaManager::noteNotebookChanged);
   connect(m_curNote, &Note::noteIdChanged,
           this, &EscribaManager::noteIDChanged);
+  connect(m_curNote, &Note::noteFavoritedChanged,
+          this, &EscribaManager::updateFavoriteButton);
   m_titleWidget->setText(note->title());
   m_editor->setMarkdown(note->text());
   updateTagsButtonCounter();
@@ -116,6 +110,7 @@ void EscribaManager::setNote( Note *note )
   } else m_notebook_id = NOTEBOOK_DEFAULT_NOTEBOOK_ID;
 
   updateNotebookWidget();
+  updateFavoriteButton();
   updateDateWidgets();
 
   QString created = "<strong>Created:</strong> %1";
@@ -234,6 +229,19 @@ void EscribaManager::updateDateWidgets(void)
 
   m_dateModifiedWidget->setText( "<strong>Modified:</strong> " + m_curNote->date_modified_str() );
   m_dateModifiedWidget->setToolTip( m_curNote->date_modified_str_informative() );
+}
+
+void EscribaManager::updateFavoriteButton(void) {
+  if ( m_curNote->favorited() )
+    m_favoriteButton->setIcon( QIcon::fromTheme("vibrato-draw-star-solid") );
+  else
+    m_favoriteButton->setIcon( QIcon::fromTheme("vibrato-draw-star") );
+  m_favoriteButton->setChecked( m_curNote->favorited() );
+}
+
+void EscribaManager::toggleFavorited() {
+  m_curNote->setFavorited( !m_curNote->favorited() );
+  updateFavoriteButton();
 }
 
 void EscribaManager::aNoteWasRemoved(int noteID) {

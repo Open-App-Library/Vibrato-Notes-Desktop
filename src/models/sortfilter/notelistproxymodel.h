@@ -34,6 +34,10 @@ public:
   bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
   void clearFilter(bool invalidate=true);
 
+  QVector<Notebook*> notebookFilter() const;
+  QVector<Tag*> tagFilter() const;
+  int favoritesFilter() const;
+
   void filterOutEverything(bool shouldFilterOutEverything=true);
   void addNotebookToFilter(Notebook *notebook);
   void addTagToFilter(Tag *tag);
