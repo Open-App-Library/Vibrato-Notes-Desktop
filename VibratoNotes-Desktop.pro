@@ -52,7 +52,10 @@ SOURCES += \
     $$PWD/src/models/sortfilter/notelistproxymodel.cpp \
     $$PWD/src/models/items/notelistitemwidget.cpp \
     $$PWD/ui/edittags.cpp \
-    src/models/views/customtreeview.cpp
+    src/models/views/customtreeview.cpp \
+    ui/trashitem.cpp \
+    src/ui-managers/notelist-views/trashview.cpp \
+    src/ui-managers/notelist-views/genericview.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -86,7 +89,10 @@ HEADERS += \
     $$PWD/src/models/sortfilter/notelistproxymodel.h \
     $$PWD/src/models/items/notelistitemwidget.h \
     $$PWD/ui/edittags.h \
-    src/models/views/customtreeview.h
+    src/models/views/customtreeview.h \
+    ui/trashitem.h \
+    src/ui-managers/notelist-views/trashview.h \
+    src/ui-managers/notelist-views/genericview.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
@@ -100,7 +106,8 @@ FORMS += \
     $$PWD/ui/note_editnotebook.ui \
     ui/note_edittags.ui \
     ui/notelist_addons.ui \
-    ui/edittags.ui
+    ui/edittags.ui \
+    ui/trashitem.ui
 
 include($$PWD/src/text-editor/Escriba.pro)
 

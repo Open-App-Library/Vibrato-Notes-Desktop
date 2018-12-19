@@ -27,6 +27,9 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
 
   view->setModel(m_proxyModel);
 
+  // Create special views
+  m_trashView = new TrashView(m_db, m_manager, this);
+
   connect(m_manager, &Manager::ready,
           this, &NoteListManager::managerIsReady);
 
@@ -58,6 +61,26 @@ NoteListManager::~NoteListManager()
 {
   delete m_filter;
   delete m_noteListAddonsUi;
+}
+
+QListView *NoteListManager::view() const
+{
+  return m_view;
+}
+
+NoteListModel *NoteListManager::model() const
+{
+  return m_model;
+}
+
+NoteListProxyModel *NoteListManager::proxyModel() const
+{
+  return m_proxyModel;
+}
+
+NoteListAddonsWidget *NoteListManager::addonsWidgetUi() const
+{
+  return m_noteListAddonsUi;
 }
 
 NoteListItem *NoteListManager::add_note(Note *note)
@@ -127,14 +150,28 @@ void NoteListManager::showAllNotesView()
 }
 
 void NoteListManager::disconnectCurrentView() {
+  ///
+  // Notebook View Deactivation
   // If in a notebook view and the current notebook is not null, disconnect it.
-  if ( m_curViewType == View_Notebook && m_curViewType_Notebook != nullptr )
+  ///
+  if ( m_curViewType == View_Notebook && m_curViewType_Notebook != nullptr ) {
     disconnect(m_curViewType_Notebook, &Notebook::notebookChanged,
             this, &NoteListManager::showNotebookView);
+  }
+  ///
+  // Tag View Deactivation
   // If in a tag view and the current tag is not null, disconnect it.
-  else if ( m_curViewType == View_Tag && m_curViewType_Tag != nullptr )
+  ///
+  else if ( m_curViewType == View_Tag && m_curViewType_Tag != nullptr ) {
     disconnect(m_curViewType_Tag, &Tag::tagChanged,
                this, &NoteListManager::showTagView);
+  }
+  ///
+  // Trash View Deactivation
+  ///
+  else if ( m_curViewType == View_Trash ) {
+    m_trashView->deactivateView();
+  }
 }
 
 void NoteListManager::showFavoritesView()
@@ -154,19 +191,8 @@ void NoteListManager::showFavoritesView()
 
 void NoteListManager::showTrashView()
 {
-  deselect();
-  disconnectCurrentView();
   m_curViewType = View_Trash;
-  setTitle("Trash");
-
-  int trashCount = 0;
-  for ( Note *note : m_db->noteDatabase()->list() )
-    if ( note->trashed() )
-      trashCount++;
-  setMetrics(trashCount, "note");
-
-  clearFilter(false);
-  m_proxyModel->setTrashedFilter(NoteListProxyModel::TrashOnly);
+  m_trashView->activateView();
 }
 
 void NoteListManager::showNotebookView(Notebook *notebook)

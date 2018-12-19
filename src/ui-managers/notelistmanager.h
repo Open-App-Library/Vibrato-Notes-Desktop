@@ -9,11 +9,14 @@
 #include "../meta/db/database.h"
 #include "../meta/filter/notefilter.h"
 #include "manager.h"
+#include "notelist-views/trashview.h"
 #include <ui_notelist_addons.h>
 
 namespace Ui {
   class NoteListAddonsWidget;
 }
+
+typedef Ui::NoteListAddonsWidget NoteListAddonsWidget;
 
 class NoteListManager : public QObject
 {
@@ -23,6 +26,11 @@ public:
   ~NoteListManager();
 
   enum viewingModes {View_AllNotes, View_Favorites, View_Notebook, View_Tag, View_Trash, View_Search};
+
+  QListView *view() const;
+  NoteListModel *model() const;
+  NoteListProxyModel *proxyModel() const;
+  NoteListAddonsWidget *addonsWidgetUi() const;
 
   NoteListItem *add_note(Note *note);
   void remove_note(int index);
@@ -71,7 +79,7 @@ signals:
 
 private:
   CustomListView *m_view;
-  Ui::NoteListAddonsWidget *m_noteListAddonsUi;
+  NoteListAddonsWidget *m_noteListAddonsUi;
   QWidget *m_noteListAddons;
   Manager *m_manager;
 
@@ -80,11 +88,11 @@ private:
   NoteListModel *m_model;
   NoteListProxyModel *m_proxyModel;
 
-
   int m_curViewType=View_AllNotes;
   int m_curViewType_ItemID;
   Notebook *m_curViewType_Notebook=nullptr;
   Tag *m_curViewType_Tag=nullptr;
+  TrashView *m_trashView=nullptr;
 
   NoteFilter *m_filter;
   Database *m_db;
