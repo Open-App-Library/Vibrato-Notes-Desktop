@@ -14,9 +14,6 @@ class TrashView : public GenericView
 public:
   explicit TrashView(Database *db, Manager *manager, QObject *parent=nullptr);
 
-  void setTrashNotes(QVector<Note*> trashNotes);
-  void addTrashNote(Note *trashNote);
-
   void activateView() override;
   void deactivateView() override;
 
@@ -31,11 +28,18 @@ private slots:
   void determineMassActionVisibility(void);
   void selectionChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
+  void deleteSelectedNotes();
+  void restoreSelectedNotes();
+
+  void deleteTrashItem(TrashItem *item);
+
+  void deleteNote(Note *note);
+  void restoreNote(Note *note);
+
 private:
   QListWidget *m_trashListWidget=nullptr;
   QWidget *m_massActions=nullptr;
 
-  QVector<Note*> m_trashNotes;
   QVector<TrashItem*> m_trashItems;
   QVector<TrashItem*> m_selectedTrashItems;
 

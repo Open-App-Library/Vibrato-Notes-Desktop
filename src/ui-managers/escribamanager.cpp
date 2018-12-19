@@ -268,8 +268,10 @@ void EscribaManager::updateTrashButton(void) {
   m_trashButton->setEnabled( !trashed );
   if ( trashed )
     m_trashButton->setToolTip(tr("This note has been trashed."));
-  else
+  else {
     m_trashButton->setToolTip(tr("Move this note to the trash."));
+    m_editor->setDisabled(false);
+  }
 }
 
 void EscribaManager::toggleFavorited() {

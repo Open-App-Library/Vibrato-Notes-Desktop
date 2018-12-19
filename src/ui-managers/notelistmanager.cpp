@@ -141,14 +141,6 @@ void NoteListManager::addTagToFilter(Tag *tag)
   m_proxyModel->addTagToFilter(tag);
 }
 
-void NoteListManager::showAllNotesView()
-{
-  deselect();
-  m_curViewType = View_AllNotes;
-  hideAddons();
-  clearFilter();
-}
-
 void NoteListManager::disconnectCurrentView() {
   ///
   // Notebook View Deactivation
@@ -174,9 +166,19 @@ void NoteListManager::disconnectCurrentView() {
   }
 }
 
+void NoteListManager::showAllNotesView()
+{
+  deselect();
+  disconnectCurrentView();
+  m_curViewType = View_AllNotes;
+  hideAddons();
+  clearFilter();
+}
+
 void NoteListManager::showFavoritesView()
 {
   deselect();
+  disconnectCurrentView();
   m_curViewType = View_Favorites;
   setTitle("Favorites");
 

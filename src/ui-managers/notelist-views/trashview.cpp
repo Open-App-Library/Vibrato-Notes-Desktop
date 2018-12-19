@@ -4,19 +4,12 @@
 #include <QDebug>
 #include "../notelistmanager.h"
 #include "../escribamanager.h"
+#include "../../meta/note.h"
 
 TrashView::TrashView(Database *db, Manager *manager, QObject *parent) :
   GenericView(db, manager, parent)
 {
 
-}
-
-void TrashView::setTrashNotes(QVector<Note*> trashNotes) {
-  m_trashNotes = trashNotes;
-}
-
-void TrashView::addTrashNote(Note* trashNote) {
-  m_trashNotes.append(trashNote);
 }
 
 void TrashView::activateView()
@@ -30,10 +23,12 @@ void TrashView::activateView()
   nlm->disconnectCurrentView();
   nlm->setTitle("Trash");
 
+  // Create the trash list widget
+  m_trashListWidget = new QListWidget();
   int trashCount = 0;
   for ( Note *note : db()->noteDatabase()->list() )
     if ( note->trashed() ) {
-      addTrashNote(note);
+      addItem(note);
       trashCount++;
     }
   nlm->setMetrics(trashCount, "note");
@@ -76,17 +71,14 @@ void TrashView::activateView()
   massActionsLayout->addWidget(m_massRestore);
   massActionsLayout->addWidget(m_massDelete);
 
-  // Create the trash list widget
-  m_trashListWidget = new QListWidget();
-
   // Add the mass actions and trash list widget to screen
   notelistlayout->addWidget(m_massActions);
   notelistlayout->addWidget(m_trashListWidget);
 
   // Poplulate the trash list widget
-  for ( Note *note : m_trashNotes) {
-    addItem(note);
-  }
+  // for ( Note *note : m_trashNotes) {
+
+  // }
 
   // Signals
   connect(m_checkbox, &QCheckBox::stateChanged,
@@ -108,7 +100,6 @@ void TrashView::deactivateView()
 
   // Clear lists
   m_trashItems.clear();
-  m_trashNotes.clear();
   m_selectedTrashItems.clear();
 
   addonsWidgetUi()->buttonBox->hide();
@@ -122,6 +113,12 @@ TrashItem* TrashView::addItem(Note* note) {
   m_trashItems.append(item);
   connect(item, &TrashItem::itemCheckedOrUnchecked,
           this, &TrashView::itemCheckedOrUnchecked);
+  connect(item, &TrashItem::pleaseDeleteTrashItem,
+          this, &TrashView::deleteTrashItem);
+  connect(item, &TrashItem::deleteNote,
+          this, &TrashView::deleteNote);
+  connect(item, &TrashItem::restoreNote,
+          this, &TrashView::restoreNote);
   return item;
 }
 
@@ -156,7 +153,36 @@ void TrashView::determineMassActionVisibility(void) {
 
 void TrashView::selectionChanged(QListWidgetItem* current, QListWidgetItem* previous) {
   TrashItem *trashItemCur = static_cast<TrashItem*>(current);
+  // For safety. If trash item list does not contain the current item, return.
+  if ( !m_trashItems.contains(trashItemCur) )
+    return;
+
   manager()->escribaManager()->setNote( trashItemCur->note() );
+}
+
+void TrashView::deleteSelectedNotes() {
+  for (TrashItem *item : m_selectedTrashItems)
+    item->emitDeleteNoteSignal();
+}
+
+void TrashView::restoreSelectedNotes() {
+  for (TrashItem *item : m_selectedTrashItems)
+    item->emitRestoreNoteSignal();
+}
+
+void TrashView::deleteTrashItem(TrashItem* item) {
+  m_trashItems.removeAll(item);
+  m_selectedTrashItems.removeAll(item);
+  m_trashListWidget->removeItemWidget(item);
+  delete item;
+}
+
+void TrashView::deleteNote(Note* note) {
+  db()->noteDatabase()->removeNote(note);
+}
+
+void TrashView::restoreNote(Note* note) {
+  note->setTrashed(false);
 }
 
 void TrashView::toggleMassCheckmark(void) {
