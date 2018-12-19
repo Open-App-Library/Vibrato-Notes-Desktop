@@ -109,6 +109,7 @@ void TrashView::deactivateView()
   // Clear lists
   m_trashItems.clear();
   m_trashNotes.clear();
+  m_selectedTrashItems.clear();
 
   addonsWidgetUi()->buttonBox->hide();
 
