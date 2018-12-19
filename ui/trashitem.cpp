@@ -13,7 +13,7 @@ TrashItem::TrashItem(Note *note, QListWidget *parent) :
   this->setSizeHint( QSize(this->sizeHint().width(), 40));
 
   connect(ui->checkbox, &QCheckBox::stateChanged,
-          this, &TrashItem::stateChanged);
+          this, &TrashItem::handleItemCheckedOrUnchecked);
 
   updateLabels();
 }
@@ -28,6 +28,21 @@ QCheckBox *TrashItem::checkbox() const
   return ui->checkbox;
 }
 
+bool TrashItem::checked() const
+{
+  return ui->checkbox->isChecked();
+}
+
+Note *TrashItem::note() const
+{
+  return m_note;
+}
+
 void TrashItem::updateLabels() {
   ui->checkbox->setText( m_note->title() );
+}
+
+void TrashItem::handleItemCheckedOrUnchecked(void)
+{
+  emit itemCheckedOrUnchecked(this);
 }

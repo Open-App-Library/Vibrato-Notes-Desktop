@@ -3,6 +3,7 @@
 #include <QVBoxLayout>
 #include <QDebug>
 #include "../notelistmanager.h"
+#include "../escribamanager.h"
 
 TrashView::TrashView(Database *db, Manager *manager, QObject *parent) :
   GenericView(db, manager, parent)
@@ -53,6 +54,7 @@ void TrashView::activateView()
   QHBoxLayout *massActionsLayout = new QHBoxLayout();
   m_massActions = new QWidget();
   m_massActions->setLayout(massActionsLayout);
+  m_massActions->setMinimumHeight(40);
   m_massActions->setMaximumHeight(40);
 
   // Create the buttons and add them to layout
@@ -66,10 +68,6 @@ void TrashView::activateView()
   m_massDelete->setToolTip(tr("Mass delete"));
   m_massDelete->setIcon( QIcon::fromTheme("window-close") );
 
-  // Signals for buttons
-  connect(m_checkbox, &QCheckBox::stateChanged,
-          this, &TrashView::toggleMassCheckmark);
-
   // Will determine if mass action buttons should be hidden (Nothing selected) or showing (at least one selected)
   determineMassActionVisibility();
 
@@ -80,7 +78,6 @@ void TrashView::activateView()
 
   // Create the trash list widget
   m_trashListWidget = new QListWidget();
-  m_trashListWidget->setSelectionMode(QAbstractItemView::NoSelection);
 
   // Add the mass actions and trash list widget to screen
   notelistlayout->addWidget(m_massActions);
@@ -90,6 +87,12 @@ void TrashView::activateView()
   for ( Note *note : m_trashNotes) {
     addItem(note);
   }
+
+  // Signals
+  connect(m_checkbox, &QCheckBox::stateChanged,
+          this, &TrashView::toggleMassCheckmark);
+  connect(m_trashListWidget, &QListWidget::currentItemChanged,
+          this, &TrashView::selectionChanged);
 
   // Show the trash list widget
   m_trashListWidget->show();
@@ -116,18 +119,17 @@ void TrashView::deactivateView()
 TrashItem* TrashView::addItem(Note* note) {
   TrashItem *item = new TrashItem(note, m_trashListWidget);
   m_trashItems.append(item);
+  connect(item, &TrashItem::itemCheckedOrUnchecked,
+          this, &TrashView::itemCheckedOrUnchecked);
+  return item;
 }
 
 void TrashView::select(TrashItem* item) {
   item->checkbox()->setChecked(true);
-  if ( !m_selectedTrashItems.contains(item) )
-    m_selectedTrashItems.append(item);
 }
 
 void TrashView::deselect(TrashItem* item) {
   item->checkbox()->setChecked(false);
-  if ( m_selectedTrashItems.contains(item) )
-    m_selectedTrashItems.removeAll(item);
 }
 
 void TrashView::selectAll() {
@@ -141,10 +143,19 @@ void TrashView::deselectAll() {
 }
 
 void TrashView::determineMassActionVisibility(void) {
-  if ( m_selectedTrashItems.length() > 0 )
-    m_massActions->show();
-  else
-    m_massActions->hide();
+  if ( m_selectedTrashItems.length() > 0 ) {
+    m_massRestore->show();
+    m_massDelete->show();
+  }
+  else {
+    m_massRestore->hide();
+    m_massDelete->hide();
+  }
+}
+
+void TrashView::selectionChanged(QListWidgetItem* current, QListWidgetItem* previous) {
+  TrashItem *trashItemCur = static_cast<TrashItem*>(current);
+  manager()->escribaManager()->setNote( trashItemCur->note() );
 }
 
 void TrashView::toggleMassCheckmark(void) {
@@ -153,5 +164,16 @@ void TrashView::toggleMassCheckmark(void) {
     selectAll();
   else
     deselectAll();
+}
+
+void TrashView::itemCheckedOrUnchecked(TrashItem *item) {
+  if ( item->checked() ) {
+    if ( !m_selectedTrashItems.contains(item) )
+      m_selectedTrashItems.append(item);
+  }
+  else {
+    if ( m_selectedTrashItems.contains(item) )
+      m_selectedTrashItems.removeAll(item);
+  }
   determineMassActionVisibility();
 }

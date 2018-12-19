@@ -29,6 +29,7 @@ public:
 
 private slots:
   void determineMassActionVisibility(void);
+  void selectionChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
 private:
   QListWidget *m_trashListWidget=nullptr;
@@ -44,6 +45,7 @@ private:
 
   // Private functions
   void toggleMassCheckmark(void);
+  void itemCheckedOrUnchecked(TrashItem *item);
 };
 
 #endif // TRASHVIEW_H

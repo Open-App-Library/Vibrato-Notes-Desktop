@@ -19,10 +19,15 @@ public:
   void updateLabels();
 
   QCheckBox *checkbox() const;
+  bool checked() const;
+  Note *note() const;
 
 signals:
+  void itemCheckedOrUnchecked(TrashItem *item);
   void noteDeleted(TrashItem *item, int noteID);
-  void stateChanged(int state);
+
+private slots:
+  void handleItemCheckedOrUnchecked(void);
 
 private:
   Ui::TrashItem *ui;

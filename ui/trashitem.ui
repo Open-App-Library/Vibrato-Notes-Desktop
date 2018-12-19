@@ -26,11 +26,15 @@
      <property name="toolTip">
       <string>Restore note</string>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>Restore</string>
      </property>
      <property name="icon">
-      <iconset theme="document-revert"/>
+      <iconset theme="document-revert">
+       <normaloff>.</normaloff>.</iconset>
      </property>
     </widget>
    </item>
@@ -39,11 +43,15 @@
      <property name="toolTip">
       <string>Permanently delete note</string>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
       <string>Delete</string>
      </property>
      <property name="icon">
-      <iconset theme="window-close"/>
+      <iconset theme="window-close">
+       <normaloff>.</normaloff>.</iconset>
      </property>
     </widget>
    </item>
