@@ -10,6 +10,7 @@ This file tracks the weekly development progress on Vibrato Notes - new features
 ** Fixed bug where imported notebooks in 'Default Notebook' weren't properly set.
 * December 16 - December 22
 ** Added a 'trash note' functionality!
+** Created a new UI for trashing notes - with bulk-trash/restore!
 ** Polished tagging functions
 ** Added "favorite note" functionality!
 ** Added solid yellow star icon to indicate favorited notes (resources/icons/vibrato-default/icons/vibrato-draw-star-solid.svg)
