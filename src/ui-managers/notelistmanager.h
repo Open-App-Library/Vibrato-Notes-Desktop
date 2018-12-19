@@ -59,9 +59,12 @@ public slots:
   void ensureCurrentNoteIsSelected();
 
 private slots:
+  void managerIsReady();
   void notebooksDeleted(QVector<int> notebookIDs);
   void tagDeleted(int tagID);
-  void favoritedChanged();
+  void favoritedChanged(void);
+  void trashedOrRestored(void);
+  void escribaDeselected();
 
 signals:
   void selectedNote(Note *note);

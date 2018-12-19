@@ -26,6 +26,8 @@ Note *NoteDatabase::addNote(Note *note)
   m_list.prepend(note);
   connect(note, &Note::noteFavoritedChanged,
           this, &NoteDatabase::handleNoteFavoritedChanged);
+  connect(note, &Note::noteTrashedOrRestored,
+          this, &NoteDatabase::noteTrashedOrRestored);
   return note;
 }
 
@@ -49,9 +51,11 @@ void NoteDatabase::removeNote(int index)
   int id = note->id();
   disconnect(note, &Note::noteFavoritedChanged,
              this, &NoteDatabase::noteFavoritedChanged);
+  disconnect(note, &Note::noteTrashedOrRestored,
+             this, &NoteDatabase::noteTrashedOrRestored);
   m_list.removeAt(index);
   delete note;
-  emit noteRemoved(id);
+  emit noteDeleted(id);
 }
 
 void NoteDatabase::removeNote(Note *note)
@@ -86,6 +90,7 @@ void NoteDatabase::loadJSON(QJsonDocument jsonDocument)
     QDateTime date_created = QDateTime::fromString(get(val, "date_created").toString(), Qt::ISODate);
     QDateTime date_modified = QDateTime::fromString(get(val, "date_modified").toString(), Qt::ISODate);
     bool favorited = get(val, "favorited").toBool();
+    bool trashed = get(val, "trashed").toBool();
     int notebook = get(val, "notebook").toInt();
     // Set invalid notebooks to default notebook ID (-1)
     if (notebook <= 0)
@@ -99,7 +104,7 @@ void NoteDatabase::loadJSON(QJsonDocument jsonDocument)
       tags.append(tag_id);
     }
 
-    Note *note = new Note(id, title, text, date_created, date_modified, favorited, notebook, tags);
+    Note *note = new Note(id, title, text, date_created, date_modified, favorited, notebook, tags, trashed);
     addNote(note);
   }
 }

@@ -99,6 +99,11 @@ border: 0;</string>
 
 QToolButton:hover {
 	background: #ee6969;
+}
+
+QToolButton:disabled {
+	background: #4f5151;
+    border-color: #686868;
 }</string>
        </property>
        <property name="text">

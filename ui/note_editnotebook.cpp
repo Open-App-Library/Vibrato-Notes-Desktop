@@ -29,6 +29,8 @@ Note_EditNotebook::Note_EditNotebook(Database *db, Manager *manager, Note *note,
 
   m_selectNotebook->setEnabled(false);
 
+  setModal(true); // Make dialog a modal
+
   connect(note, &Note::noteChanged,
           this, &Note_EditNotebook::noteChanged);
   connect(m_selectNotebook, &QPushButton::clicked,

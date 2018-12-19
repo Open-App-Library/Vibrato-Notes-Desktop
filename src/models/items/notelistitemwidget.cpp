@@ -87,6 +87,8 @@ void NoteListItemWidget::noteDateChanged(Note *note)
 }
 
 void NoteListItemWidget::updateFavoriteButton(void) {
+  m_favoriteButton->setEnabled( !m_note->trashed() );
+
   if ( m_note->favorited() )
     m_favoriteButton->setIcon( QIcon::fromTheme("vibrato-draw-star-solid") );
   else

@@ -12,7 +12,7 @@ class Note : public QObject
   Q_OBJECT
 
 public:
-  Note(int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, bool favorited, int notebook, QVector<int> tags);
+  Note(int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, bool favorited, int notebook, QVector<int> tags, bool trashed=false);
 
   int id() const;
   void setId(int value);
@@ -42,6 +42,9 @@ public:
   QVector<int> tags() const;
   void setTags(const QVector<int> &value);
 
+  bool trashed() const;
+  void setTrashed(bool trashed);
+
   // Sorting comparison functions for your convenience.
   static bool byDateCreatedAsc(const Note *n1, const Note *n2);
   static bool byDateCreatedDesc(const Note *n1, const Note *n2);
@@ -61,16 +64,20 @@ signals:
   void noteFavoritedChanged(Note *note);
   void noteNotebookChanged(Note *note);
   void noteTagsChanged(Note *note);
+  void noteTrashedOrRestored(Note *note, bool trashed);
+  void noteTrashed(Note *note);
+  void noteRestored(Note *note);
 
 private:
-  int        m_id;
-  QString    m_title;
-  QString    m_text;
-  QDateTime  m_date_created;
-  QDateTime  m_date_modified;
-  bool       m_favorited;
-  int        m_notebook;
+  int          m_id;
+  QString      m_title;
+  QString      m_text;
+  QDateTime    m_date_created;
+  QDateTime    m_date_modified;
+  bool         m_favorited;
+  int          m_notebook;
   QVector<int> m_tags;
+  bool         m_trashed=false;
 
   QString informativeDate(QDateTime date) const;
 

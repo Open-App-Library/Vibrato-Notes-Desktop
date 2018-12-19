@@ -8,7 +8,7 @@ NoteListModel::NoteListModel(QListView *view, NoteDatabase *noteDatabase) : QAbs
   m_view->setStyleSheet(style);
   m_noteDatabase = noteDatabase;
 
-  connect(m_noteDatabase, &NoteDatabase::noteRemoved,
+  connect(m_noteDatabase, &NoteDatabase::noteDeleted,
           this, &NoteListModel::removeNoteItemWithID);
 }
 

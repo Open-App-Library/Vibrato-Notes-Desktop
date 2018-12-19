@@ -14,7 +14,7 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db, Manager *manager) 
   m_tagsViewerWidget     = m_addons_ui->f_noteTagsViewer;
   m_notebookWidget = m_addons_ui->f_noteNotebook;
   m_favoriteButton = m_addons_ui->f_favoriteButton;
-  m_trashWidget    = m_addons_ui->f_noteTrash;
+  m_trashButton    = m_addons_ui->f_noteTrash;
   m_moreWidget     = m_addons_ui->f_noteMore;
   m_dateCreatedWidget = m_addons_ui->f_noteDateCreated;
   m_dateModifiedWidget = m_addons_ui->f_noteDateModified;
@@ -31,9 +31,11 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db, Manager *manager) 
           this, &EscribaManager::openNotebookEditor);
   connect(m_favoriteButton, &QToolButton::clicked,
           this, &EscribaManager::toggleFavorited);
+  connect(m_trashButton, &QToolButton::clicked,
+          this, &EscribaManager::trashNote);
   connect(m_tagsViewerWidget, &QToolButton::clicked,
           this, &EscribaManager::openTagsEditor);
-  connect(m_db->noteDatabase(), &NoteDatabase::noteRemoved,
+  connect(m_db->noteDatabase(), &NoteDatabase::noteDeleted,
           this, &EscribaManager::aNoteWasRemoved);
   connect(m_db->notebookDatabase(), &NotebookDatabase::notebooksRemoved,
           this, &EscribaManager::notebooksRemoved);
@@ -57,7 +59,9 @@ void EscribaManager::setNote( Note *note )
   if ( note == m_curNote)
     return;
 
-  // Save current note and disconnect signal/slot
+  ///
+  // Save current note and disconnect signals/slots
+  ///
   bool curNoteExists = m_db->noteDatabase()->noteWithIDExists(m_id) && m_id != -1;
   if (m_curNote != nullptr && curNoteExists ) {
     m_curNote->setTitle( m_titleWidget->text() );
@@ -70,6 +74,8 @@ void EscribaManager::setNote( Note *note )
                this, &EscribaManager::noteNotebookChanged);
     disconnect(m_curNote, &Note::noteFavoritedChanged,
                this, &EscribaManager::updateFavoriteButton);
+    disconnect(m_curNote, &Note::noteTrashedOrRestored,
+            this, &EscribaManager::updateTrashButton);
   } else if (!curNoteExists) {
     m_curNote = nullptr;
     m_id = -1;
@@ -79,10 +85,22 @@ void EscribaManager::setNote( Note *note )
     disconnect(m_curNotebook, &Notebook::notebookChanged,
             this, &EscribaManager::notebookChanged);
 
-  if ( note == nullptr )
+  ///
+  // Open the new note
+  ///
+  m_curNote = note;
+
+  if ( m_curNote == nullptr )
     return;
-  else
-    m_editor->setDisabled(false);
+  else {
+    if ( !m_curNote->trashed() ) {
+      m_editor->setDisabled(false);
+      m_editor->setToolTip("");
+    } else {
+      m_editor->setDisabled(true);
+      m_editor->setToolTip(tr("You may not edit a notebook that is in the trash. Restore it to edit it."));
+    }
+  }
 
   // Change to requested note
   m_curNote = note;
@@ -95,6 +113,8 @@ void EscribaManager::setNote( Note *note )
           this, &EscribaManager::noteIDChanged);
   connect(m_curNote, &Note::noteFavoritedChanged,
           this, &EscribaManager::updateFavoriteButton);
+  connect(m_curNote, &Note::noteTrashedOrRestored,
+          this, &EscribaManager::updateTrashButton);
   m_titleWidget->setText(note->title());
   m_editor->setMarkdown(note->text());
   updateTagsButtonCounter();
@@ -112,6 +132,7 @@ void EscribaManager::setNote( Note *note )
   updateNotebookWidget();
   updateFavoriteButton();
   updateDateWidgets();
+  updateTrashButton();
 
   QString created = "<strong>Created:</strong> %1";
   QString modified = "<strong>Modified:</strong> %1";
@@ -125,6 +146,7 @@ void EscribaManager::deselect() {
   m_titleWidget->setText("Untitled");
   m_editor->setMarkdown("");
   m_editor->setDisabled(true);
+  emit deselected();
 }
 
 void EscribaManager::contentChangedFromEditor(QString markdown)
@@ -164,7 +186,7 @@ void EscribaManager::openNotebookEditor()
   }
 
   if (m_editNotebookDialog == nullptr) {
-    m_editNotebookDialog = new Note_EditNotebook(m_db, m_manager, m_curNote);
+    m_editNotebookDialog = new Note_EditNotebook(m_db, m_manager, m_curNote, m_notebookWidget);
   }
 
   m_editNotebookDialog->show();
@@ -182,7 +204,7 @@ void EscribaManager::openTagsEditor()
   }
 
   if (m_editTagsDialog == nullptr) {
-    m_editTagsDialog = new Note_EditTags(m_db, m_curNote);
+    m_editTagsDialog = new Note_EditTags(m_db, m_curNote, m_tagsViewerWidget);
   }
 
   m_editTagsDialog->show();
@@ -239,9 +261,28 @@ void EscribaManager::updateFavoriteButton(void) {
   m_favoriteButton->setChecked( m_curNote->favorited() );
 }
 
+void EscribaManager::updateTrashButton(void) {
+  // If note is trashed, disable trash button
+  // If note is not trashed, enable trash button
+  bool trashed = m_curNote->trashed();
+  m_trashButton->setEnabled( !trashed );
+  if ( trashed )
+    m_trashButton->setToolTip(tr("This note has been trashed."));
+  else
+    m_trashButton->setToolTip(tr("Move this note to the trash."));
+}
+
 void EscribaManager::toggleFavorited() {
   m_curNote->setFavorited( !m_curNote->favorited() );
   updateFavoriteButton();
+}
+
+void EscribaManager::trashNote() {
+  if ( m_curNote->trashed() )
+    return;
+  m_curNote->setTrashed(true);
+  updateTrashButton();
+  deselect();
 }
 
 void EscribaManager::aNoteWasRemoved(int noteID) {

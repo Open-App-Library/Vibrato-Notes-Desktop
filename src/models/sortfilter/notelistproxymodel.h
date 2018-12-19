@@ -24,6 +24,8 @@ public:
   // With this enum, you can choose whether you want the favorites filter disable,
   // to display favorites only or exclude favorites.
   enum FavoritesMethods {FavoritesFilterDisabled, FavoritesOnly, FavoritesExclude};
+  // Either hide trash (default), show only trash, or show both trash and not-trash.
+  enum TrashMethods {TrashHidden, TrashOnly, TrashBoth};
 
   void setSortingMethod(int sortingMethod);
 
@@ -37,11 +39,13 @@ public:
   QVector<Notebook*> notebookFilter() const;
   QVector<Tag*> tagFilter() const;
   int favoritesFilter() const;
+  int trashedFilter() const;
 
   void filterOutEverything(bool shouldFilterOutEverything=true);
   void addNotebookToFilter(Notebook *notebook);
   void addTagToFilter(Tag *tag);
   void setFavoritesFilterMode(int filterMode);
+  void setTrashedFilter(int trashedFilter);
 
   NoteListItem *item(int row);
 
@@ -56,7 +60,8 @@ private:
   bool m_filter_out_everything=false;
   QVector<Notebook*> m_notebook_filter;
   QVector<Tag*> m_tag_filter;
-  int m_favorites_filter;
+  int m_favorites_filter=FavoritesFilterDisabled;
+  int m_trashed_filter=TrashHidden;
 
 };
 

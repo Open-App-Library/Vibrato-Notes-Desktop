@@ -60,6 +60,7 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
   QVector<int> tagIds = note->tags();
 
   bool passed_favorite_check = false;
+  bool passed_trashed_check  = false;
   bool passed_notebook_check = false;
   bool passed_tag_check      = false;
 
@@ -73,6 +74,18 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
   else if ( m_favorites_filter == FavoritesExclude )
     passed_favorite_check = note->favorited() ? false : true;
   if ( !passed_favorite_check )
+    return false;
+
+  //////////////////////
+  /// TRASHED FILTER ///
+  //////////////////////
+  if ( m_trashed_filter == TrashBoth )
+    passed_trashed_check = true;
+  else if ( m_trashed_filter == TrashHidden )
+    passed_trashed_check = note->trashed() ? false : true;
+  else if ( m_trashed_filter == TrashOnly )
+    passed_trashed_check = note->trashed() ? true : false;
+  if ( !passed_trashed_check )
     return false;
 
   ///////////////////////
@@ -113,10 +126,11 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
 
 void NoteListProxyModel::clearFilter(bool invalidate)
 {
+  m_favorites_filter = FavoritesFilterDisabled;
+  m_trashed_filter = TrashHidden;
   m_notebook_filter.clear();
   m_tag_filter.clear();
   m_filter_out_everything = false;
-  m_favorites_filter = FavoritesFilterDisabled;
   if ( invalidate )
     invalidateFilter();
 }
@@ -131,6 +145,10 @@ QVector<Tag*> NoteListProxyModel::tagFilter() const {
 
 int NoteListProxyModel::favoritesFilter() const {
   return m_favorites_filter;
+}
+
+int NoteListProxyModel::trashedFilter() const {
+  return m_trashed_filter;
 }
 
 void NoteListProxyModel::filterOutEverything(bool shouldFilterOutEverything)
@@ -153,6 +171,11 @@ void NoteListProxyModel::addTagToFilter(Tag *tag)
 
 void NoteListProxyModel::setFavoritesFilterMode(int filterMode) {
   m_favorites_filter = filterMode;
+  invalidateFilter();
+}
+
+void NoteListProxyModel::setTrashedFilter(int trashedFilter) {
+  m_trashed_filter = trashedFilter;
   invalidateFilter();
 }
 

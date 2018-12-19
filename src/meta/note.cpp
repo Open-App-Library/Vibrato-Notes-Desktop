@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <helper-io.hpp>
 
-Note::Note(int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, bool favorited,int notebook, QVector<int> tags)
+Note::Note(int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, bool favorited,int notebook, QVector<int> tags, bool trashed)
 {
   m_id = id;
   m_title = title;
@@ -14,6 +14,7 @@ Note::Note(int id, QString title, QString text, QDateTime date_created, QDateTim
   m_favorited = favorited;
   m_notebook = notebook;
   m_tags = tags;
+  m_trashed = trashed;
   connect(this, &Note::noteChanged,
           this, &Note::handleNoteChange);
 }
@@ -198,6 +199,18 @@ void Note::setTags(const QVector<int> &tags)
   m_tags = tags;
   emit noteChanged( this );
   emit noteTagsChanged( this );
+}
+
+bool Note::trashed() const {
+  return m_trashed;
+}
+
+void Note::setTrashed(bool trashed) {
+  m_trashed = trashed;
+  emit noteChanged(this, false);
+  emit noteTrashedOrRestored(this, trashed);
+  if ( trashed ) emit noteTrashed(this);
+  else emit noteRestored(this);
 }
 
 void Note::handleNoteChange(Note *note, bool updateDateModified)

@@ -44,7 +44,10 @@ public:
   bool noteWithIDExists(int noteID) const;
 
 signals:
-  void noteRemoved(int noteID);
+  // Important: 'Trashed' means the *Note is set as trashed=true.
+  //            'Deleted' means the *Note was deleted and removed from database. (Permanent)
+  void noteTrashedOrRestored(Note *note, bool trashed);
+  void noteDeleted(int noteID);
   void noteFavoritedChanged(Note *note);
 
 private slots:

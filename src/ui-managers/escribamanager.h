@@ -30,9 +30,11 @@ public:
   void deselect();
 
   void toggleFavorited();
+  void trashNote();
 
 signals:
   void selectedNewNote(Note *note);
+  void deselected();
 
 public slots:
   void contentChangedFromEditor(QString markdown);
@@ -49,6 +51,7 @@ public slots:
   void updateNotebookWidget(void);
   void updateDateWidgets(void);
   void updateFavoriteButton(void);
+  void updateTrashButton(void);
 
 private slots:
   void aNoteWasRemoved(int noteID);
@@ -73,7 +76,7 @@ private:
   QToolButton *m_notebookWidget;
   QToolButton *m_favoriteButton;
   QToolButton *m_moreWidget;
-  QToolButton *m_trashWidget;
+  QToolButton *m_trashButton;
   QLabel *m_dateCreatedWidget;
   QLabel *m_dateModifiedWidget;
 

@@ -27,6 +27,9 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
 
   view->setModel(m_proxyModel);
 
+  connect(m_manager, &Manager::ready,
+          this, &NoteListManager::managerIsReady);
+
   connect(m_view, &CustomListView::selectedItemChanged,
           this, &NoteListManager::noteListItemChanged);
 
@@ -41,6 +44,9 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
 
   connect(m_db->noteDatabase(), &NoteDatabase::noteFavoritedChanged,
           this, &NoteListManager::favoritedChanged);
+
+  connect(m_db->noteDatabase(), &NoteDatabase::noteTrashedOrRestored,
+          this, &NoteListManager::trashedOrRestored);
 
   // commented outff for now. This is potentially a more efficient way to set indexWidgets
   // however it has a slight graphical bug when loading a lot of notes.
@@ -146,6 +152,23 @@ void NoteListManager::showFavoritesView()
   m_proxyModel->setFavoritesFilterMode(NoteListProxyModel::FavoritesOnly);
 }
 
+void NoteListManager::showTrashView()
+{
+  deselect();
+  disconnectCurrentView();
+  m_curViewType = View_Trash;
+  setTitle("Trash");
+
+  int trashCount = 0;
+  for ( Note *note : m_db->noteDatabase()->list() )
+    if ( note->trashed() )
+      trashCount++;
+  setMetrics(trashCount, "note");
+
+  clearFilter(false);
+  m_proxyModel->setTrashedFilter(NoteListProxyModel::TrashOnly);
+}
+
 void NoteListManager::showNotebookView(Notebook *notebook)
 {
   deselect();
@@ -205,15 +228,6 @@ void NoteListManager::showTagView(Tag *tag)
     if ( note->tags().contains(tag->id()) )
       tagCount++;
   setMetrics(tagCount, "note");
-}
-
-void NoteListManager::showTrashView()
-{
-  deselect();
-  disconnectCurrentView();
-  m_curViewType = View_Trash;
-  hideMetrics();
-  setTitle("Trash");
 }
 
 void NoteListManager::showSearchView(QString searchQuery)
@@ -300,6 +314,11 @@ void NoteListManager::ensureCurrentNoteIsSelected()
   }
 }
 
+void NoteListManager::managerIsReady() {
+  connect(m_manager->escribaManager(), &EscribaManager::deselected,
+          this, &NoteListManager::escribaDeselected);
+}
+
 void NoteListManager::notebooksDeleted(QVector<int> notebookIDs) {
   // If the current notebook gets deleted, set the value to nullptr for safety.
   if ( m_curViewType == View_Notebook &&
@@ -313,11 +332,24 @@ void NoteListManager::tagDeleted(int tagID) {
     m_curViewType_Tag = nullptr;
 }
 
-void NoteListManager::favoritedChanged() {
+void NoteListManager::favoritedChanged(void) {
   int favFilterMode = m_proxyModel->favoritesFilter();
   if ( favFilterMode == NoteListProxyModel::FavoritesOnly ||
        favFilterMode == NoteListProxyModel::FavoritesExclude )
     m_proxyModel->invalidate();
+}
+
+void NoteListManager::trashedOrRestored(void) {
+  int trashFilterMode = m_proxyModel->trashedFilter();
+  if ( trashFilterMode == NoteListProxyModel::TrashHidden ||
+       trashFilterMode == NoteListProxyModel::TrashOnly )
+    m_proxyModel->invalidate();
+}
+
+void NoteListManager::escribaDeselected() {
+  if ( m_proxyModel->rowCount() > 0 ) {
+    openIndexInEditor(0);
+  }
 }
 
 // This is potentially a more efficient way to set indexWidgets
