@@ -12,6 +12,8 @@ Note_EditTags::Note_EditTags(Database *db, Note *note, QWidget *parent) :
 {
   ui->setupUi(this);
 
+  setModal(true);
+
   // Tree Widget
   m_tagList = ui->tagList;
   m_tagList->setSelectionMode( QAbstractItemView::ExtendedSelection ); // allow multiple item selection
