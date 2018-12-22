@@ -1,10 +1,10 @@
 #include "trashview.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QDebug>
 #include "../notelistmanager.h"
 #include "../escribamanager.h"
 #include "../../meta/note.h"
+#include <QSizePolicy>
 
 TrashView::TrashView(Database *db, Manager *manager, QObject *parent) :
   GenericView(db, manager, parent)
@@ -57,6 +57,11 @@ void TrashView::activateView()
   m_massRestore = new QToolButton();
   m_massDelete = new QToolButton();
 
+  connect(m_massRestore, &QToolButton::clicked,
+          this, &TrashView::restoreSelectedNotes);
+  connect(m_massDelete, &QToolButton::clicked,
+          this, &TrashView::deleteSelectedNotes);
+
   m_checkbox->setToolTip(tr("Select or deselect all notes in trash."));
   m_massRestore->setToolTip(tr("Mass restore"));
   m_massRestore->setIcon( QIcon::fromTheme("document-revert") );
@@ -74,11 +79,6 @@ void TrashView::activateView()
   // Add the mass actions and trash list widget to screen
   notelistlayout->addWidget(m_massActions);
   notelistlayout->addWidget(m_trashListWidget);
-
-  // Poplulate the trash list widget
-  // for ( Note *note : m_trashNotes) {
-
-  // }
 
   // Signals
   connect(m_checkbox, &QCheckBox::stateChanged,
@@ -112,7 +112,7 @@ TrashItem* TrashView::addItem(Note* note) {
   TrashItem *item = new TrashItem(note, m_trashListWidget);
   m_trashItems.append(item);
   connect(item, &TrashItem::itemCheckedOrUnchecked,
-          this, &TrashView::itemCheckedOrUnchecked);
+          this, &TrashView::itemCheckedOrUncheckedOrRemoved);
   connect(item, &TrashItem::pleaseDeleteTrashItem,
           this, &TrashView::deleteTrashItem);
   connect(item, &TrashItem::deleteNote,
@@ -161,19 +161,25 @@ void TrashView::selectionChanged(QListWidgetItem* current, QListWidgetItem* prev
 }
 
 void TrashView::deleteSelectedNotes() {
-  for (TrashItem *item : m_selectedTrashItems)
-    item->emitDeleteNoteSignal();
+  for (int i=m_selectedTrashItems.length()-1; i>=0; i--) {
+    TrashItem *item = m_selectedTrashItems[i];
+    deleteNote(item->note());
+    deleteTrashItem(item);
+  }
 }
 
 void TrashView::restoreSelectedNotes() {
-  for (TrashItem *item : m_selectedTrashItems)
-    item->emitRestoreNoteSignal();
+  for (int i=m_selectedTrashItems.length()-1; i>=0; i--) {
+    TrashItem *item = m_selectedTrashItems[i];
+    restoreNote(item->note());
+  }
 }
 
 void TrashView::deleteTrashItem(TrashItem* item) {
   m_trashItems.removeAll(item);
   m_selectedTrashItems.removeAll(item);
   m_trashListWidget->removeItemWidget(item);
+  itemCheckedOrUncheckedOrRemoved(nullptr);
   delete item;
 }
 
@@ -193,14 +199,17 @@ void TrashView::toggleMassCheckmark(void) {
     deselectAll();
 }
 
-void TrashView::itemCheckedOrUnchecked(TrashItem *item) {
-  if ( item->checked() ) {
-    if ( !m_selectedTrashItems.contains(item) )
-      m_selectedTrashItems.append(item);
-  }
-  else {
-    if ( m_selectedTrashItems.contains(item) )
-      m_selectedTrashItems.removeAll(item);
+void TrashView::itemCheckedOrUncheckedOrRemoved(TrashItem *item) {
+  if ( item != nullptr ) {
+    if ( item->checked() ) {
+      if ( !m_selectedTrashItems.contains(item) ) {
+        m_selectedTrashItems.append(item);
+      }
+    }
+    else {
+      if ( m_selectedTrashItems.contains(item) )
+        m_selectedTrashItems.removeAll(item);
+    }
   }
   determineMassActionVisibility();
 }

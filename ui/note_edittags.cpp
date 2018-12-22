@@ -19,7 +19,7 @@ Note_EditTags::Note_EditTags(Database *db, Note *note, QWidget *parent) :
   m_tagList->setSelectionMode( QAbstractItemView::ExtendedSelection ); // allow multiple item selection
 
   // Button box
-  m_removeTagButton = new QPushButton( "Remove selected tag from note" );
+  m_removeTagButton = new QPushButton("Remove selected tag from note");
   ui->buttonBox->addButton(m_removeTagButton, QDialogButtonBox::ActionRole);
 
   // Tag input

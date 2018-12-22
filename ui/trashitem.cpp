@@ -1,5 +1,6 @@
 #include "trashitem.h"
 #include "ui_trashitem.h"
+#include <QSizePolicy>
 
 TrashItem::TrashItem(Note *note, QListWidget *parent) :
   QListWidgetItem(parent),
@@ -10,8 +11,10 @@ TrashItem::TrashItem(Note *note, QListWidget *parent) :
   widget = new QWidget();
   ui->setupUi(widget);
 
-  this->listWidget()->setItemWidget(this, widget);
-  this->setSizeHint( QSize(this->sizeHint().width(), 40));
+  listWidget()->setItemWidget(this, widget);
+  setSizeHint( QSize(this->sizeHint().width(), 40));
+
+  ui->checkbox->setSizePolicy( QSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed) );
 
   connect(ui->checkbox, &QCheckBox::stateChanged,
           this, &TrashItem::handleItemCheckedOrUnchecked);

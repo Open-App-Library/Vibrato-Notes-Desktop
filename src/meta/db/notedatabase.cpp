@@ -61,7 +61,10 @@ void NoteDatabase::removeNote(int index)
 void NoteDatabase::removeNote(Note *note)
 {
   int index = m_list.indexOf( note );
-  removeNote( index );
+  if ( index >= 0)
+    removeNote( index );
+  else
+    qDebug() << "Tried to remove a note with an ID of -1 :" << note->title();
 }
 
 void NoteDatabase::removeNotes(QVector<Note*> notes)

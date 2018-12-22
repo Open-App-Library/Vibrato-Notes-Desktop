@@ -49,7 +49,7 @@ private:
 
   // Private functions
   void toggleMassCheckmark(void);
-  void itemCheckedOrUnchecked(TrashItem *item);
+  void itemCheckedOrUncheckedOrRemoved(TrashItem *item);
 };
 
 #endif // TRASHVIEW_H
