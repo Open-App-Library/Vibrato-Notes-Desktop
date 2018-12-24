@@ -30,7 +30,9 @@ QString Notebook::title() const
 
 void Notebook::setTitle(const QString &title)
 {
-  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
+  // If Default Notebook or title is empty, return.
+  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID ||
+       title.trimmed().isEmpty() )
     return;
   m_title = title;
   emit notebookTitleChanged(this);

@@ -55,7 +55,8 @@ SOURCES += \
     src/models/views/customtreeview.cpp \
     ui/trashitem.cpp \
     src/ui-managers/notelist-views/trashview.cpp \
-    src/ui-managers/notelist-views/genericview.cpp
+    src/ui-managers/notelist-views/genericview.cpp \
+    ui/notebook_editparent.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -92,7 +93,8 @@ HEADERS += \
     src/models/views/customtreeview.h \
     ui/trashitem.h \
     src/ui-managers/notelist-views/trashview.h \
-    src/ui-managers/notelist-views/genericview.h
+    src/ui-managers/notelist-views/genericview.h \
+    ui/notebook_editparent.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
@@ -107,7 +109,8 @@ FORMS += \
     ui/note_edittags.ui \
     ui/notelist_addons.ui \
     ui/edittags.ui \
-    ui/trashitem.ui
+    ui/trashitem.ui \
+    ui/notebook_editparent.ui
 
 include($$PWD/src/text-editor/Escriba.pro)
 

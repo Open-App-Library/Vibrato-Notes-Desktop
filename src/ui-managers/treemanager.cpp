@@ -480,8 +480,13 @@ void TreeManager::treeContextMenu(const QPoint &point)
 
     // Don't allow editing of default notebook
     if ( item->isNotebook() && item->object().notebook->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID ) {
-      m_notebookRename->setVisible(false);
-      m_notebookEditHierarchy->setVisible(false);
+      m_notebookRename->setDisabled(true);
+      m_notebookEditHierarchy->setDisabled(true);
+      m_notebookDelete->setDisabled(true);
+    } else {
+      m_notebookRename->setDisabled(false);
+      m_notebookEditHierarchy->setDisabled(false);
+      m_notebookDelete->setDisabled(false);
     }
 
     m_notebookContextMenu->exec(p);
