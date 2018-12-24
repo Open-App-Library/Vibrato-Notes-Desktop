@@ -60,8 +60,6 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
     item->object().tag->setTitle(value.toString());
   else return false;
 
-  item->setLabel(value.toString());
-
   emit dataChanged(index, index);
   return true;
 }

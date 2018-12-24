@@ -27,6 +27,7 @@ TagDatabase *Database::tagDatabase() const
 void Database::addTagToNote(Note *note, QString tagString)
 {
   Tag *tag = m_tag_database->addTag(tagString);
+  if ( tag == nullptr ) return;
   if ( note->tags().indexOf(tag->id()) == -1 )
     note->setTags( note->tags() << tag->id());
 }

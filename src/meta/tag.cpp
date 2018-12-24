@@ -25,6 +25,8 @@ QString Tag::title() const
 
 void Tag::setTitle(const QString &title)
 {
+  if ( title.trimmed().isEmpty() )
+    return;
   m_title = title;
   emit tagTitleChanged(this);
   emit tagChanged(this);

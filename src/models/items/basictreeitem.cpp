@@ -7,10 +7,7 @@
 
 BasicTreeItem::BasicTreeItem(Notebook *notebook, BasicTreeItem *parent)
 {
-  NotebookOrTag nortObject;
-  m_type = Type_Notebook;
-  nortObject.notebook = notebook;
-  m_object = nortObject;
+  setObjectNotebook(notebook);
   updateLabel();
   m_parentItem = parent;
   m_id = notebook->id();
@@ -18,10 +15,7 @@ BasicTreeItem::BasicTreeItem(Notebook *notebook, BasicTreeItem *parent)
 
 BasicTreeItem::BasicTreeItem(Tag *tag, BasicTreeItem *parent)
 {
-  NotebookOrTag nortObject;
-  m_type = Type_Tag;
-  nortObject.tag = tag;
-  m_object = nortObject;
+  setObjectTag(tag);
   updateLabel();
   m_parentItem = parent;
   m_id = tag->id();
@@ -94,16 +88,24 @@ NotebookOrTag BasicTreeItem::object() const
 
 void BasicTreeItem::setObjectNotebook(Notebook *notebook)
 {
+  NotebookOrTag blankObject;
+  m_object = blankObject;
   m_type = Type_Notebook;
   m_object.notebook = notebook;
+  connect(notebook, &Notebook::notebookTitleChanged,
+          this, &BasicTreeItem::notebookTitleChanged);
   connect(notebook, &Notebook::notebookIDChanged,
           this, &BasicTreeItem::notebookIDChanged);
 }
 
 void BasicTreeItem::setObjectTag(Tag *tag)
 {
+  NotebookOrTag blankObject;
+  m_object = blankObject;
   m_type = Type_Tag;
   m_object.tag = tag;
+  connect(tag, &Tag::tagTitleChanged,
+          this, &BasicTreeItem::tagTitleChanged);
   connect(tag, &Tag::tagIDChanged,
           this, &BasicTreeItem::tagIDChanged);
 }
@@ -165,9 +167,17 @@ int BasicTreeItem::row() const
   return 0;
 }
 
+void BasicTreeItem::notebookTitleChanged(Notebook* notebook) {
+  m_label = notebook->title();
+}
+
 void BasicTreeItem::notebookIDChanged(Notebook *notebook)
 {
   m_id = notebook->id();
+}
+
+void BasicTreeItem::tagTitleChanged(Tag* tag) {
+  m_label = tag->title();
 }
 
 void BasicTreeItem::tagIDChanged(Tag *tag)

@@ -52,7 +52,9 @@ public:
   int row() const;
 
 private slots:
+  void notebookTitleChanged(Notebook *notebook);
   void notebookIDChanged(Notebook *notebook);
+  void tagTitleChanged(Tag *tag);
   void tagIDChanged(Tag *tag);
 
 private:
