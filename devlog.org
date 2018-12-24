@@ -18,3 +18,5 @@ This file tracks the weekly development progress on Vibrato Notes - new features
 ** Made favorites view update when you un-favorite a note
 ** Added "trashed" property to Note class
 ** Updated the Note class to utilize the updateModifiedDate boolean
+* December 23 - December 29
+** Fixed bugs while renaming tags
