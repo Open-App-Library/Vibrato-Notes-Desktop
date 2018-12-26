@@ -51,6 +51,11 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
   connect(m_db->noteDatabase(), &NoteDatabase::noteTrashedOrRestored,
           this, &NoteListManager::trashedOrRestored);
 
+  connect(m_db->notebookDatabase(), &NotebookDatabase::notebookChanged,
+          this, &NoteListManager::aNotebookChanged);
+  connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
+          this, &NoteListManager::aTagChanged);
+
   // commented outff for now. This is potentially a more efficient way to set indexWidgets
   // however it has a slight graphical bug when loading a lot of notes.
   //    connect(m_proxyModel, &QSortFilterProxyModel::rowsInserted,
@@ -147,16 +152,14 @@ void NoteListManager::disconnectCurrentView() {
   // If in a notebook view and the current notebook is not null, disconnect it.
   ///
   if ( m_curViewType == View_Notebook && m_curViewType_Notebook != nullptr ) {
-    disconnect(m_curViewType_Notebook, &Notebook::notebookChanged,
-            this, &NoteListManager::showNotebookView);
+
   }
   ///
   // Tag View Deactivation
   // If in a tag view and the current tag is not null, disconnect it.
   ///
   else if ( m_curViewType == View_Tag && m_curViewType_Tag != nullptr ) {
-    disconnect(m_curViewType_Tag, &Tag::tagChanged,
-               this, &NoteListManager::showTagView);
+
   }
   ///
   // Trash View Deactivation
@@ -209,9 +212,6 @@ void NoteListManager::showNotebookView(Notebook *notebook)
   m_curViewType_ItemID = notebook->id();
   m_curViewType_Notebook = notebook;
 
-  connect(notebook, &Notebook::notebookChanged,
-          this, &NoteListManager::showNotebookView);
-
   clearFilter(false);
   addNotebookToFilter(notebook);
 
@@ -242,9 +242,6 @@ void NoteListManager::showTagView(Tag *tag)
   m_curViewType = View_Tag;
   m_curViewType_ItemID = tag->id();
   m_curViewType_Tag = tag;
-
-  connect(tag, &Tag::tagChanged,
-          this, &NoteListManager::showTagView);
 
   clearFilter(false);
   addTagToFilter(tag);
@@ -378,6 +375,16 @@ void NoteListManager::escribaDeselected() {
   if ( m_proxyModel->rowCount() > 0 ) {
     openIndexInEditor(0);
   }
+}
+
+void NoteListManager::aNotebookChanged(Notebook* notebook) {
+  if ( m_curViewType == View_Notebook && m_curViewType_Notebook == notebook )
+    showNotebookView(notebook);
+}
+
+void NoteListManager::aTagChanged(Tag* tag) {
+  if ( m_curViewType == View_Tag && m_curViewType_Tag == tag )
+    showTagView(tag);
 }
 
 // This is potentially a more efficient way to set indexWidgets
