@@ -22,6 +22,7 @@ public:
   EscribaManager(Escriba *editor, Database *db, Manager *manager);
 
   void updateTagsButtonCounter();
+  void updateTagsCompletionList(void);
 
   Note *note();
   void setNote( Note *note );

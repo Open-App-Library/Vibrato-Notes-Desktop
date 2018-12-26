@@ -52,7 +52,7 @@ public:
   void showNotebookView(Notebook *notebook);
   void showTagView(Tag *tag);
   void showTrashView();
-  void showSearchView(QString searchQuery);
+  void showSearchQueryView(QString searchQuery);
 
   void setTitle(QString title);
   void setMetrics(int count, QString objectTypeSingular, QString pluralOverride=QString("")); // objectTypeSingular - ex. "note", "notebook"

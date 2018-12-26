@@ -8,51 +8,52 @@
 #include "../../models/items/listitemwithid.h"
 
 namespace Ui {
-class Note_EditTags;
+  class Note_EditTags;
 }
 
 class Note_EditTags : public QDialog
 {
-    Q_OBJECT
+  Q_OBJECT
 
 public:
-    explicit Note_EditTags(Database *db, Note *note, QWidget *parent = nullptr);
-    ~Note_EditTags();
+  explicit Note_EditTags(Database *db, Note *note, QWidget *parent = nullptr);
+  ~Note_EditTags();
 
-    Note *note();
+  Note *note();
 
-    int selectedTag() const;
+  int selectedTag() const;
 
-    virtual void keyPressEvent(QKeyEvent *event) override;
+  virtual void keyPressEvent(QKeyEvent *event) override;
 
 private slots:
-    void noteChanged(void);
-    void removeTagsFromNote();
-    void addTag();
+  void noteChanged(void);
+  void updateTagsCompletionList(void);
+  void removeTagsFromNote();
+  void addTag();
 
-    void currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
+  void currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
 
 signals:
-    void tagChanged();
+  void tagChanged();
 
 private:
-    Ui::Note_EditTags *ui;
+  Ui::Note_EditTags *ui;
 
-    void updateTitle();
+  void updateTitle();
 
-    QListWidget *m_tagList;
-    QPushButton *m_removeTagButton;
-    QLineEdit   *m_tagInput;
+  QListWidget *m_tagList;
+  QPushButton *m_removeTagButton;
+  QLineEdit   *m_tagInput;
 
-    Database *m_db=nullptr;
-    Note *m_note=nullptr;
+  Database *m_db=nullptr;
+  Note *m_note=nullptr;
 
-    QVector<ListItemWithID*> m_listItems;
+  QVector<ListItemWithID*> m_listItems;
 
-    // private functions
-    void clearList();
-    void addTagToList(Tag *tag);
-    void loadNotesTags();
+  // private functions
+  void clearList();
+  void addTagToList(Tag *tag);
+  void loadNotesTags();
 
 };
 

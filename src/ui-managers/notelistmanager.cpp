@@ -255,13 +255,13 @@ void NoteListManager::showTagView(Tag *tag)
   setMetrics(tagCount, "note");
 }
 
-void NoteListManager::showSearchView(QString searchQuery)
+void NoteListManager::showSearchQueryView(QString searchQuery)
 {
   deselect();
   disconnectCurrentView();
   m_curViewType = View_Search;
   hideMetrics();
-  setTitle("Search results for STRING");
+  setTitle(QString("Search results for \"%1\"").arg(searchQuery));
 }
 
 void NoteListManager::setTitle(QString title)

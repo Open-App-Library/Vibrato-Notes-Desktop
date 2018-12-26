@@ -59,6 +59,9 @@ public:
 
   void loadTagsFromTagDatabase(TagDatabase *tagDatabase);
 
+  // SearchQuery functions
+  BasicTreeItem *addSearchQuery(QString searchQuery);
+
   // Signal Callbacks
   void treeItemChanged(const QModelIndex &current, const QModelIndex &previous);
 

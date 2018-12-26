@@ -42,9 +42,13 @@ bool BasicTreeItem::isTag() const
   return m_type == Type_Tag;
 }
 
+bool BasicTreeItem::isSearchQuery() const {
+  return m_type == Type_SearchQuery;
+}
+
 bool BasicTreeItem::isOther() const
 {
-  return m_type != Type_Notebook && m_type != Type_Tag;
+  return m_type != Type_Notebook && m_type != Type_Tag && m_type != Type_SearchQuery;
 }
 
 int BasicTreeItem::id() const
@@ -108,6 +112,15 @@ void BasicTreeItem::setObjectTag(Tag *tag)
           this, &BasicTreeItem::tagTitleChanged);
   connect(tag, &Tag::tagIDChanged,
           this, &BasicTreeItem::tagIDChanged);
+}
+
+QString BasicTreeItem::searchQuery() const {
+  return m_searchQuery;
+}
+
+void BasicTreeItem::setSearchQuery(QString searchQuery) {
+  m_type = Type_SearchQuery;
+  m_searchQuery = searchQuery.trimmed();
 }
 
 BasicTreeItem *BasicTreeItem::getChild(int row) const

@@ -26,6 +26,7 @@ public:
   enum FavoritesMethods {FavoritesFilterDisabled, FavoritesOnly, FavoritesExclude};
   // Either hide trash (default), show only trash, or show both trash and not-trash.
   enum TrashMethods {TrashHidden, TrashOnly, TrashBoth};
+  enum SearchMethods {SearchOff, SearchOn};
 
   void setSortingMethod(int sortingMethod);
 
@@ -63,6 +64,8 @@ private:
   int m_favorites_filter=FavoritesFilterDisabled;
   int m_trashed_filter=TrashHidden;
 
+  // Searching notes
+  int m_search_filter=SearchOff;
 };
 
 #endif // NOTELISTPROXYMODEL_H

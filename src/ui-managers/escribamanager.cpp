@@ -1,6 +1,7 @@
 #include "escribamanager.h"
 #include <QDebug>
 #include "../models/items/treeitemwithid.h"
+#include <QCompleter>
 
 EscribaManager::EscribaManager(Escriba *editor, Database *db, Manager *manager) :
   m_editor(editor),
@@ -39,6 +40,14 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db, Manager *manager) 
           this, &EscribaManager::aNoteWasRemoved);
   connect(m_db->notebookDatabase(), &NotebookDatabase::notebooksRemoved,
           this, &EscribaManager::notebooksRemoved);
+  connect(m_db->tagDatabase(), &TagDatabase::tagRemoved,
+          this, &EscribaManager::updateTagsCompletionList);
+  connect(m_db->tagDatabase(), &TagDatabase::tagAdded,
+          this, &EscribaManager::updateTagsCompletionList);
+  connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
+          this, &EscribaManager::updateTagsCompletionList);
+
+  updateTagsCompletionList();
 
   // Deselect by default
   deselect();
@@ -47,6 +56,26 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db, Manager *manager) 
 void EscribaManager::updateTagsButtonCounter()
 {
   m_tagsViewerWidget->setText( QString("Manage Tags (%1)").arg( m_curNote->tags().count() ) );
+}
+
+void EscribaManager::updateTagsCompletionList(void)
+{
+  // Save the old completer to a variable
+  QCompleter *oldCompleter = m_tagsInputWidget->completer();
+
+  // Create a string list of all of the tags
+  QStringList tags;
+  for (Tag *tag : m_db->tagDatabase()->list() )
+    tags << tag->title();
+
+  // Create a qcompleter, configure it, and set the tag input to use it.
+  QCompleter *completer = new QCompleter(tags, this);
+  completer->setCaseSensitivity( Qt::CaseInsensitive );
+  m_tagsInputWidget->setCompleter(completer);
+
+  // If old completer exists, free it from memory
+  if ( oldCompleter )
+    delete oldCompleter;
 }
 
 Note *EscribaManager::note()

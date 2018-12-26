@@ -18,12 +18,14 @@ public:
   explicit BasicTreeItem(const QString label, BasicTreeItem *parent = nullptr);
   explicit BasicTreeItem(Notebook *notebook, BasicTreeItem *parent = nullptr);
   explicit BasicTreeItem(Tag *tag, BasicTreeItem *parent = nullptr);
+
   ~BasicTreeItem();
 
-  enum TypeOfItem {Type_Notebook, Type_Tag};
+  enum TypeOfItem {Type_Notebook, Type_Tag, Type_SearchQuery};
 
   bool isNotebook() const;
   bool isTag() const;
+  bool isSearchQuery() const;
   bool isOther() const;
 
   int id() const;
@@ -38,6 +40,10 @@ public:
   NotebookOrTag object() const;
   void setObjectNotebook(Notebook *notebook);
   void setObjectTag(Tag *tag);
+
+  // For items with a type of Type_SearchQuery
+  QString searchQuery() const;
+  void setSearchQuery(QString searchQuery);
 
   BasicTreeItem *getChild(int index) const;
   BasicTreeItem *appendChild(BasicTreeItem *child);
@@ -61,10 +67,11 @@ private:
   int m_id; // Grab ID of notebook or tag without accessing object. This is a safety feature.
   QString m_label;
   QIcon m_icon;
-  int m_type; // either TYPE_NOTEBOOK or TYPE_TAG
+  int m_type; // either Type_Notebook, Type_Tag, or Type_SearchQuery
   NotebookOrTag m_object;
   QVector<BasicTreeItem*> m_childItems;
   BasicTreeItem *m_parentItem;
+  QString m_searchQuery = "";
 };
 
 #endif // BASICTREEITEM_H

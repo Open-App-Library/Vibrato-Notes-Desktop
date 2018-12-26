@@ -19,23 +19,21 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   m_favorites = new BasicTreeItem( tr("Favorites") );
   m_notebooks = new BasicTreeItem( tr("Notebooks") );
   m_tags      = new BasicTreeItem( tr("Tags") );
-  m_trash     = new BasicTreeItem( tr("Trash (6)") );
-  BasicTreeItem *m_search = new BasicTreeItem( tr("Search results for \"Test\"") );
+  m_trash     = new BasicTreeItem( tr("Trash") );
 
   m_all_notes->setIcon( IconUtils::requestDarkIcon("document-new") );
   m_favorites->setIcon( IconUtils::requestDarkIcon("draw-star") );
   m_notebooks->setIcon( IconUtils::requestDarkIcon("folder") );
   m_tags->setIcon     ( IconUtils::requestDarkIcon("tag") );
   m_trash->setIcon    ( IconUtils::requestDarkIcon("trash-empty") );
-  m_search->setIcon   ( IconUtils::requestDarkIcon("edit-find") );
-
 
   m_tree_model->root()->appendChild(m_all_notes);
   m_tree_model->root()->appendChild(m_favorites);
   m_tree_model->root()->appendChild(m_notebooks);
   m_tree_model->root()->appendChild(m_tags);
   m_tree_model->root()->appendChild(m_trash);
-  m_tree_model->root()->appendChild(m_search);
+
+  addSearchQuery("lepre"); // test search. Should return the leprecan note.
 
   ////////////////////////////////////
   // START: CONTEXT MENUS
@@ -266,6 +264,15 @@ void TreeManager::loadTagsFromTagDatabase(TagDatabase *tagDatabase)
   update();
 }
 
+BasicTreeItem *TreeManager::addSearchQuery(QString searchQuery)
+{
+  BasicTreeItem *item = new BasicTreeItem( QString("Search results for \"%1\"").arg(searchQuery));
+  item->setSearchQuery(searchQuery);
+  item->setIcon( IconUtils::requestDarkIcon("edit-find") );
+  m_tree_model->root()->appendChild(item);
+  return item;
+}
+
 void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex &previous)
 {
   (void) previous; // Avoid 'unused parameter' compiler warning. Ignore.
@@ -309,6 +316,12 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
     else if ( item == m_trash )
       {
         m_manager->noteListManager()->showTrashView();
+      }
+
+    else if ( item->isSearchQuery() )
+      {
+        QString searchQuery = item->searchQuery();
+        m_manager->noteListManager()->showSearchQueryView(searchQuery);
       }
 
     else

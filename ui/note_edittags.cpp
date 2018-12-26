@@ -3,6 +3,7 @@
 #include "../../meta/db/notebookdatabase.h"
 
 #include <QDebug>
+#include <QCompleter>
 
 Note_EditTags::Note_EditTags(Database *db, Note *note, QWidget *parent) :
   QDialog(parent),
@@ -39,6 +40,15 @@ Note_EditTags::Note_EditTags(Database *db, Note *note, QWidget *parent) :
           this, &Note_EditTags::addTag);
   connect(m_tagList, &QListWidget::currentItemChanged,
           this, &Note_EditTags::currentItemChanged);
+
+  connect(m_db->tagDatabase(), &TagDatabase::tagRemoved,
+          this, &Note_EditTags::updateTagsCompletionList);
+  connect(m_db->tagDatabase(), &TagDatabase::tagAdded,
+          this, &Note_EditTags::updateTagsCompletionList);
+  connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
+          this, &Note_EditTags::updateTagsCompletionList);
+
+  updateTagsCompletionList();
 }
 
 Note_EditTags::~Note_EditTags()
@@ -65,6 +75,26 @@ void Note_EditTags::noteChanged(void)
 {
   updateTitle();
   loadNotesTags();
+}
+
+void Note_EditTags::updateTagsCompletionList(void)
+{
+  // Save the old completer to a variable
+  QCompleter *oldCompleter = m_tagInput->completer();
+
+  // Create a string list of all of the tags
+  QStringList tags;
+  for (Tag *tag : m_db->tagDatabase()->list() )
+    tags << tag->title();
+
+  // Create a qcompleter, configure it, and set the tag input to use it.
+  QCompleter *completer = new QCompleter(tags, this);
+  completer->setCaseSensitivity( Qt::CaseInsensitive );
+  m_tagInput->setCompleter(completer);
+
+  // If old completer exists, free it from memory
+  if ( oldCompleter )
+    delete oldCompleter;
 }
 
 void Note_EditTags::removeTagsFromNote()
