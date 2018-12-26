@@ -22,3 +22,4 @@ This file tracks the weekly development progress on Vibrato Notes - new features
 ** Fixed bugs while renaming tags
 ** Added auto-completion when tagging notes
 ** Fixed a segfault bug when user is deleting a tag/notebook they are viewing.
+** Added API for search results
