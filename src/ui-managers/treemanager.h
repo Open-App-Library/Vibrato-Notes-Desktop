@@ -47,6 +47,9 @@ public:
   void loadNotebookObjectAndChildren(Notebook *notebook, BasicTreeItem *parent=nullptr);
   void loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDatabase, bool expandAll=true);
 
+  QModelIndex findIndexFromTreeItem(BasicTreeItem *item);
+  void selectItem(BasicTreeItem *item);
+  void selectItem(QModelIndex index);
   void gotoAllNotesTab();
 
   QVector<BasicTreeItem*> recurseNotebooks(BasicTreeItem *parent=nullptr);

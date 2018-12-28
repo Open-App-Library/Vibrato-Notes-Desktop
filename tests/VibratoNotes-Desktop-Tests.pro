@@ -1,13 +1,13 @@
 QT += testlib
-QT += gui
-CONFIG += qt warn_on depend_includepath testcase
-DEFINES += "UNIT_TEST"
 
+include(../VibratoNotes-Desktop.pro)
+
+TARGET = UnitTests
 TEMPLATE = app
+DEFINES += UNIT_TEST
 
-SOURCES += \  
-    unit-tests.cpp \
-    ../src/meta/note.cpp
+# Remove the app's entry file
+SOURCES -= $$VIBRATO_ENTRY_POINT
 
-HEADERS += \
-    ../src/meta/note.h
+# Sources
+SOURCES += $$PWD/unit-tests.cpp

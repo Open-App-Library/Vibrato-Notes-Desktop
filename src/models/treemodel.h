@@ -26,6 +26,7 @@ public:
   QModelIndex index(int row, int column,
                     const QModelIndex &parent = QModelIndex()) const override;
   QModelIndex parent(const QModelIndex &index) const override;
+  QVector<QModelIndex> recurseChildren();
 
   int rowCount(const QModelIndex &parent = QModelIndex()) const override;
   int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -33,8 +34,8 @@ public:
   QModelIndex getItem(BasicTreeItem *item, QModelIndex parent=QModelIndex());
 
 private:
-
   BasicTreeItem *m_rootItem;
+  QVector<QModelIndex> m_recurseChildren(QModelIndex parent=QModelIndex());
 };
 
 #endif // TREEMODEL_H

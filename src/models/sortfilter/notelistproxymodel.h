@@ -47,6 +47,7 @@ public:
   void addTagToFilter(Tag *tag);
   void setFavoritesFilterMode(int filterMode);
   void setTrashedFilter(int trashedFilter);
+  void setSearchQuery(QString searchQuery, int searchFilterMode=SearchOn);
 
   NoteListItem *item(int row);
 
@@ -66,6 +67,7 @@ private:
 
   // Searching notes
   int m_search_filter=SearchOff;
+  QString m_searchQuery;
 };
 
 #endif // NOTELISTPROXYMODEL_H

@@ -1,5 +1,6 @@
 #include "notelistproxymodel.h"
 #include "../../meta/db/notedatabase.h"
+#include "../../dougsfuzzysearch.h"
 #include "../notelistmodel.h"
 #include <QStandardItemModel>
 
@@ -63,6 +64,7 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
   bool passed_trashed_check  = false;
   bool passed_notebook_check = false;
   bool passed_tag_check      = false;
+  bool passed_search_check   = false;
 
   ////////////////////////
   /// FAVORITES FILTER ///
@@ -121,6 +123,20 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
   if ( !passed_tag_check )
     return false;
 
+  /////////////////////
+  /// Search FILTER ///
+  /////////////////////
+  if (m_search_filter == SearchOn) {
+    DougsFuzzySearch search;
+    int lev = search.levenshteinSentences(m_searchQuery, note->title(), true);
+    if (lev < m_searchQuery.length()/2)
+      passed_search_check = true;
+  }
+  else
+    passed_search_check = true;
+  if (!passed_search_check)
+    return false;
+
   return true;
 }
 
@@ -131,6 +147,8 @@ void NoteListProxyModel::clearFilter(bool invalidate)
   m_notebook_filter.clear();
   m_tag_filter.clear();
   m_filter_out_everything = false;
+  m_search_filter = SearchOff;
+  m_searchQuery = "";
   if ( invalidate )
     invalidateFilter();
 }
@@ -176,6 +194,12 @@ void NoteListProxyModel::setFavoritesFilterMode(int filterMode) {
 
 void NoteListProxyModel::setTrashedFilter(int trashedFilter) {
   m_trashed_filter = trashedFilter;
+  invalidateFilter();
+}
+
+void NoteListProxyModel::setSearchQuery(QString searchQuery, int searchFilterMode) {
+  m_searchQuery = searchQuery;
+  m_search_filter = searchFilterMode;
   invalidateFilter();
 }
 

@@ -22,8 +22,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
+VIBRATO_ENTRY_POINT=$$PWD/src/main.cpp
+
 SOURCES += \
-    $$PWD/src/main.cpp \
+    $$VIBRATO_ENTRY_POINT \
     $$PWD/src/meta/info/appconfig.cpp \
     $$PWD/src/mainwindow.cpp \
     $$PWD/src/userwindow.cpp \
@@ -52,11 +54,12 @@ SOURCES += \
     $$PWD/src/models/sortfilter/notelistproxymodel.cpp \
     $$PWD/src/models/items/notelistitemwidget.cpp \
     $$PWD/ui/edittags.cpp \
-    src/models/views/customtreeview.cpp \
-    ui/trashitem.cpp \
-    src/ui-managers/notelist-views/trashview.cpp \
-    src/ui-managers/notelist-views/genericview.cpp \
-    ui/notebook_editparent.cpp
+    $$PWD/src/models/views/customtreeview.cpp \
+    $$PWD/ui/trashitem.cpp \
+    $$PWD/src/ui-managers/notelist-views/trashview.cpp \
+    $$PWD/src/ui-managers/notelist-views/genericview.cpp \
+    $$PWD/ui/notebook_editparent.cpp \
+    $$PWD/src/dougsfuzzysearch.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -90,11 +93,12 @@ HEADERS += \
     $$PWD/src/models/sortfilter/notelistproxymodel.h \
     $$PWD/src/models/items/notelistitemwidget.h \
     $$PWD/ui/edittags.h \
-    src/models/views/customtreeview.h \
-    ui/trashitem.h \
-    src/ui-managers/notelist-views/trashview.h \
-    src/ui-managers/notelist-views/genericview.h \
-    ui/notebook_editparent.h
+    $$PWD/src/models/views/customtreeview.h \
+    $$PWD/ui/trashitem.h \
+    $$PWD/src/ui-managers/notelist-views/trashview.h \
+    $$PWD/src/ui-managers/notelist-views/genericview.h \
+    $$PWD/ui/notebook_editparent.h \
+    $$PWD/src/dougsfuzzysearch.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
@@ -106,11 +110,11 @@ FORMS += \
     $$PWD/ui/escribaaddons.ui \
     $$PWD/ui/tagitem.ui \
     $$PWD/ui/note_editnotebook.ui \
-    ui/note_edittags.ui \
-    ui/notelist_addons.ui \
-    ui/edittags.ui \
-    ui/trashitem.ui \
-    ui/notebook_editparent.ui
+    $$PWD/ui/note_edittags.ui \
+    $$PWD/ui/notelist_addons.ui \
+    $$PWD/ui/edittags.ui \
+    $$PWD/ui/trashitem.ui \
+    $$PWD/ui/notebook_editparent.ui
 
 include($$PWD/src/text-editor/Escriba.pro)
 

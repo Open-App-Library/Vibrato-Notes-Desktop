@@ -33,8 +33,6 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   m_tree_model->root()->appendChild(m_tags);
   m_tree_model->root()->appendChild(m_trash);
 
-  addSearchQuery("lepre"); // test search. Should return the leprecan note.
-
   ////////////////////////////////////
   // START: CONTEXT MENUS
   ////////////////////////////////////
@@ -203,14 +201,35 @@ void TreeManager::loadNotebooksFromNotebookDatabase(NotebookDatabase *notebookDa
     m_tree_view->expandAll();
 }
 
+QModelIndex TreeManager::findIndexFromTreeItem(BasicTreeItem *item)
+{
+  for (QModelIndex index : m_tree_model->recurseChildren()) {
+    BasicTreeItem *curItem = static_cast<BasicTreeItem*>(index.internalPointer());
+    if (curItem == item)
+      return index;
+  }
+  return QModelIndex();
+}
+
+void TreeManager::selectItem(BasicTreeItem *item)
+{
+  selectItem( findIndexFromTreeItem(item) );
+}
+
+void TreeManager::selectItem(QModelIndex index)
+{
+  if ( !index.isValid() )
+    return;
+  m_tree_view->setCurrentIndex(index);
+  treeItemChanged(index, QModelIndex());
+}
+
 void TreeManager::gotoAllNotesTab()
 {
   // Set the current selection to the first item in the treeview..which is "All Notes"
   // Explanation: https://stackoverflow.com/questions/15817429/how-to-get-list-of-visible-qmodelindex-in-qabstractitemview
   QModelIndex all_notes_index = m_tree_model->index(0, 0);
-  m_tree_view->setCurrentIndex( all_notes_index );
-  treeItemChanged(all_notes_index, QModelIndex());
-
+  selectItem(all_notes_index);
 }
 
 QVector<BasicTreeItem*> TreeManager::recurseNotebooks(BasicTreeItem *parent)
@@ -270,6 +289,7 @@ BasicTreeItem *TreeManager::addSearchQuery(QString searchQuery)
   item->setSearchQuery(searchQuery);
   item->setIcon( IconUtils::requestDarkIcon("edit-find") );
   m_tree_model->root()->appendChild(item);
+  update();
   return item;
 }
 

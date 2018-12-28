@@ -262,6 +262,8 @@ void NoteListManager::showSearchQueryView(QString searchQuery)
   m_curViewType = View_Search;
   hideMetrics();
   setTitle(QString("Search results for \"%1\"").arg(searchQuery));
+  clearFilter(false);
+  m_proxyModel->setSearchQuery(searchQuery);
 }
 
 void NoteListManager::setTitle(QString title)

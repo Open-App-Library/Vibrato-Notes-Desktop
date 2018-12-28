@@ -120,6 +120,28 @@ QModelIndex TreeModel::parent(const QModelIndex &index) const
   return createIndex(parentItem->row(), 0, parentItem);
 }
 
+QVector<QModelIndex> TreeModel::recurseChildren() {
+  QVector<QModelIndex> items;
+  for (int i=0; i<rowCount(); i++) {
+    items.append(index(i, 0));
+    items.append(m_recurseChildren(index(i, 0)));
+  }
+  return items;
+}
+
+QVector<QModelIndex> TreeModel::m_recurseChildren(QModelIndex parent) {
+  QVector<QModelIndex> items;
+  if ( !parent.isValid() )
+    return items;
+
+  for (int i=0; i<rowCount(parent); i++) {
+    items.append(index(i, 0, parent));
+    items.append(m_recurseChildren(index(i, 0, parent)));
+  }
+
+  return items;
+}
+
 int TreeModel::rowCount(const QModelIndex &parent) const
 {
   BasicTreeItem *parentItem;

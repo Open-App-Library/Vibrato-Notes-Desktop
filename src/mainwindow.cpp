@@ -77,6 +77,9 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->action_viewFocus, &QAction::triggered,
           this, &MainWindow::view_focus);
 
+  // Search bar
+  connect(ui->searchBar, &QLineEdit::returnPressed,
+          this, &MainWindow::search);
 }
 
 MainWindow::~MainWindow()
@@ -155,4 +158,13 @@ void MainWindow::view_focus()
   splitterSizes[1] = 0;     // Second split is 1/6 of the screen
   splitterSizes[2] = window_width; // Last split occupies 4/6 of the screen
   ui->mainSplitter->setSizes(splitterSizes);
+}
+
+void MainWindow::search() {
+  QString searchQuery = ui->searchBar->text().trimmed();
+  ui->searchBar->clear();
+  if ( searchQuery.isEmpty() )
+    return;
+  BasicTreeItem *item = m_manager->treeManager()->addSearchQuery(searchQuery);
+  m_manager->treeManager()->selectItem(item);
 }
