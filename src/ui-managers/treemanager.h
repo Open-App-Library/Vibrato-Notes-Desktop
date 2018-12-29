@@ -73,6 +73,10 @@ public:
   // Navigation
   void openNotebookWithID(int notebookID);
 
+  // Removes a treeitem if isSearchQuery().
+  // If item == nullptr (default) it will try to delete the selected item.
+  void removeSearchQuery(BasicTreeItem *item=nullptr);
+
 public slots:
   void tagAdded(Tag *tag);
   void tagRemoved(int tagID);
@@ -90,6 +94,8 @@ public slots:
   void contextNewTag();
   void contextDeleteTag();
   void contextRenameTag();
+
+  void contextRemoveSearchQuery();
 
 private:
   TreeModel       *m_tree_model;
@@ -119,7 +125,9 @@ private:
   QAction *m_tagNew;
   QAction *m_tagRename;
   QAction *m_tagDelete;
-  //  QAction *m_
+
+  QMenu *m_searchQueryContextMenu;
+  QAction *m_searchQueryRemove;
 
   // TODO: https://forum.qt.io/topic/45262/disable-certain-rows-in-qtreeview
   BasicTreeItem *m_no_notebooks_placedholder = nullptr;

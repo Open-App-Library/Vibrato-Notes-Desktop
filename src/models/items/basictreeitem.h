@@ -48,6 +48,7 @@ public:
   BasicTreeItem *getChild(int index) const;
   BasicTreeItem *appendChild(BasicTreeItem *child);
   void removeChild(int index);
+  void removeChild(BasicTreeItem *item);
   QVector<BasicTreeItem*> children() const;
   QVector<BasicTreeItem*> recurseChildren() const;
   int childCount() const;

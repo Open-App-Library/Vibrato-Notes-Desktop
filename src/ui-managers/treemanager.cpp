@@ -87,6 +87,14 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   connect(m_tagDelete, &QAction::triggered,
           this, &TreeManager::contextDeleteTag);
 
+  // Search query context menu
+  m_searchQueryContextMenu = new QMenu();
+
+  m_searchQueryRemove = new QAction(tr("&Remove search query"));
+  m_searchQueryContextMenu->addAction(m_searchQueryRemove);
+  connect(m_searchQueryRemove, &QAction::triggered,
+          this, &TreeManager::contextRemoveSearchQuery);
+
   ////////////////////////////////////
   // END: CONTEXT MENUS
   ////////////////////////////////////
@@ -146,6 +154,7 @@ BasicTreeItem *TreeManager::addNotebook(Notebook *notebook, BasicTreeItem *paren
 
 void TreeManager::removeNotebook(BasicTreeItem *item)
 {
+  if ( !item->isNotebook() ) return;
   clearChildren(item);
   delete item;
   update();
@@ -489,6 +498,12 @@ void TreeManager::contextRenameTag()
     m_tree_view->edit(m_currentContextModelIndex);
 }
 
+void TreeManager::contextRemoveSearchQuery()
+{
+  if ( m_currentContextModelIndex.isValid() )
+    removeSearchQuery(m_currentContextIndex);
+}
+
 void TreeManager::treeContextMenu(const QPoint &point)
 {
   QModelIndex index = m_tree_view->indexAt(point);
@@ -536,6 +551,9 @@ void TreeManager::treeContextMenu(const QPoint &point)
 
     m_tagContextMenu->exec(p);
   }
+  else if ( item->isSearchQuery() ) {
+    m_searchQueryContextMenu->exec(p);
+  }
 }
 
 void TreeManager::openNotebookWithID(int notebookID)
@@ -550,4 +568,17 @@ void TreeManager::openNotebookWithID(int notebookID)
       return;
     }
   }
+}
+
+void TreeManager::removeSearchQuery(BasicTreeItem *item)
+{
+  if ( item == nullptr )
+    item = m_curItem;
+  if ( !item->isSearchQuery())
+    return;
+  if (item == m_curItem)
+    gotoAllNotesTab();
+  item->parentItem()->removeChild(item);
+  delete item;
+  update();
 }

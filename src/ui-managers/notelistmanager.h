@@ -78,6 +78,8 @@ private slots:
   void aNotebookChanged(Notebook *notebook);
   void aTagChanged(Tag *tag);
 
+  void removeSearchQuery();
+
 signals:
   void selectedNote(Note *note);
 

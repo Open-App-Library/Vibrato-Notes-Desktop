@@ -288,7 +288,7 @@ border-bottom: 0;
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -358,11 +358,18 @@ border-bottom: 0;
     <addaction name="menuLayout"/>
     <addaction name="actionShow_Menubar"/>
    </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuAccount"/>
    <addaction name="menuSettings"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="actionImport_Notes">
    <property name="text">
@@ -472,6 +479,11 @@ border-bottom: 0;
    </property>
    <property name="text">
     <string>Show Menubar</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>

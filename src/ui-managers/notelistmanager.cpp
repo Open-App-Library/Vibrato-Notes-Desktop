@@ -4,6 +4,7 @@
 #include "../meta/db/notedatabase.h"
 #include <helper-io.hpp>
 #include "escribamanager.h"
+#include "treemanager.h"
 
 NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, Database *db, Manager *manager) :
   m_view(view),
@@ -167,6 +168,13 @@ void NoteListManager::disconnectCurrentView() {
   else if ( m_curViewType == View_Trash ) {
     m_trashView->deactivateView();
   }
+  ///
+  // Search View Deactivation
+  ///
+  else if ( m_curViewType == View_Search ) {
+    m_noteListAddonsUi->buttonBox->clear();
+    m_noteListAddonsUi->buttonBox->hide();
+  }
 }
 
 void NoteListManager::showAllNotesView()
@@ -261,7 +269,18 @@ void NoteListManager::showSearchQueryView(QString searchQuery)
   disconnectCurrentView();
   m_curViewType = View_Search;
   hideMetrics();
+
   setTitle(QString("Search results for \"%1\"").arg(searchQuery));
+
+  m_noteListAddonsUi->buttonBox->clear();
+  m_noteListAddonsUi->buttonBox->show();
+
+  QPushButton *deleteQuery = m_noteListAddonsUi->buttonBox->addButton("", QDialogButtonBox::ActionRole);
+  deleteQuery->setToolTip("Remove search query");
+  deleteQuery->setIcon(QIcon::fromTheme("window-close"));
+  connect(deleteQuery, &QPushButton::clicked,
+          this, &NoteListManager::removeSearchQuery);
+
   clearFilter(false);
   m_proxyModel->setSearchQuery(searchQuery);
 }
@@ -349,7 +368,7 @@ void NoteListManager::managerIsReady() {
 void NoteListManager::notebooksDeleted(QVector<int> notebookIDs) {
   // If the current notebook gets deleted, set the value to nullptr for safety.
   if ( m_curViewType == View_Notebook &&
-      notebookIDs.contains(m_curViewType_ItemID) )
+       notebookIDs.contains(m_curViewType_ItemID) )
     m_curViewType_Notebook = nullptr;
 }
 
@@ -387,6 +406,10 @@ void NoteListManager::aNotebookChanged(Notebook* notebook) {
 void NoteListManager::aTagChanged(Tag* tag) {
   if ( m_curViewType == View_Tag && m_curViewType_Tag == tag )
     showTagView(tag);
+}
+
+void NoteListManager::removeSearchQuery() {
+  m_manager->treeManager()->removeSearchQuery();
 }
 
 // This is potentially a more efficient way to set indexWidgets

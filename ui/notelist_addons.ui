@@ -64,6 +64,19 @@
       </widget>
      </item>
      <item>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::NoButton</set>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="metricsLabel">
        <property name="font">
         <font>
@@ -98,7 +111,10 @@ font-size: 10px;</string>
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
+    <widget class="QDialogButtonBox" name="buttonBox_bottom">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::NoButton</set>
      </property>

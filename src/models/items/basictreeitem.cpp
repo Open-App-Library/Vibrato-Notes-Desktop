@@ -137,9 +137,22 @@ BasicTreeItem *BasicTreeItem::appendChild(BasicTreeItem *child)
 
 void BasicTreeItem::removeChild(int index)
 {
-  BasicTreeItem *item = m_childItems.at(index);
   m_childItems.removeAt(index);
-  //  delete item;
+}
+
+void BasicTreeItem::removeChild(BasicTreeItem *item)
+{
+  // Loop through child items to find the array index of it.
+  int index = -1;
+  for (int i=0; i < m_childItems.length(); i++)
+    if (m_childItems.at(i) == item) {
+      index = i;
+    }
+  // Return if index not found.
+  if ( index == -1 ) return;
+
+  // Remove the child
+  removeChild(index);
 }
 
 QVector<BasicTreeItem *> BasicTreeItem::children() const
