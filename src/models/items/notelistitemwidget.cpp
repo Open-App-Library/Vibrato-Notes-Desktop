@@ -12,6 +12,9 @@ NoteListItemWidget::NoteListItemWidget( Note *note ) : m_note(note)
   m_date_created_label = m_ui_class->dateCreatedLabel;
   m_favoriteButton     = m_ui_class->favoriteButton;
 
+  connect(m_favoriteButton, &QToolButton::clicked,
+          this, &NoteListItemWidget::toggleFavorited);
+
   updateLabels();
   connectSignals();
 }
