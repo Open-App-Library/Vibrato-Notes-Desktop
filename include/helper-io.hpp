@@ -12,6 +12,22 @@
 #include <QMessageBox>
 class HelperIO {
 public:
+
+  // Warning: Returns a char* that must be deleted.
+  static char *QString2CString(QString str)
+  {
+    int len = str.length()+1;
+    char *new_string = static_cast<char*>(malloc(len));
+
+    std::string std_str = str.toStdString();
+
+    for (int i=0; i<len-1; i++)
+      new_string[i] = std_str[i];
+
+    new_string[len-1] = '\0';
+    return new_string;
+  }
+
   static QString fileToQString(QString filename)
   {
     QString val;

@@ -1,8 +1,11 @@
 #include "notelistproxymodel.h"
 #include "../../meta/db/notedatabase.h"
-#include "../../dougsfuzzysearch.h"
 #include "../notelistmodel.h"
 #include <QStandardItemModel>
+
+#define FTS_FUZZY_MATCH_IMPLEMENTATION
+#include <fts_fuzzy_match.hpp>
+#include <helper-io.hpp>
 
 #include <QDebug>
 
@@ -127,10 +130,11 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
   /// Search FILTER ///
   /////////////////////
   if (m_search_filter == SearchOn) {
-    DougsFuzzySearch search;
-    int lev = search.levenshteinSentences(m_searchQuery, note->title(), true);
-    if (lev < m_searchQuery.length()/2)
-      passed_search_check = true;
+    char *query = HelperIO::QString2CString(m_searchQuery);
+    char *title = HelperIO::QString2CString(note->title());
+    passed_search_check = fts::fuzzy_match_simple(query, title);
+    delete query;
+    delete title;
   }
   else
     passed_search_check = true;
@@ -200,7 +204,8 @@ void NoteListProxyModel::setTrashedFilter(int trashedFilter) {
 void NoteListProxyModel::setSearchQuery(QString searchQuery, int searchFilterMode) {
   m_searchQuery = searchQuery;
   m_search_filter = searchFilterMode;
-  invalidateFilter();
+  //  invalidateFilter();
+  invalidate();
 }
 
 bool NoteListProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
@@ -209,6 +214,25 @@ bool NoteListProxyModel::lessThan(const QModelIndex &left, const QModelIndex &ri
   if ( !right.isValid() ) return false;
   NoteListItem *item1 = static_cast<NoteListItem*>(left.internalPointer());
   NoteListItem *item2 = static_cast<NoteListItem*>(right.internalPointer());
+
+  if ( m_search_filter == SearchOn ) {
+    int item1_score = 0;
+    int item2_score = 0;
+
+    char *query = HelperIO::QString2CString(m_searchQuery);
+    char *item1_title = HelperIO::QString2CString(item1->note()->title());
+    char *item2_title = HelperIO::QString2CString(item2->note()->title());
+
+    // Get the ranking score of item1 & item2 and store them in *_score variables.
+    fts::fuzzy_match(query, item1_title, item1_score);
+    fts::fuzzy_match(query, item2_title, item2_score);
+
+    delete query;
+    delete item1_title;
+    delete item2_title;
+
+    return item1_score < item2_score;
+  }
 
   switch (m_sortingMethod) {
   case DateCreated:

@@ -28,6 +28,9 @@ public:
 
   void toggleFavorited();
 
+  void connectSignals();
+  void disconnectSignals();
+
 private:
   Ui::NoteListItem *m_ui_class;
 
@@ -40,6 +43,7 @@ private:
 
 private slots:
   void noteDateChanged(Note *note);
+  void noteTitleChanged(Note *note);
 };
 
 #endif // NOTELISTITEMWIDGET_H

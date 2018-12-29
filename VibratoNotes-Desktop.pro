@@ -58,8 +58,7 @@ SOURCES += \
     $$PWD/ui/trashitem.cpp \
     $$PWD/src/ui-managers/notelist-views/trashview.cpp \
     $$PWD/src/ui-managers/notelist-views/genericview.cpp \
-    $$PWD/ui/notebook_editparent.cpp \
-    $$PWD/src/dougsfuzzysearch.cpp
+    $$PWD/ui/notebook_editparent.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -97,8 +96,7 @@ HEADERS += \
     $$PWD/ui/trashitem.h \
     $$PWD/src/ui-managers/notelist-views/trashview.h \
     $$PWD/src/ui-managers/notelist-views/genericview.h \
-    $$PWD/ui/notebook_editparent.h \
-    $$PWD/src/dougsfuzzysearch.h
+    $$PWD/ui/notebook_editparent.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview

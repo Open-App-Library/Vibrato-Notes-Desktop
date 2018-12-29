@@ -13,15 +13,7 @@ NoteListItemWidget::NoteListItemWidget( Note *note ) : m_note(note)
   m_favoriteButton     = m_ui_class->favoriteButton;
 
   updateLabels();
-
-  connect(note, &Note::noteDateCreatedChanged,
-          this, &NoteListItemWidget::noteDateChanged);
-  connect(note, &Note::noteDateModifiedChanged,
-          this, &NoteListItemWidget::noteDateChanged);
-  connect(note, &Note::noteFavoritedChanged,
-          this, &NoteListItemWidget::updateFavoriteButton);
-  connect(m_favoriteButton, &QToolButton::clicked,
-          this, &NoteListItemWidget::toggleFavorited);
+  connectSignals();
 }
 
 NoteListItemWidget::~NoteListItemWidget()
@@ -36,22 +28,9 @@ Note *NoteListItemWidget::note() const
 
 void NoteListItemWidget::setNote(Note *note)
 {
-  disconnect(m_note, &Note::noteDateCreatedChanged,
-             this, &NoteListItemWidget::noteDateChanged);
-  disconnect(m_note, &Note::noteDateModifiedChanged,
-             this, &NoteListItemWidget::noteDateChanged);
-  disconnect(m_note, &Note::noteFavoritedChanged,
-             this, &NoteListItemWidget::updateFavoriteButton);
-
+  disconnectSignals();
   m_note = note;
-
-  connect(m_note, &Note::noteDateCreatedChanged,
-          this, &NoteListItemWidget::noteDateChanged);
-  connect(m_note, &Note::noteDateModifiedChanged,
-          this, &NoteListItemWidget::noteDateChanged);
-  connect(m_note, &Note::noteFavoritedChanged,
-          this, &NoteListItemWidget::updateFavoriteButton);
-
+  connectSignals();
   updateLabels();
 }
 
@@ -80,6 +59,12 @@ void NoteListItemWidget::updateDateLabel() {
   m_date_created_label->setText(m_note->date_created_str());
 }
 
+void NoteListItemWidget::noteTitleChanged(Note *note)
+{
+  (void)note;
+  updateLabels();
+}
+
 void NoteListItemWidget::noteDateChanged(Note *note)
 {
   (void)note;
@@ -99,4 +84,26 @@ void NoteListItemWidget::updateFavoriteButton(void) {
 void NoteListItemWidget::toggleFavorited() {
   m_note->setFavorited( !m_note->favorited() );
   updateFavoriteButton();
+}
+
+void NoteListItemWidget::connectSignals() {
+  connect(m_note, &Note::noteTitleChanged,
+          this, &NoteListItemWidget::noteTitleChanged);
+  connect(m_note, &Note::noteDateCreatedChanged,
+          this, &NoteListItemWidget::noteDateChanged);
+  connect(m_note, &Note::noteDateModifiedChanged,
+          this, &NoteListItemWidget::noteDateChanged);
+  connect(m_note, &Note::noteFavoritedChanged,
+          this, &NoteListItemWidget::updateFavoriteButton);
+}
+
+void NoteListItemWidget::disconnectSignals() {
+  disconnect(m_note, &Note::noteTitleChanged,
+             this, &NoteListItemWidget::noteTitleChanged);
+  disconnect(m_note, &Note::noteDateCreatedChanged,
+             this, &NoteListItemWidget::noteDateChanged);
+  disconnect(m_note, &Note::noteDateModifiedChanged,
+             this, &NoteListItemWidget::noteDateChanged);
+  disconnect(m_note, &Note::noteFavoritedChanged,
+             this, &NoteListItemWidget::updateFavoriteButton);
 }
