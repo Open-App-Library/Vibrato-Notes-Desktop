@@ -59,6 +59,7 @@ public slots:
   void view_minimal();
   void view_focus();
   void search();
+  void focusSearchbar();
 };
 
 #endif // NOTES_H

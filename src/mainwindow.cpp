@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QVariant>
+#include <QShortcut>
 #include "ui-managers/treemanager.h"
 #include "ui-managers/notelistmanager.h"
 #include "ui-managers/escribamanager.h"
@@ -80,6 +81,13 @@ MainWindow::MainWindow(QWidget *parent) :
   // Search bar
   connect(ui->searchBar, &QLineEdit::returnPressed,
           this, &MainWindow::search);
+
+  // -------------
+  // SHORTCUT KEYS
+  // -------------
+  QShortcut *shortcut_searchbar = new QShortcut(QKeySequence(tr("Ctrl+l")), this);
+  connect(shortcut_searchbar, &QShortcut::activated,
+          this, &MainWindow::focusSearchbar);
 }
 
 MainWindow::~MainWindow()
@@ -167,4 +175,9 @@ void MainWindow::search() {
     return;
   BasicTreeItem *item = m_manager->treeManager()->addSearchQuery(searchQuery);
   m_manager->treeManager()->selectItem(item);
+}
+
+void MainWindow::focusSearchbar() {
+  ui->searchBar->setFocus();
+  ui->searchBar->selectAll();
 }
