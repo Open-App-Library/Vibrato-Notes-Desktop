@@ -73,6 +73,10 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 
   Qt::ItemFlags flags = QAbstractItemModel::flags(index);
 
+  // If a label, make not selectable.
+  if ( !item->selectable() )
+    flags &= ~Qt::ItemIsSelectable;
+
   if ( item->isNotebook() || item->isTag() )
     flags |= Qt::ItemIsEditable;
 

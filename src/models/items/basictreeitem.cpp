@@ -42,13 +42,27 @@ bool BasicTreeItem::isTag() const
   return m_type == Type_Tag;
 }
 
-bool BasicTreeItem::isSearchQuery() const {
+bool BasicTreeItem::isSearchQuery() const
+{
   return m_type == Type_SearchQuery;
+}
+
+bool BasicTreeItem::selectable() const
+{
+  return m_selectable;
+}
+
+void BasicTreeItem::setSelectable(bool selectable)
+{
+  m_selectable = selectable;
 }
 
 bool BasicTreeItem::isOther() const
 {
-  return m_type != Type_Notebook && m_type != Type_Tag && m_type != Type_SearchQuery;
+  return
+    m_type != Type_Notebook    &&
+    m_type != Type_Tag         &&
+    m_type != Type_SearchQuery;
 }
 
 int BasicTreeItem::id() const

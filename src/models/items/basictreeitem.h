@@ -28,6 +28,9 @@ public:
   bool isSearchQuery() const;
   bool isOther() const;
 
+  bool selectable() const;
+  void setSelectable(bool selectable=true);
+
   int id() const;
 
   QString   label() const;
@@ -68,7 +71,8 @@ private:
   int m_id; // Grab ID of notebook or tag without accessing object. This is a safety feature.
   QString m_label;
   QIcon m_icon;
-  int m_type; // either Type_Notebook, Type_Tag, or Type_SearchQuery
+  int m_type; // Type_Notebook, Type_Tag, etc.
+  bool m_selectable=true;
   NotebookOrTag m_object;
   QVector<BasicTreeItem*> m_childItems;
   BasicTreeItem *m_parentItem;

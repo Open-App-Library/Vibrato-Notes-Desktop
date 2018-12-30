@@ -21,6 +21,10 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   m_tags      = new BasicTreeItem( tr("Tags") );
   m_trash     = new BasicTreeItem( tr("Trash") );
 
+  // Make notebooks and tags labels not selectable.
+  m_notebooks->setSelectable(false);
+  m_tags->setSelectable(false);
+
   m_all_notes->setIcon( IconUtils::requestDarkIcon("document-new") );
   m_favorites->setIcon( IconUtils::requestDarkIcon("draw-star") );
   m_notebooks->setIcon( IconUtils::requestDarkIcon("folder") );
@@ -220,17 +224,18 @@ QModelIndex TreeManager::findIndexFromTreeItem(BasicTreeItem *item)
   return QModelIndex();
 }
 
-void TreeManager::selectItem(BasicTreeItem *item)
+void TreeManager::selectItem(BasicTreeItem *item, bool triggerItemChangedEvent)
 {
-  selectItem( findIndexFromTreeItem(item) );
+  selectItem( findIndexFromTreeItem(item), triggerItemChangedEvent );
 }
 
-void TreeManager::selectItem(QModelIndex index)
+void TreeManager::selectItem(QModelIndex index, bool triggerItemChangedEvent)
 {
   if ( !index.isValid() )
     return;
   m_tree_view->setCurrentIndex(index);
-  treeItemChanged(index, QModelIndex());
+  if (triggerItemChangedEvent)
+    treeItemChanged(index, QModelIndex());
 }
 
 void TreeManager::gotoAllNotesTab()
@@ -310,6 +315,12 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
     BasicTreeItem *item = static_cast<BasicTreeItem*>(current.internalPointer());
     m_curItem = item;
 
+    if ( !item->selectable() ) {
+      selectItem(previous, false);
+      return;
+    }
+
+
     if (item == m_all_notes)
       {   // Selected all notes label
         m_manager->noteListManager()->showAllNotesView();
@@ -318,11 +329,6 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
     else if (item == m_favorites)
       {   // Selected all notes label
         m_manager->noteListManager()->showFavoritesView();
-      }
-
-    else if ( item == m_notebooks )
-      {   // Selected notebooks label
-        m_manager->noteListManager()->filterOutEverything();
       }
 
     else if ( item->isNotebook() )
