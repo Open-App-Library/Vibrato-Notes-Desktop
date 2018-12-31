@@ -10,8 +10,20 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QMessageBox>
+#include <QStandardPaths>
+#include <QDir>
+
 class HelperIO {
 public:
+
+  // File/directory functions
+  static QDir dataDir()
+  {
+    QDir data_dir = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    if ( !data_dir.exists() )
+      data_dir.mkpath(".");
+    return data_dir;
+  }
 
   // Warning: Returns a char* that must be deleted.
   static char *QString2CString(QString str)
