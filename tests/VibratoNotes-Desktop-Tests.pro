@@ -11,3 +11,6 @@ SOURCES -= $$VIBRATO_ENTRY_POINT
 
 # Sources
 SOURCES += $$PWD/unit-tests.cpp
+
+RESOURCES += \
+    resources/testresources.qrc

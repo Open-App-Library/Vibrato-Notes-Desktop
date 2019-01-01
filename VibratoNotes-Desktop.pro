@@ -59,7 +59,7 @@ SOURCES += \
     $$PWD/src/ui-managers/notelist-views/trashview.cpp \
     $$PWD/src/ui-managers/notelist-views/genericview.cpp \
     $$PWD/ui/notebook_editparent.cpp \
-    src/sql/sqlmanager.cpp
+    $$PWD/src/sql/sqlmanager.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -98,7 +98,7 @@ HEADERS += \
     $$PWD/src/ui-managers/notelist-views/trashview.h \
     $$PWD/src/ui-managers/notelist-views/genericview.h \
     $$PWD/ui/notebook_editparent.h \
-    src/sql/sqlmanager.h
+    $$PWD/src/sql/sqlmanager.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview

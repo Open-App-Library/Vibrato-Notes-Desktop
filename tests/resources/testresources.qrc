@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/test">
+        <file>heroes.sql</file>
+        <file>heroes-error.sql</file>
+    </qresource>
+</RCC>

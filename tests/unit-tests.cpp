@@ -6,11 +6,11 @@
 #define UNIT_TEST
 #define private public
 #include "../src/meta/note.h"
-#include "../src/dougsfuzzysearch.h"
+#include "../src/sql/sqlmanager.h"
 #include <helper-io.hpp>
 #define private private
 
-#include <QtTest>
+#include <QtTest/qtest.h>
 #include <QCoreApplication>
 #include <QDebug>
 
@@ -21,7 +21,7 @@ class GenericTest : public QObject
 private slots:
   void numberToStringWord();
   void dateFormatting();
-  void dougsFuzzySearch();
+  void sqlmanager();
 
 private:
   QDateTime isoDate(QString str);
@@ -79,31 +79,25 @@ void GenericTest::dateFormatting()
 
 }
 
-void GenericTest::dougsFuzzySearch()
+void GenericTest::sqlmanager()
 {
-  DougsFuzzySearch *doug = new DougsFuzzySearch({"The old man and the sea",
-                                                "The young man and the sea",
-                                                "animal farm",
-                                                "Zero dark thirty",
-                                                "the third door",
-                                                "eat sleep repeat",
-                                                "eat sleep rave repeat",
-                                                "wolf man eats a bone"});
+  SQLManager manager;
 
-  // Test the levenshtein function
-  QCOMPARE(doug->levenshtein("cat", "Cat"), 1);
-  QCOMPARE(doug->levenshtein("caT", "Cat"), 2);
-  QCOMPARE(doug->levenshtein("puppy", "cat"), 5);
+  QVERIFY( !manager.runScript(":test/heroes-error.sql") );
+  QVERIFY( manager.runScript(":test/heroes.sql") );
 
-  // Ignoring case tests
-  QCOMPARE(doug->levenshtein("dog", "DOG"), 3);
-  QCOMPARE(doug->levenshtein("dog", "DOG", true), 0);
+  QVector<QVariant> col = manager.column("select name from heroes");
+  QStringList expected = {"Batman", "Spiderman"};
 
-  // Ignoring special characters
-  QCOMPARE(doug->levenshtein("$100", "100", false, true), 0);
+  for (int i=0; i<2; i++)
+    QCOMPARE( col[i].toString(), expected[i] );
 
-  delete doug; // :(
+  QVector<QVector<QVariant>> rows = manager.rows("select * from vehicles", {"name", "color", "speed"});
+  QCOMPARE(rows[0][0].toString(), "Ferrari");
+  QCOMPARE(rows[1][1].toString(), "camo");
+  QCOMPARE(rows[2][2].toInt(), 30000);
 }
+
 
 QDateTime GenericTest::isoDate(QString str)
 {
