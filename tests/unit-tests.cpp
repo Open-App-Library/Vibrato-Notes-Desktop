@@ -83,7 +83,9 @@ void GenericTest::sqlmanager()
 {
   SQLManager manager;
 
+  qDebug("TESTING AN ERROR");
   QVERIFY( !manager.runScript(":test/heroes-error.sql") );
+  qDebug("DONE TESTING AN ERROR");
   QVERIFY( manager.runScript(":test/heroes.sql") );
 
   QVector<QVariant> col = manager.column("select name from heroes");
@@ -96,6 +98,11 @@ void GenericTest::sqlmanager()
   QCOMPARE(rows[0][0].toString(), "Ferrari");
   QCOMPARE(rows[1][1].toString(), "camo");
   QCOMPARE(rows[2][2].toInt(), 30000);
+
+  QStringList tables = {"notes", "notebooks", "tags", "notes_tags"};
+  for (QString t : tables)
+    manager.realBasicQuery( QString("drop table if exists %1").arg(t) );
+  manager.runScript(":sql/create.sql");
 }
 
 

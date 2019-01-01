@@ -101,8 +101,11 @@ bool SQLManager::runScript(QString fileName)
 
 bool SQLManager::runScript(QFile *file, QSqlQuery *query)
 {
-
   QString contents = file->readAll();
+
+  // Remove sql comments
+  contents = contents.replace(QRegExp("--.+$"), "");
+
   QStringList lines = contents.split(";");
 
   for ( QString line : lines ) {

@@ -122,11 +122,10 @@ RESOURCES += \
     $$PWD/resources/dummy-data.qrc \
     $$PWD/resources/icons.qrc \
     $$PWD/resources/fonts.qrc \
-    $$PWD/resources/qdarkstyle.qrc
+    $$PWD/resources/qdarkstyle.qrc \
+    $$PWD/resources/sqlfiles.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-DISTFILES +=
