@@ -12,7 +12,7 @@ trashed boolean
 
 create table if not exists notebooks (
 sync_hash integer unique,
-id integer primary key autoincrement,
+id integer primary key autoincrement, -- my cool thing
 title text,
 parent integer references notebooks(id)
 );

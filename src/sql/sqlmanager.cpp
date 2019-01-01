@@ -103,12 +103,14 @@ bool SQLManager::runScript(QFile *file, QSqlQuery *query)
 {
   QString contents = file->readAll();
 
-  // Remove sql comments
-  contents = contents.replace(QRegExp("--.+$"), "");
+  // Remove sql comments and
+  // Remove unnecesary blank lines
+  contents = contents.replace(QRegExp("--[^\\n]+\\n"), "\n");
+  contents = contents.replace(QRegExp("\\n\\n+"), "\n");
 
-  QStringList lines = contents.split(";");
+  QStringList queryList = contents.split(";");
 
-  for ( QString line : lines ) {
+  for ( QString line : queryList ) {
     line = line.trimmed();
     if ( line.isEmpty() ) continue;
 
