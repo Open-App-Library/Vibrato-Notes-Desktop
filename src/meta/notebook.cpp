@@ -1,11 +1,26 @@
 #include "notebook.h"
 
-Notebook::Notebook(int id, QString title, Notebook *parent, QVector<Notebook*> children) :
+Notebook::Notebook(int syncId, int id, QString title, Notebook *parent, QVector<Notebook*> children) :
+  m_syncId(syncId),
   m_id(id),
   m_title(title),
   m_parent(parent),
   m_children(children)
 {
+}
+
+int Notebook::syncId() const
+{
+  return m_syncId;
+}
+
+void Notebook::setSyncId(int syncId)
+{
+  if ( m_syncId == NOTEBOOK_DEFAULT_NOTEBOOK_ID ||
+       m_syncId   == NOTEBOOK_DEFAULT_NOTEBOOK_ID)
+    return;
+  m_syncId = syncId;
+  emit notebookSyncIDChanged(this);
 }
 
 int Notebook::id() const

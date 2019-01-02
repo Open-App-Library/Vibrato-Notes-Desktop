@@ -75,7 +75,7 @@ Tag *TagDatabase::addTag(int id, QString title)
 
   if ( existingTag )
     return existingTag;
-  Tag *tag = existingTag ? existingTag : new Tag(id, title);
+  Tag *tag = existingTag ? existingTag : new Tag(-1, id, title);
 
   addTag(tag);
   return tag;
@@ -141,9 +141,10 @@ void TagDatabase::loadJSON(QJsonDocument jsonDocument)
   QJsonArray tagArray = jsonDocument.array();
   for (int i = 0; i < tagArray.size(); i++) {
     QJsonObject curTag = tagArray[i].toObject();
+    int tag_sync_id = curTag.value("sync_id").toInt();
     int tag_id = curTag.value("id").toInt();
     QString tag_title = curTag.value("title").toString();
-    Tag *t = new Tag(tag_id, tag_title);
+    Tag *t = new Tag(tag_sync_id, tag_id, tag_title);
     addTag(t);
   }
 }

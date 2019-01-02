@@ -11,7 +11,10 @@ class Notebook : public QObject
 {
   Q_OBJECT
 public:
-  Notebook(int id, QString title, Notebook *parent=nullptr, QVector<Notebook*> children={});
+  Notebook(int syncId, int id, QString title, Notebook *parent=nullptr, QVector<Notebook*> children={});
+
+  int syncId() const;
+  void setSyncId(int syncId);
 
   int id() const;
   void setId(int id);
@@ -31,6 +34,7 @@ public:
 
 signals:
   void notebookChanged(Notebook *notebook);
+  void notebookSyncIDChanged(Notebook *notebook);
   void notebookIDChanged(Notebook *notebook);
   void notebookTitleChanged(Notebook *notebook);
   void notebookParentChanged(Notebook *notebook);
@@ -38,10 +42,12 @@ signals:
   void deletingNotebook();
 
 private:
+  int m_syncId;
   int m_id;
   QString m_title;
   Notebook *m_parent=nullptr;
   QVector<Notebook*> m_children;
+  // Below are some todo items that are needed for sharing notes
   // TODO: Implement user
   // TODO: implement shared_with
   // TODO: implement is_public

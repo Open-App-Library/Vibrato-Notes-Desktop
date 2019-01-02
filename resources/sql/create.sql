@@ -1,24 +1,24 @@
 create table if not exists notes (
-sync_hash integer unique,
+sync_id integer unique,
 id integer primary key autoincrement,
 title text,
 text text,
 date_created datetime,
-date_modifed timetime,
+date_modified timetime,
 favorited boolean,
 notebook integer references notebooks(id),
 trashed boolean
 );
 
 create table if not exists notebooks (
-sync_hash integer unique,
+sync_id integer unique,
 id integer primary key autoincrement, -- my cool thing
 title text,
 parent integer references notebooks(id)
 );
 
 create table if not exists tags (
-sync_hash integer unique,
+sync_id integer unique,
 id integer primary key autoincrement,
 title text
 );

@@ -10,6 +10,8 @@
 #include <helper-io.hpp>
 #define private private
 
+
+
 #include <QtTest/qtest.h>
 #include <QCoreApplication>
 #include <QDebug>
@@ -47,7 +49,7 @@ void GenericTest::numberToStringWord()
 
 void GenericTest::dateFormatting()
 {
-  Note *note = new Note(1, "Test Note", "",
+  Note *note = new Note(-1, 1, "Test Note", "",
                         isoDate( "2000-01-01T09:38:59Z"), // Date Created
                         QDateTime::currentDateTime(),  // Date Modified
                         false, -1, {}, false);
@@ -79,6 +81,11 @@ void GenericTest::dateFormatting()
 
 }
 
+void addNoteToSQLite()
+{
+
+}
+
 void GenericTest::sqlmanager()
 {
   SQLManager manager;
@@ -88,21 +95,31 @@ void GenericTest::sqlmanager()
   qDebug("DONE TESTING AN ERROR");
   QVERIFY( manager.runScript(":test/heroes.sql") );
 
-  QVector<QVariant> col = manager.column("select name from heroes");
+  QVector<QVariant> col = manager.column("SELECT name FROM heroes");
   QStringList expected = {"Batman", "Spiderman"};
 
   for (int i=0; i<2; i++)
     QCOMPARE( col[i].toString(), expected[i] );
 
-  QVector<QVector<QVariant>> rows = manager.rows("select * from vehicles", {"name", "color", "speed"});
-  QCOMPARE(rows[0][0].toString(), "Ferrari");
-  QCOMPARE(rows[1][1].toString(), "camo");
-  QCOMPARE(rows[2][2].toInt(), 30000);
+  ArrayOfMaps rows = manager.rows("SELECT * FROM vehicles", {"name", "color", "speed"});
+  QCOMPARE(rows[0]["name"].toString(), "Ferrari");
+  QCOMPARE(rows[1]["color"].toString(), "camo");
+  QCOMPARE(rows[2]["speed"].toInt(), 30000);
+
+  QVERIFY( manager.realBasicQuery("DROP TABLE heroes") );
+  QVERIFY( manager.realBasicQuery("DROP TABLE vehicles") );
 
   QStringList tables = {"notes", "notebooks", "tags", "notes_tags"};
   for (QString t : tables)
-    manager.realBasicQuery( QString("drop table if exists %1").arg(t) );
+    QVERIFY( manager.realBasicQuery( QString("drop table if exists %1").arg(t) ) );
   manager.runScript(":sql/create.sql");
+
+  Note note(-1, 1, "Test Note", "Hello world.",
+            isoDate( "2000-01-01T09:38:59Z"), // Date Created
+            QDateTime::currentDateTime(),  // Date Modified
+            false, -1, {}, false);
+
+  manager.addNoteToDatabase(&note);
 }
 
 

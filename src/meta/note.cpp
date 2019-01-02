@@ -4,8 +4,9 @@
 #include <QDebug>
 #include <helper-io.hpp>
 
-Note::Note(int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, bool favorited,int notebook, QVector<int> tags, bool trashed)
+Note::Note(int syncId, int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, bool favorited,int notebook, QVector<int> tags, bool trashed)
 {
+  m_syncId = syncId;
   m_id = id;
   m_title = title;
   m_text  = text;
@@ -17,6 +18,19 @@ Note::Note(int id, QString title, QString text, QDateTime date_created, QDateTim
   m_trashed = trashed;
   connect(this, &Note::noteChanged,
           this, &Note::handleNoteChange);
+}
+
+int Note::syncId() const
+{
+  return m_syncId;
+}
+
+void Note::setSyncId(int syncId)
+{
+  if (m_syncId == syncId)
+    return;
+  m_syncId = syncId;
+  emit noteChanged( this, false );
 }
 
 int Note::id() const

@@ -12,10 +12,13 @@ class Note : public QObject
   Q_OBJECT
 
 public:
-  Note(int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, bool favorited, int notebook, QVector<int> tags, bool trashed=false);
+  Note(int syncId, int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, bool favorited, int notebook, QVector<int> tags, bool trashed=false);
+
+  int syncId() const;
+  void setSyncId(int syncId);
 
   int id() const;
-  void setId(int value);
+  void setId(int id);
 
   QString title() const;
   void    setTitle(const QString title);
@@ -56,6 +59,7 @@ private slots:
 
 signals:
   void noteChanged(Note *note, bool updateDateModified=true);
+  void noteSyncIdChanged(Note *note);
   void noteIdChanged(Note *note);
   void noteTitleChanged(Note *note);
   void noteTextChanged(Note *note);
@@ -69,6 +73,7 @@ signals:
   void noteRestored(Note *note);
 
 private:
+  int          m_syncId;
   int          m_id;
   QString      m_title;
   QString      m_text;

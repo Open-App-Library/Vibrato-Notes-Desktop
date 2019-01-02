@@ -9,8 +9,7 @@
 NotebookDatabase::NotebookDatabase(NoteDatabase *noteDatabase) :
   m_noteDatabase(noteDatabase)
 {
-  addNotebook(new Notebook(NOTEBOOK_DEFAULT_NOTEBOOK_ID,
-                           "Default Notebook"));
+  addNotebook(new Notebook(-1, -1, "Default Notebook"));
 }
 
 QVector<Notebook *> NotebookDatabase::list() const
@@ -77,7 +76,7 @@ int NotebookDatabase::getUniqueNotebookID(Notebook *notebookToSync)
 
 Notebook *NotebookDatabase::addNotebook(QString title, Notebook *parent, QVector<Notebook*> children)
 {
-  Notebook *notebook = new Notebook(getUniqueNotebookID(), title, parent, children);
+  Notebook *notebook = new Notebook(-1, getUniqueNotebookID(), title, parent, children);
   if (parent != nullptr && parent->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID)
     return nullptr;
   if (parent != nullptr)
@@ -213,11 +212,12 @@ Notebook *NotebookDatabase::findNotebookWithID(int id)
 
 void NotebookDatabase::jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent)
 {
+  int     notebook_sync_id    = notebookObj.value("sync_id").toInt();
   int     notebook_id    = notebookObj.value("id").toInt();
   QString notebook_title = notebookObj.value("title").toString();
   QJsonArray children = notebookObj["children"].toArray();
   Notebook *newNotebook;
-  newNotebook = new Notebook(notebook_id, notebook_title);
+  newNotebook = new Notebook(notebook_sync_id, notebook_id, notebook_title);
 
   if (parent == nullptr) {           // No parent? Add to main database list
     addNotebook(newNotebook);

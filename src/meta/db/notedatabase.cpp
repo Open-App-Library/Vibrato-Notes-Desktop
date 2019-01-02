@@ -33,7 +33,7 @@ Note *NoteDatabase::addNote(Note *note)
 
 Note *NoteDatabase::addDefaultNote()
 {
-  Note *note = new Note(-1, "Untitled Note", "", QDateTime::currentDateTime(), QDateTime::currentDateTime(), false, -1, {});
+  Note *note = new Note(-1, -1, "Untitled Note", "", QDateTime::currentDateTime(), QDateTime::currentDateTime(), false, -1, {});
   // Todo add note to cloud and get ID
   return addNote(note);
 }
@@ -87,6 +87,7 @@ void NoteDatabase::loadJSON(QJsonDocument jsonDocument)
   for (int i = 0; i < noteArray.size(); i++) {
     QJsonObject val = noteArray[i].toObject();
 
+    int sync_id = get(val, "sync_id").toInt();
     int id = get(val, "id").toInt();
     QString title = get(val, "title").toString();
     QString text = get(val, "text").toString();
@@ -107,7 +108,7 @@ void NoteDatabase::loadJSON(QJsonDocument jsonDocument)
       tags.append(tag_id);
     }
 
-    Note *note = new Note(id, title, text, date_created, date_modified, favorited, notebook, tags, trashed);
+    Note *note = new Note(sync_id, id, title, text, date_created, date_modified, favorited, notebook, tags, trashed);
     addNote(note);
   }
 }

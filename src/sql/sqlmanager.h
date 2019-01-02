@@ -5,6 +5,10 @@
 #include <QMap>
 #include <QVector>
 #include <QFile>
+#include "../meta/note.h"
+
+// A 2d array.
+typedef QVector<QMap<QString, QVariant>> ArrayOfMaps;
 
 class SQLManager : public QObject
 {
@@ -26,16 +30,28 @@ public:
   bool  realBasicQuery(QString query);
 
   // Returns a list representing a single-column selection
-  QVector<QVariant> column(QString query);
+  QVector<QVariant> column(QString query, int column=0);
 
   // Returns the rows of a SQL query.
-  QVector<QVector<QVariant>> rows(QString query, QStringList tableLabels);
+  ArrayOfMaps rows(QString query, QStringList tableLabels);
 
   bool runScript(QString fileName);
   bool runScript(QFile *file, QSqlQuery *query);
 
   // Log SQL error to console.
   void logSqlError(QSqlError error, bool fatal=false);
+
+  /*
+   * Vibrato-specific SQL functions
+   */
+  QStringList noteColumns() const; // List of supported note columns
+
+  // Retrieve notes
+  QVector<Note*> Notes();
+  QVector<Note*> Notebooks();
+  QVector<Note*> tags();
+
+  void addNoteToDatabase(Note *note, bool getNewID=false);
 
 signals:
 
@@ -44,6 +60,18 @@ public slots:
 private:
   QString m_location;
   QSqlDatabase m_sqldb;
+
+  QStringList m_noteColumns =
+    {"sync_id",
+     "id",
+     "title",
+     "text",
+     "date_created",
+     "date_modified",
+     "favorited",
+     "notebook",
+     "trashed"
+    };
 };
 
 #endif // SQLMANAGER_H

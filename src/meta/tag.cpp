@@ -1,9 +1,21 @@
 #include "tag.h"
 
-Tag::Tag(int id, QString title) :
+Tag::Tag(int syncId, int id, QString title) :
+  m_syncId(syncId),
   m_id(id),
   m_title(title)
 {
+}
+
+int Tag::syncId() const
+{
+  return m_id;
+}
+
+void Tag::setSyncId(int syncId)
+{
+  m_syncId = syncId;
+  emit tagSyncIDChanged(this);
 }
 
 int Tag::id() const

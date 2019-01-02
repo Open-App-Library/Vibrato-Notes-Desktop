@@ -10,7 +10,11 @@ class Tag : public QObject
 {
   Q_OBJECT
 public:
-  Tag(int id, QString title="Untitled Tag");
+  Tag(int syncId, int id, QString title="Untitled Tag");
+
+  int syncId() const;
+  void setSyncId(int syncId);
+
   int id() const;
   void setId(int id);
 
@@ -19,11 +23,13 @@ public:
 
 signals:
   void tagChanged(Tag *tag);
+  void tagSyncIDChanged(Tag *tag);
   void tagIDChanged(Tag *tag);
   void tagTitleChanged(Tag *tag);
 
 private:
-  int     m_id=TAG_DEFAULT_TAG_ID;
+  int     m_syncId;
+  int     m_id;
   QString m_title;
 };
 

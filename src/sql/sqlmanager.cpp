@@ -55,7 +55,7 @@ bool SQLManager::realBasicQuery(QString query)
   return basicQuery(query).isActive();
 }
 
-QVector<QVariant> SQLManager::column(QString query)
+QVector<QVariant> SQLManager::column(QString query, int column)
 {
   QSqlQuery q = basicQuery(query);
   if (!q.isActive())
@@ -64,25 +64,25 @@ QVector<QVariant> SQLManager::column(QString query)
   QVector<QVariant> list;
 
   while ( q.next() )
-    list.append( q.value(0) );
+    list.append( q.value(column) );
 
   return list;
 }
 
-QVector<QVector<QVariant>> SQLManager::rows(QString query, QStringList tableLabels)
+ArrayOfMaps SQLManager::rows(QString query, QStringList tableColumns)
 {
   QSqlQuery q = basicQuery(query);
   if (!q.isActive())
-    return QVector<QVector<QVariant>>(); // Return empty list
+    return ArrayOfMaps(); // Return empty list
 
-  QVector<QVector<QVariant>> table;
+  ArrayOfMaps table;
 
   while ( q.next() ) {
-    QVector<QVariant> row;
-    for (int i=0; i<tableLabels.length(); i++) {
-      row.append( q.value(i) );
+    QMap<QString, QVariant> row;
+    for (int i=0; i<tableColumns.length(); i++) {
+      row[tableColumns[i]] = q.value(i);
     }
-    table.append( row );
+    table.append(row);
   }
 
   return table;
@@ -134,4 +134,93 @@ void SQLManager::logSqlError(QSqlError error, bool fatal) {
     qFatal("%s", msg.toLatin1().constData());
   else
     qWarning("%s", msg.toLatin1().constData());
+}
+
+QStringList SQLManager::noteColumns() const
+{
+  return m_noteColumns;
+}
+
+QVector<Note*> SQLManager::Notes() {
+  QVector<Note*> notes;
+
+  ArrayOfMaps rawNotes = rows("SELECT * FROM notes", noteColumns());
+
+  for ( int i=0; i<rawNotes.length(); i++ ) {
+    QMap<QString, QVariant> noteObject = rawNotes[i];
+
+    int sync_id             = noteObject["sync_id"].toInt();
+    int id                  = noteObject["id"].toInt();
+    QString title           = noteObject["title"].toString();
+    QString text            = noteObject["text"].toString();
+    QDateTime date_created  = noteObject["date_created"].toDateTime();
+    QDateTime date_modified = noteObject["date_modified"].toDateTime();
+    bool favorited          = noteObject["favorited"].toBool();
+    int notebook            = noteObject["notebook"].toInt();
+    bool trashed            = noteObject["trashed"].toInt();
+
+    // Parse a tags array
+    QVector<int> tags;
+    QString tagVariantsQuery = QString("select tag from notes_tags where note = %1").arg(id);
+    for ( QVariant tagVariant : column(tagVariantsQuery) )
+      tags.append( tagVariant.toInt() );
+
+    Note *note = new Note(sync_id,
+                          id,
+                          title,
+                          text,
+                          date_created,
+                          date_modified,
+                          favorited,
+                          notebook,
+                          tags,
+                          trashed);
+    notes.append(note);
+
+    qDebug() << "ADDED NOTE" << sync_id << id << title << text << date_created << date_modified << favorited << notebook << tags << trashed;
+  }
+  return notes;
+}
+
+QVector<Note*> SQLManager::Notebooks() {
+
+}
+
+QVector<Note*> SQLManager::tags() {
+
+}
+#include <iostream>
+void SQLManager::addNoteToDatabase(Note *note, bool getNewID)
+{
+  QSqlQuery q;
+
+  QStringList noteCols = noteColumns();
+  QStringList columnPlaceholders;
+
+  if (!getNewID) noteCols.removeAll("id");
+
+  for (QString col : noteCols)
+    columnPlaceholders.append( QString(":%1").arg(col) );
+
+  QString queryString = QString("INSERT INTO notes (%1) "
+                                "VALUES (%2)").arg(noteCols.join(", "),
+                                                   columnPlaceholders.join(", "));
+
+
+  q.prepare(queryString);
+
+  q.bindValue(":sync_id"       , note->syncId());
+  if (getNewID) q.bindValue(":id", note->id());
+  q.bindValue(":title"         , note->title());
+  q.bindValue(":text"          , note->text());
+  q.bindValue(":date_created"  , note->date_created());
+  q.bindValue(":date_modified" , note->date_modified());
+  q.bindValue(":favorited"     , note->favorited());
+  q.bindValue(":notebook"      , note->notebook());
+  q.bindValue(":trashed"       , note->trashed());
+
+  qDebug() << "TEST" << q.executedQuery();
+
+  q.exec();
+  qDebug() << q.lastError();
 }
