@@ -8,9 +8,9 @@
 #include "../meta/note.h"
 
 // A 2d array.
-typedef QVector<QMap<QString, QVariant>> ArrayOfMaps;
 typedef QMap<QString, QVariant> Map;
-typedef QVector<QVariant> ObjectList;
+typedef QVector<Map>            MapVector;
+typedef QVector<QVariant>       VariantList;
 
 class SQLManager : public QObject
 {
@@ -32,13 +32,13 @@ public:
   bool  realBasicQuery(QString query);
 
   // Returns a list representing a single-column selection
-  ObjectList column(QString query, int column=0);
+  VariantList column(QString query, int column=0);
 
   // Returns the row/s of a SQL query.
   Map row(QSqlQuery query, QStringList tableLabels);
   Map row(QString queryString, QStringList tableLabels);
-  ArrayOfMaps rows(QSqlQuery query, QStringList tableLabels);
-  ArrayOfMaps rows(QString queryString, QStringList tableLabels);
+  MapVector rows(QSqlQuery query, QStringList tableLabels);
+  MapVector rows(QString queryString, QStringList tableLabels);
 
   bool runScript(QString fileName);
   bool runScript(QFile *file, QSqlQuery *query);
@@ -49,11 +49,14 @@ public:
   /*
    * Vibrato-specific SQL functions
    */
-  QStringList noteColumns() const; // List of supported note columns
+  // List of supported note, notebook, and tag columns (in SQL)
+  QStringList noteColumns() const;
+  QStringList notebookColumns() const;
+  QStringList tagColumns() const;
 
   // Retrieve notes
-  QVector<Note*> Notes();
-  QVector<Notebook*> Notebooks();
+  QVector<Note*> notes();
+  QVector<Notebook*> notebooks();
   QVector<Tag*> tags();
 
   bool addNote(Note *note, bool getNewID=false);
@@ -74,6 +77,8 @@ private:
   QString m_location;
   QSqlDatabase m_sqldb;
 
+  QVector<Notebook*> m_getNotebooks(Notebook *parent=nullptr);
+
   QStringList m_noteColumns =
     {"sync_id",
      "id",
@@ -84,6 +89,17 @@ private:
      "favorited",
      "notebook",
      "trashed"
+    };
+  QStringList m_notebookColumns =
+    {"sync_id",
+     "id",
+     "title",
+     "parent"
+    };
+  QStringList m_tagColumns =
+    {"sync_id",
+     "id",
+     "title"
     };
 };
 

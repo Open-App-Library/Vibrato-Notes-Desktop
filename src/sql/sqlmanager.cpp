@@ -57,13 +57,13 @@ bool SQLManager::realBasicQuery(QString query)
   return basicQuery(query).isActive();
 }
 
-ObjectList SQLManager::column(QString query, int column)
+VariantList SQLManager::column(QString query, int column)
 {
   QSqlQuery q = basicQuery(query);
   if (!q.isActive())
-    return ObjectList();
+    return VariantList();
 
-  ObjectList list;
+  VariantList list;
 
   while ( q.next() )
     list.append( q.value(column) );
@@ -72,7 +72,7 @@ ObjectList SQLManager::column(QString query, int column)
 }
 
 Map SQLManager::row(QSqlQuery query, QStringList tableLabels) {
-  ArrayOfMaps arr = rows(query, tableLabels);
+  MapVector arr = rows(query, tableLabels);
   Map m;
   if ( arr.length() > 0)
     return arr[0];
@@ -86,12 +86,12 @@ Map SQLManager::row(QString queryString, QStringList tableLabels) {
   return row(q, tableLabels);
 }
 
-ArrayOfMaps SQLManager::rows(QSqlQuery query, QStringList tableColumns)
+MapVector SQLManager::rows(QSqlQuery query, QStringList tableColumns)
 {
   if (!query.isActive())
-    return ArrayOfMaps(); // Return empty list
+    return MapVector(); // Return empty list
 
-  ArrayOfMaps table;
+  MapVector table;
 
   while ( query.next() ) {
     QMap<QString, QVariant> row;
@@ -104,7 +104,7 @@ ArrayOfMaps SQLManager::rows(QSqlQuery query, QStringList tableColumns)
   return table;
 }
 
-ArrayOfMaps SQLManager::rows(QString query, QStringList tableColumns)
+MapVector SQLManager::rows(QString query, QStringList tableColumns)
 {
   QSqlQuery q = basicQuery(query);
   return rows(q, tableColumns);
@@ -168,11 +168,20 @@ QStringList SQLManager::noteColumns() const
   return m_noteColumns;
 }
 
-QVector<Note*> SQLManager::Notes() {
+QStringList SQLManager::notebookColumns() const
+{
+  return m_notebookColumns;
+}
+
+QStringList SQLManager::tagColumns() const {
+  return m_tagColumns;
+}
+
+QVector<Note*> SQLManager::notes() {
   QVector<Note*> notes;
 
   QString queryString = QString("SELECT %1 FROM notes").arg(noteColumns().join(", "));
-  ArrayOfMaps rawNotes = rows(queryString, noteColumns());
+  MapVector rawNotes = rows(queryString, noteColumns());
 
   for ( int i=0; i<rawNotes.length(); i++ ) {
     QMap<QString, QVariant> noteObject = rawNotes[i];
@@ -209,12 +218,52 @@ QVector<Note*> SQLManager::Notes() {
   return notes;
 }
 
-QVector<Notebook*> SQLManager::Notebooks() {
+QVector<Notebook*> SQLManager::notebooks() {
+  return m_getNotebooks();
+}
 
+QVector<Notebook*> SQLManager::m_getNotebooks(Notebook *parent) {
+  QVector<Notebook*> notebooks;
+  QSqlQuery q;
+
+  int parentID=-1;
+  if ( parent != nullptr) parentID = parent->id();
+
+
+
+  QString queryString =
+    QString("select %1 from notebooks where parent = :id").arg( notebookColumns().join(", ") );
+  q.prepare(queryString);
+  q.bindValue(":id", parentID);
+  q.exec();
+  MapVector notebookResults = rows(q, notebookColumns());
+
+  for (Map n : notebookResults) {
+    Notebook *notebook = new Notebook(n["sync_id"].toInt(),
+                                      n["id"].toInt(),
+                                      n["title"].toString(),
+                                      parent);
+    notebook->setChildren(m_getNotebooks(notebook));
+    notebooks.append(notebook);
+  }
+
+  return notebooks;
 }
 
 QVector<Tag*> SQLManager::tags() {
+  QVector<Tag*> tags;
+  QString queryString =
+    QString("select %1 from tags").arg( tagColumns().join(", ") );
+  MapVector tagResults = rows(queryString, tagColumns());
 
+  for ( Map tagMap : tagResults) {
+    Tag *t = new Tag(tagMap["sync_id"].toInt(),
+                     tagMap["id"].toInt(),
+                     tagMap["title"].toString());
+    tags.append(t);
+  }
+
+  return tags;
 }
 
 bool SQLManager::addNote(Note *note, bool getNewID)
@@ -298,7 +347,7 @@ bool SQLManager::updateNoteToDB(Note* note) {
   ///
   QString noteTagsQuery
     = QString("select note, tag from notes_tags where note =%1").arg(note->id());
-  ObjectList curTagObjects = column(noteTagsQuery, 1);
+  VariantList curTagObjects = column(noteTagsQuery, 1);
   QVector<int> curTagIDs;
   for (QVariant obj : curTagObjects)
     curTagIDs.append(obj.toInt());

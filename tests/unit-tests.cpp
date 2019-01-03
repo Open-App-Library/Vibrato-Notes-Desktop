@@ -111,7 +111,7 @@ void GenericTest::sqlmanager()
   //
   // Test: Rows
   //
-  ArrayOfMaps rows = manager.rows("SELECT * FROM vehicles", {"name", "color", "speed"});
+  MapVector rows = manager.rows("SELECT * FROM vehicles", {"name", "color", "speed"});
   QCOMPARE(rows[0]["name"].toString(), "Ferrari");
   QCOMPARE(rows[1]["color"].toString(), "camo");
   QCOMPARE(rows[2]["speed"].toInt(), 30000);
@@ -155,6 +155,53 @@ void GenericTest::sqlmanager()
   manager.updateNoteFromDB(&note);
   mynote = manager.row("select title from notes", {"title"});
   QCOMPARE(note.title(), mynote["title"].toString());
+
+  //
+  // Test: Loading a notebook
+  //
+  QVERIFY (manager.realBasicQuery("insert into notebooks (sync_id, id, title, parent) values "
+                                  "(1, 2, 'Recipes', -1)"));
+  QVector<Notebook*> notebooks = manager.notebooks();
+  for (Notebook *n : notebooks) {
+    QCOMPARE( n->syncId(), 1 );
+    QCOMPARE( n->id(), 2 );
+    QCOMPARE( n->title(), "Recipes" );
+    QCOMPARE( n->parent(), nullptr );
+  }
+  // Free memory
+  for (int i=notebooks.length()-1; i>=0; i--)
+    delete notebooks[i];
+
+  //
+  // Test: Loading nested notebooks (hierarchial)
+  //
+  QVERIFY (manager.realBasicQuery("insert into notebooks (sync_id, id, title, parent) values "
+                                  "(2, 3, 'Cool', 1)"));
+  notebooks = manager.notebooks();
+  for (Notebook *n : notebooks) {
+    QCOMPARE( n->syncId(), 1 );
+    QCOMPARE( n->id(), 2 );
+    QCOMPARE( n->title(), "Recipes" );
+    QCOMPARE( n->parent(), nullptr );
+    for (Notebook *n2 : n->children()) {
+      QCOMPARE( n2->syncId(), 2 );
+      QCOMPARE( n2->id(), 3 );
+      QCOMPARE( n2->title(), "Cool" );
+      QCOMPARE( n2->parent(), n );
+    }
+  }
+  // Free memory
+  for (int i=notebooks.length()-1; i>=0; i--)
+    delete notebooks[i];
+
+  //
+  // Test: Tags
+  //
+  QStringList tags = {"fun", "2018", "2019", "pictures"};
+  QVERIFY( manager.realBasicQuery("insert into tags (title) values ('fun'), ('2018'), ('2019'), ('pictures')"));
+  VariantList tagNames = manager.column("select * from tags", 2);
+  for (int i=0; i<tags.length(); i++)
+    QCOMPARE( tagNames[i].toString(), tags[i] );
 }
 
 
