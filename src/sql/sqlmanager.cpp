@@ -1,10 +1,12 @@
 #include "sqlmanager.h"
+#include <QDebug>
 #include <QDir>
 #include <helper-io.hpp>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlTableModel>
+#include <QSqlRecord>
 #include <QVariant>
-#include <QDebug>
 
 SQLManager::SQLManager(QObject *parent) : QObject(parent)
 {
@@ -55,13 +57,13 @@ bool SQLManager::realBasicQuery(QString query)
   return basicQuery(query).isActive();
 }
 
-QVector<QVariant> SQLManager::column(QString query, int column)
+ObjectList SQLManager::column(QString query, int column)
 {
   QSqlQuery q = basicQuery(query);
   if (!q.isActive())
-    return QVector<QVariant>();
+    return ObjectList();
 
-  QVector<QVariant> list;
+  ObjectList list;
 
   while ( q.next() )
     list.append( q.value(column) );
@@ -69,23 +71,44 @@ QVector<QVariant> SQLManager::column(QString query, int column)
   return list;
 }
 
-ArrayOfMaps SQLManager::rows(QString query, QStringList tableColumns)
+Map SQLManager::row(QSqlQuery query, QStringList tableLabels) {
+  ArrayOfMaps arr = rows(query, tableLabels);
+  qDebug() << arr;
+  Map m;
+  if ( arr.length() > 0)
+    return arr[0];
+  else
+    return m;
+}
+
+Map SQLManager::row(QString queryString, QStringList tableLabels) {
+  QSqlQuery q;
+  q.exec(queryString);
+  return row(q, tableLabels);
+}
+
+ArrayOfMaps SQLManager::rows(QSqlQuery query, QStringList tableColumns)
 {
-  QSqlQuery q = basicQuery(query);
-  if (!q.isActive())
+  if (!query.isActive())
     return ArrayOfMaps(); // Return empty list
 
   ArrayOfMaps table;
 
-  while ( q.next() ) {
+  while ( query.next() ) {
     QMap<QString, QVariant> row;
     for (int i=0; i<tableColumns.length(); i++) {
-      row[tableColumns[i]] = q.value(i);
+      row[tableColumns[i]] = query.value(i);
     }
     table.append(row);
   }
 
   return table;
+}
+
+ArrayOfMaps SQLManager::rows(QString query, QStringList tableColumns)
+{
+  QSqlQuery q = basicQuery(query);
+  return rows(q, tableColumns);
 }
 
 bool SQLManager::runScript(QString fileName)
@@ -115,13 +138,16 @@ bool SQLManager::runScript(QFile *file, QSqlQuery *query)
     if ( line.isEmpty() ) continue;
 
     bool success = query->exec(line);
-    if (!success) qDebug() << "ERROR!" << line << "(" << file->fileName() << ")";
+    if (!success)
+      logSqlError(query->lastError());
   }
 
   return query->isActive();
 }
 
-void SQLManager::logSqlError(QSqlError error, bool fatal) {
+bool SQLManager::logSqlError(QSqlError error, bool fatal) {
+  if ( !error.isValid() )
+    return true;
   QString status = "SQL Error";
   if (fatal) status = "FATAL SQL Error";
 
@@ -134,6 +160,8 @@ void SQLManager::logSqlError(QSqlError error, bool fatal) {
     qFatal("%s", msg.toLatin1().constData());
   else
     qWarning("%s", msg.toLatin1().constData());
+
+  return false;
 }
 
 QStringList SQLManager::noteColumns() const
@@ -144,7 +172,8 @@ QStringList SQLManager::noteColumns() const
 QVector<Note*> SQLManager::Notes() {
   QVector<Note*> notes;
 
-  ArrayOfMaps rawNotes = rows("SELECT * FROM notes", noteColumns());
+  QString queryString = QString("SELECT %1 FROM notes").arg(noteColumns().join(", "));
+  ArrayOfMaps rawNotes = rows(queryString, noteColumns());
 
   for ( int i=0; i<rawNotes.length(); i++ ) {
     QMap<QString, QVariant> noteObject = rawNotes[i];
@@ -182,22 +211,20 @@ QVector<Note*> SQLManager::Notes() {
   return notes;
 }
 
-QVector<Note*> SQLManager::Notebooks() {
+QVector<Notebook*> SQLManager::Notebooks() {
 
 }
 
-QVector<Note*> SQLManager::tags() {
+QVector<Tag*> SQLManager::tags() {
 
 }
-#include <iostream>
-void SQLManager::addNoteToDatabase(Note *note, bool getNewID)
+
+bool SQLManager::addNote(Note *note, bool getNewID)
 {
-  QSqlQuery q;
-
   QStringList noteCols = noteColumns();
   QStringList columnPlaceholders;
 
-  if (!getNewID) noteCols.removeAll("id");
+  if (!getNewID) noteCols.removeOne("id");
 
   for (QString col : noteCols)
     columnPlaceholders.append( QString(":%1").arg(col) );
@@ -206,7 +233,7 @@ void SQLManager::addNoteToDatabase(Note *note, bool getNewID)
                                 "VALUES (%2)").arg(noteCols.join(", "),
                                                    columnPlaceholders.join(", "));
 
-
+  QSqlQuery q;
   q.prepare(queryString);
 
   q.bindValue(":sync_id"       , note->syncId());
@@ -219,8 +246,140 @@ void SQLManager::addNoteToDatabase(Note *note, bool getNewID)
   q.bindValue(":notebook"      , note->notebook());
   q.bindValue(":trashed"       , note->trashed());
 
-  qDebug() << "TEST" << q.executedQuery();
-
   q.exec();
-  qDebug() << q.lastError();
+
+  // Set the ID
+  int newID = q.lastInsertId().toInt();
+  if ( getNewID )
+    note->setId( newID );
+  if ( newID != note->id() )
+    qWarning() << "Note" << note->title() << "has an id of" << note->id() << "however it was just inserted to the database as id" << newID;
+
+  // Set the tags
+  QSqlQuery tagQ;
+  for ( int tagID : note->tags() ) {
+    tagQ.prepare("insert into notes_tags (note, tag) values "
+              "(:noteID, :tagID)");
+    tagQ.bindValue(":noteID", note->id());
+    tagQ.bindValue(":tagID", tagID);
+    tagQ.exec();
+    logSqlError(tagQ.lastError());
+  }
+
+  // Print error if there is one. Return true if no error.
+  return logSqlError(q.lastError());
+}
+
+bool SQLManager::updateNoteToDB(Note* note) {
+  ///
+  // Update the note
+  ///
+  QSqlTableModel model;
+  model.setTable("notes");
+  model.setFilter( QString("id = %1").arg(note->id()) );
+  model.select();
+
+  if ( model.rowCount() > 1 )
+    qWarning() << "[Duplicate Note SQLite3 Warning!] Found" << model.rowCount() << "of" << note->title();
+
+  QSqlRecord noteInDB = model.record(0);
+
+  noteInDB.setValue("sync_id", note->syncId());
+  noteInDB.setValue("title", note->title());
+  noteInDB.setValue("text", note->text());
+  noteInDB.setValue("date_created", note->date_created());
+  noteInDB.setValue("date_modified", note->date_modified());
+  noteInDB.setValue("favorited", note->favorited());
+  noteInDB.setValue("notebook", note->notebook());
+  noteInDB.setValue("trashed", note->trashed());
+
+  model.setRecord(0, noteInDB);
+
+  ///
+  // Update the note's tags
+  ///
+  QString noteTagsQuery
+    = QString("select note, tag from notes_tags where note =%1").arg(note->id());
+  ObjectList curTagObjects = column(noteTagsQuery, 1);
+  QVector<int> curTagIDs;
+  for (QVariant obj : curTagObjects)
+    curTagIDs.append(obj.toInt());
+
+  // First, loop through note's tags and add to db if needded
+  for (int id : note->tags()) {
+    if (!curTagIDs.contains(id))
+      addTagToNote(note->id(), id);
+  }
+
+  // Then, loop through db tags and remove ones that are not needed
+  for (int id : curTagIDs) {
+    if (!note->tags().contains(id))
+      removeTagFromNote(note->id(), id);
+  }
+  return logSqlError(model.lastError());
+}
+
+bool SQLManager::updateNoteFromDB(Note* note) {
+  QSqlQuery query;
+  QString queryString
+    = QString("select %1 from notes where id = :id").arg(noteColumns().join(", "));
+  query.prepare( queryString );
+  query.bindValue(":id", note->id());
+  query.exec();
+  Map noteRow = row(query, noteColumns());
+
+  note->setSyncId        ( noteRow["sync_id"].toInt() );
+  note->setId            ( noteRow["id"].toInt() );
+  note->setTitle         ( noteRow["title"].toString() );
+  note->setText          ( noteRow["text"].toString() );
+  note->setDate_created  ( noteRow["date_created"].toDateTime() );
+  note->setDate_modified ( noteRow["date_modified"].toDateTime() );
+  note->setFavorited     ( noteRow["favorited"].toBool() );
+  note->setNotebook      ( noteRow["notebook"].toInt() );
+  note->setTrashed       ( noteRow["trashed"].toBool() );
+
+  QSqlTableModel tags;
+  tags.setTable("notes_tags");
+  tags.setFilter( QString("note = %1").arg(note->id()) );
+  tags.select();
+
+  QVector<int> tagList;
+
+  for (int i=0; i<tags.rowCount(); i++)
+    tagList.append( tags.record(i).value("tag").toInt() );
+  note->setTags(tagList);
+
+  return
+    logSqlError(query.lastError()) &&
+    logSqlError(tags.lastError());
+}
+
+bool SQLManager::tagExists(int noteID, int tagID) {
+  QSqlTableModel model;
+  model.setTable("notes_tags");
+  model.setFilter( QString("note = %1 and tag = %2").arg(noteID, tagID) );
+  model.select();
+  return model.rowCount() > 0;
+}
+
+bool SQLManager::addTagToNote(int noteID, int tagID, bool skip_duplicate_check) {
+  if ( !skip_duplicate_check && tagExists(noteID, tagID) )
+    return true;
+  QSqlQuery q;
+  q.prepare("INSERT INTO notes_tags (note, tag) VALUES "
+            "(:noteID, :tagID)");
+  q.bindValue(":noteID", noteID);
+  q.bindValue(":tagID", tagID);
+  q.exec();
+  return logSqlError(q.lastError());
+}
+
+bool SQLManager::removeTagFromNote(int noteID, int tagID) {
+  QSqlQuery q;
+  q.prepare("DELETE FROM notes_tags WHERE "
+            "note = :noteID and tag = :tagID");
+  q.bindValue(":noteID", noteID);
+  q.bindValue(":tagID", tagID);
+  q.exec();
+  return logSqlError(q.lastError());
 }

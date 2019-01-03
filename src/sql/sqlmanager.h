@@ -9,6 +9,8 @@
 
 // A 2d array.
 typedef QVector<QMap<QString, QVariant>> ArrayOfMaps;
+typedef QMap<QString, QVariant> Map;
+typedef QVector<QVariant> ObjectList;
 
 class SQLManager : public QObject
 {
@@ -30,16 +32,19 @@ public:
   bool  realBasicQuery(QString query);
 
   // Returns a list representing a single-column selection
-  QVector<QVariant> column(QString query, int column=0);
+  ObjectList column(QString query, int column=0);
 
-  // Returns the rows of a SQL query.
-  ArrayOfMaps rows(QString query, QStringList tableLabels);
+  // Returns the row/s of a SQL query.
+  Map row(QSqlQuery query, QStringList tableLabels);
+  Map row(QString queryString, QStringList tableLabels);
+  ArrayOfMaps rows(QSqlQuery query, QStringList tableLabels);
+  ArrayOfMaps rows(QString queryString, QStringList tableLabels);
 
   bool runScript(QString fileName);
   bool runScript(QFile *file, QSqlQuery *query);
 
-  // Log SQL error to console.
-  void logSqlError(QSqlError error, bool fatal=false);
+  // Log SQL error to console. Returns false if error.
+  bool logSqlError(QSqlError error, bool fatal=false);
 
   /*
    * Vibrato-specific SQL functions
@@ -48,10 +53,18 @@ public:
 
   // Retrieve notes
   QVector<Note*> Notes();
-  QVector<Note*> Notebooks();
-  QVector<Note*> tags();
+  QVector<Notebook*> Notebooks();
+  QVector<Tag*> tags();
 
-  void addNoteToDatabase(Note *note, bool getNewID=false);
+  bool addNote(Note *note, bool getNewID=false);
+  bool updateNoteToDB(Note *note);
+  bool updateNoteFromDB(Note *note);
+
+  bool tagExists(int noteID, int tagID);
+  // If skip_duplicate_check is set to true, it will not check for a duplicate entry
+  // before adding the tag to note. This will save you from an extra database call.
+  bool addTagToNote(int noteID, int tagID, bool skip_duplicate_check=false);
+  bool removeTagFromNote(int noteID, int tagID);
 
 signals:
 

@@ -90,9 +90,16 @@ void GenericTest::sqlmanager()
 {
   SQLManager manager;
 
+  //
+  // Test: SQL Errors
+  //
   qDebug("TESTING AN ERROR");
   QVERIFY( !manager.runScript(":test/heroes-error.sql") );
   qDebug("DONE TESTING AN ERROR");
+
+  //
+  // Test: Columns
+  //
   QVERIFY( manager.runScript(":test/heroes.sql") );
 
   QVector<QVariant> col = manager.column("SELECT name FROM heroes");
@@ -101,25 +108,53 @@ void GenericTest::sqlmanager()
   for (int i=0; i<2; i++)
     QCOMPARE( col[i].toString(), expected[i] );
 
+  //
+  // Test: Rows
+  //
   ArrayOfMaps rows = manager.rows("SELECT * FROM vehicles", {"name", "color", "speed"});
   QCOMPARE(rows[0]["name"].toString(), "Ferrari");
   QCOMPARE(rows[1]["color"].toString(), "camo");
   QCOMPARE(rows[2]["speed"].toInt(), 30000);
 
+  //
+  // Test: Dropping tables
+  //
   QVERIFY( manager.realBasicQuery("DROP TABLE heroes") );
   QVERIFY( manager.realBasicQuery("DROP TABLE vehicles") );
 
+  //
+  // Test: Dropping tables
+  //
   QStringList tables = {"notes", "notebooks", "tags", "notes_tags"};
   for (QString t : tables)
     QVERIFY( manager.realBasicQuery( QString("drop table if exists %1").arg(t) ) );
-  manager.runScript(":sql/create.sql");
+  QVERIFY( manager.runScript(":sql/create.sql") );
 
+  //
+  // Test: Adding a note
+  //
   Note note(-1, 1, "Test Note", "Hello world.",
             isoDate( "2000-01-01T09:38:59Z"), // Date Created
             QDateTime::currentDateTime(),  // Date Modified
             false, -1, {}, false);
 
-  manager.addNoteToDatabase(&note);
+  QVERIFY( manager.addNote(&note) );
+
+  //
+  // Test: Updating note to database
+  //
+  note.setTitle("My new title");
+  manager.updateNoteToDB(&note);
+  Map mynote = manager.row("select title from notes", {"title"});
+  QCOMPARE(mynote["title"].toString(), note.title());
+
+  //
+  // Test: Updating note from database
+  //
+  manager.realBasicQuery( QString("update notes set title = 'from database' where id = %1").arg(note.id()) );
+  manager.updateNoteFromDB(&note);
+  mynote = manager.row("select title from notes", {"title"});
+  QCOMPARE(note.title(), mynote["title"].toString());
 }
 
 
