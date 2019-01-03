@@ -22,7 +22,7 @@ public:
   QList<Note*> list() const;
   int          size() const;
 
-  Note *addNote(Note *note);
+  Note *addNote(Note *note, bool addToSQL=true);
   Note *addDefaultNote(); // Takes note, sets certain fields to default values.
   //p Note *addNote(Note note);
 

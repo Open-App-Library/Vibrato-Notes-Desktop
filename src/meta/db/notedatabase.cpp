@@ -22,9 +22,12 @@ int NoteDatabase::size() const
   return m_list.size();
 }
 
-Note *NoteDatabase::addNote(Note *note)
+Note *NoteDatabase::addNote(Note *note, bool addToSQL)
 {
   m_list.prepend(note);
+
+  if (addToSQL) m_sqlManager->addNote(note);
+
   connect(note, &Note::noteFavoritedChanged,
           this, &NoteDatabase::handleNoteFavoritedChanged);
   connect(note, &Note::noteTrashedOrRestored,
@@ -85,7 +88,7 @@ void NoteDatabase::loadSQL()
 {
   QVector<Note*> notes = m_sqlManager->notes();
   for (Note *note : notes)
-    addNote(note);
+    addNote(note, false);
 }
 
 void NoteDatabase::loadJSON(QJsonDocument jsonDocument)

@@ -272,7 +272,11 @@ bool SQLManager::addNote(Note *note, bool getNewID)
   QStringList noteCols = noteColumns();
   QStringList columnPlaceholders;
 
-  if (!getNewID) noteCols.removeOne("id");
+  if (getNewID) {
+    noteCols.removeOne("id");
+    noteCols.removeOne("sync_id");
+  }
+  qDebug() << noteCols;
 
   for (QString col : noteCols)
     columnPlaceholders.append( QString(":%1").arg(col) );
@@ -284,8 +288,8 @@ bool SQLManager::addNote(Note *note, bool getNewID)
   QSqlQuery q;
   q.prepare(queryString);
 
-  q.bindValue(":sync_id"       , note->syncId());
-  if (getNewID) q.bindValue(":id", note->id());
+  q.bindValue(":sync_id" , note->syncId());
+  if (!getNewID) q.bindValue(":id", note->id());
   q.bindValue(":title"         , note->title());
   q.bindValue(":text"          , note->text());
   q.bindValue(":date_created"  , note->date_created());
@@ -408,7 +412,7 @@ bool SQLManager::addNotebook(Notebook* notebook, bool getNewID) {
   QStringList notebookCols = notebookColumns();
   QStringList columnPlaceholders;
 
-  if (!getNewID) notebookCols.removeOne("id");
+  if (getNewID) notebookCols.removeOne("id");
 
   for (QString col : notebookCols)
     columnPlaceholders.append( QString(":%1").arg(col) );
@@ -425,7 +429,7 @@ bool SQLManager::addNotebook(Notebook* notebook, bool getNewID) {
     parentID = notebook->parent()->id();
 
   q.bindValue(":sync_id"          , notebook->syncId());
-  if (getNewID) q.bindValue(":id" , notebook->id());
+  if (!getNewID) q.bindValue(":id" , notebook->id());
   q.bindValue(":title"            , notebook->title());
   q.bindValue(":parent"           , parentID);
 
@@ -490,7 +494,7 @@ bool SQLManager::addTag(Tag *tag, bool getNewID) {
   QStringList tagCols = tagColumns();
   QStringList columnPlaceholders;
 
-  if (!getNewID) tagCols.removeOne("id");
+  if (getNewID) tagCols.removeOne("id");
 
   for (QString col : tagCols)
     columnPlaceholders.append( QString(":%1").arg(col) );
@@ -503,7 +507,7 @@ bool SQLManager::addTag(Tag *tag, bool getNewID) {
   q.prepare(queryString);
 
   q.bindValue(":sync_id"          , tag->syncId());
-  if (getNewID) q.bindValue(":id" , tag->id());
+  if (!getNewID) q.bindValue(":id" , tag->id());
   q.bindValue(":title"            , tag->title());
 
   q.exec();
