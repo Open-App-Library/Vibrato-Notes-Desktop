@@ -99,6 +99,8 @@ void NotebookDatabase::addNotebook(Notebook *notebook)
           this, &NotebookDatabase::notebookParentChanged_slot);
   connect(notebook, &Notebook::notebookChildrenChanged,
           this, &NotebookDatabase::notebookChildrenChanged_slot);
+  connect(notebook, &Notebook::requestedParentWithID,
+          this, &NotebookDatabase::handleNotebookParentRequest);
   emit notebookAdded(notebook);
 }
 
@@ -252,6 +254,21 @@ void NotebookDatabase::notebookParentChanged_slot(Notebook *notebook)
 void NotebookDatabase::notebookChildrenChanged_slot(Notebook *notebook)
 {
   emit notebookChildrenChanged(notebook);
+}
+
+void NotebookDatabase::handleNotebookParentRequest(Notebook* notebook, int requestedParentID) {
+  for (Notebook *n : listRecursively()) {
+    if (n->id() == requestedParentID) {
+      QVector<int> id_blacklist = {notebook->id()};
+      for (Notebook *child : notebook->recurseChildren())
+        id_blacklist.append(child->id());
+      // If not a child of notebook, change parent
+      if ( !id_blacklist.contains(n->id()) ) {
+        n->addChild(notebook);
+        return;
+      }
+    }
+  }
 }
 
 void NotebookDatabase::loadJSON(QJsonDocument jsonDocument)

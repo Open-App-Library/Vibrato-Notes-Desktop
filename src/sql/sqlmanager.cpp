@@ -373,6 +373,10 @@ bool SQLManager::updateNoteFromDB(Note* note) {
   query.prepare( queryString );
   query.bindValue(":id", note->id());
   query.exec();
+
+  if (!logSqlError(query.lastError()) )
+    return false;
+
   Map noteRow = row(query, noteColumns());
 
   note->setSyncId        ( noteRow["sync_id"].toInt() );
@@ -396,9 +400,158 @@ bool SQLManager::updateNoteFromDB(Note* note) {
     tagList.append( tags.record(i).value("tag").toInt() );
   note->setTags(tagList);
 
-  return
-    logSqlError(query.lastError()) &&
-    logSqlError(tags.lastError());
+  return logSqlError(tags.lastError());
+}
+
+bool SQLManager::addNotebook(Notebook* notebook, bool getNewID) {
+  QStringList notebookCols = notebookColumns();
+  QStringList columnPlaceholders;
+
+  if (!getNewID) notebookCols.removeOne("id");
+
+  for (QString col : notebookCols)
+    columnPlaceholders.append( QString(":%1").arg(col) );
+
+  QString queryString = QString("INSERT INTO notebooks (%1) "
+                                "VALUES (%2)").arg(notebookCols.join(", "),
+                                                   columnPlaceholders.join(", "));
+
+  QSqlQuery q;
+  q.prepare(queryString);
+
+  int parentID = -1;
+  if ( notebook->parent() != nullptr )
+    parentID = notebook->parent()->id();
+
+  q.bindValue(":sync_id"          , notebook->syncId());
+  if (getNewID) q.bindValue(":id" , notebook->id());
+  q.bindValue(":title"            , notebook->title());
+  q.bindValue(":parent"           , parentID);
+
+  q.exec();
+
+  // Set the ID
+  int newID = q.lastInsertId().toInt();
+  if ( getNewID )
+    notebook->setId( newID );
+  if ( newID != notebook->id() )
+    qWarning() << "Notebook" << notebook->title() << "has an id of" << notebook->id() << "however it was just inserted to the database as id" << newID;
+
+  // Print error if there is one. Return true if no error.
+  return logSqlError(q.lastError());
+}
+
+bool SQLManager::updateNotebookToDB(Notebook* notebook) {
+  QSqlTableModel model;
+  model.setTable("notebooks");
+  model.setFilter( QString("id = %1").arg(notebook->id()) );
+  model.select();
+
+  if ( model.rowCount() > 1 )
+    qWarning() << "[Duplicate Notebook SQLite3 Warning!] Found" << model.rowCount() << "of" << notebook->title();
+
+  QSqlRecord notebookInDB = model.record(0);
+
+  int parentID = -1;
+  if ( notebook->parent() != nullptr)
+    parentID = notebook->parent()->id();
+
+  notebookInDB.setValue("sync_id", notebook->syncId());
+  notebookInDB.setValue("title", notebook->title());
+  notebookInDB.setValue("parent", parentID);
+
+  model.setRecord(0, notebookInDB);
+
+  return logSqlError(model.lastError());
+}
+
+bool SQLManager::updateNotebookFromDB(Notebook* notebook) {
+  QSqlQuery query;
+  QString queryString
+    = QString("select %1 from notebooks where id = :id").arg(notebookColumns().join(", "));
+  query.prepare( queryString );
+  query.bindValue(":id", notebook->id());
+  query.exec();
+  Map notebookRow = row(query, notebookColumns());
+
+  if ( !logSqlError(query.lastError()) )
+    return false;
+
+  notebook->setSyncId ( notebookRow["sync_id"].toInt() );
+  notebook->setId     ( notebookRow["id"].toInt() );
+  notebook->setTitle  ( notebookRow["title"].toString() );
+  notebook->requestParentChangeToID( notebookRow["parent"].toInt());
+
+  return true;
+}
+//////////////////
+bool SQLManager::addTag(Tag *tag, bool getNewID) {
+  QStringList tagCols = tagColumns();
+  QStringList columnPlaceholders;
+
+  if (!getNewID) tagCols.removeOne("id");
+
+  for (QString col : tagCols)
+    columnPlaceholders.append( QString(":%1").arg(col) );
+
+  QString queryString = QString("INSERT INTO tags (%1) "
+                                "VALUES (%2)").arg(tagCols.join(", "),
+                                                   columnPlaceholders.join(", "));
+
+  QSqlQuery q;
+  q.prepare(queryString);
+
+  q.bindValue(":sync_id"          , tag->syncId());
+  if (getNewID) q.bindValue(":id" , tag->id());
+  q.bindValue(":title"            , tag->title());
+
+  q.exec();
+
+  // Set the ID
+  int newID = q.lastInsertId().toInt();
+  if ( getNewID )
+    tag->setId( newID );
+  if ( newID != tag->id() )
+    qWarning() << "Tag" << tag->title() << "has an id of" << tag->id() << "however it was just inserted to the database as id" << newID;
+
+  // Print error if there is one. Return true if no error.
+  return logSqlError(q.lastError());
+}
+
+bool SQLManager::updateTagToDB(Tag* tag) {
+  QSqlTableModel model;
+  model.setTable("tags");
+  model.setFilter( QString("id = %1").arg(tag->id()) );
+  model.select();
+
+  if ( model.rowCount() > 1 )
+    qWarning() << "[Duplicate Tag SQLite3 Warning!] Found" << model.rowCount() << "of" << tag->title();
+
+  QSqlRecord tagInDB = model.record(0);
+  tagInDB.setValue("sync_id", tag->syncId());
+  tagInDB.setValue("title", tag->title());
+  model.setRecord(0, tagInDB);
+
+  return logSqlError(model.lastError());
+}
+
+bool SQLManager::updateTagFromDB(Tag* tag) {
+  QSqlQuery query;
+  QString queryString
+    = QString("select %1 from tags where id = :id").arg(tagColumns().join(", "));
+  query.prepare( queryString );
+  query.bindValue(":id", tag->id());
+  query.exec();
+  Map tagRow = row(query, tagColumns());
+
+  if ( !logSqlError(query.lastError()) )
+    return false;
+
+  tag->setSyncId ( tagRow["sync_id"].toInt() );
+  tag->setId     ( tagRow["id"].toInt() );
+  tag->setTitle  ( tagRow["title"].toString() );
+
+  return true;
 }
 
 bool SQLManager::tagExists(int noteID, int tagID) {

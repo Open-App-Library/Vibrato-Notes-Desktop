@@ -195,13 +195,26 @@ void GenericTest::sqlmanager()
     delete notebooks[i];
 
   //
-  // Test: Tags
+  // Test: Read tags
   //
   QStringList tags = {"fun", "2018", "2019", "pictures"};
   QVERIFY( manager.realBasicQuery("insert into tags (title) values ('fun'), ('2018'), ('2019'), ('pictures')"));
   VariantList tagNames = manager.column("select * from tags", 2);
   for (int i=0; i<tags.length(); i++)
     QCOMPARE( tagNames[i].toString(), tags[i] );
+
+  //
+  // Test: Add new Tag
+  //
+  Tag *newTag = new Tag(1, 5, "cats&dogs");
+  manager.addTag(newTag);
+  tagNames = manager.column("select * from tags", 2);
+  QStringList tlist;
+  tags.append("cats&dogs");
+  for (QVariant t : tagNames)
+    tlist.append(t.toString());
+  QCOMPARE(tlist, tags);
+  delete newTag;
 }
 
 

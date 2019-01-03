@@ -68,6 +68,10 @@ void Notebook::setParent(Notebook *parent)
   emit notebookChanged(this);
 }
 
+void Notebook::requestParentChangeToID(int parentID) {
+  emit requestedParentWithID(this, parentID);
+}
+
 QVector<Notebook *> Notebook::children() const
 {
   return m_children;
@@ -100,19 +104,23 @@ void Notebook::addChild(Notebook *child)
 {
   if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
     return;
+  if (child->parent() != nullptr)
+    child->parent()->removeChild(child, true);
   m_children.append(child);
   child->setParent(this);
   emit notebookChildrenChanged(this);
   emit notebookChanged(this);
 }
 
-void Notebook::removeChild(Notebook *child)
+void Notebook::removeChild(Notebook *child, bool dont_emit_change_signal)
 {
   if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
     return;
   int index = m_children.indexOf(child);
   child->setParent(nullptr);
   m_children.removeAt(index);
+
+  if ( dont_emit_change_signal ) return;
   emit notebookChildrenChanged(this);
   emit notebookChanged(this);
 }

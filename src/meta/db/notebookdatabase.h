@@ -40,6 +40,7 @@ private slots:
   void notebookTitleChanged_slot(Notebook *notebook);
   void notebookParentChanged_slot(Notebook *notebook);
   void notebookChildrenChanged_slot(Notebook *notebook);
+  void handleNotebookParentRequest(Notebook *notebook, int requestedParentID);
 signals:
   void notebookAdded(Notebook *notebook);
   void notebooksRemoved(QVector<int> notebookIDs);

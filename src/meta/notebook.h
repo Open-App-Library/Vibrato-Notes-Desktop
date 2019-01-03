@@ -24,13 +24,14 @@ public:
 
   Notebook *parent() const;
   void setParent(Notebook *parent);
+  void requestParentChangeToID(int parentID);
 
   QVector<Notebook *> children() const;
   QVector<Notebook *> recurseChildren(Notebook* parent=nullptr) const;
   void setChildren(const QVector<Notebook *> &children);
 
   void addChild(Notebook *child);
-  void removeChild(Notebook *child);
+  void removeChild(Notebook *child, bool dont_emit_change_signal=false);
 
 signals:
   void notebookChanged(Notebook *notebook);
@@ -38,6 +39,7 @@ signals:
   void notebookIDChanged(Notebook *notebook);
   void notebookTitleChanged(Notebook *notebook);
   void notebookParentChanged(Notebook *notebook);
+  void requestedParentWithID(Notebook *notebook, int requestedParentID);
   void notebookChildrenChanged(Notebook *notebook);
   void deletingNotebook();
 
