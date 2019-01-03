@@ -25,6 +25,7 @@ BasicTreeItem::BasicTreeItem(const QString label, BasicTreeItem *parent)
 {
   m_label = label;
   m_parentItem = parent;
+  m_type = Type_Other;
 }
 
 BasicTreeItem::~BasicTreeItem()

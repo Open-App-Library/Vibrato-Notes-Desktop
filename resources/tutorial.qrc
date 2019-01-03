@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>tutorial/1-welcome.md</file>
+    </qresource>
+</RCC>

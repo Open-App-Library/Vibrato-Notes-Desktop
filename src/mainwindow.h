@@ -18,6 +18,7 @@
 #include "meta/db/notebookdatabase.h"
 #include "meta/db/tagdatabase.h"
 #include "ui-managers/manager.h"
+#include "sql/sqlmanager.h"
 #include "userwindow.h"
 
 namespace Ui {
@@ -37,10 +38,20 @@ public:
 
   void selectedNoteChanged(Note *n);
 
+public slots:
+  void userButtonClicked();
+  void addNewNote();
+  void view_default();
+  void view_minimal();
+  void view_focus();
+  void search();
+  void focusSearchbar();
+
 private:
   Ui::MainWindow *ui;
   UserWindow m_user_window;
 
+  SQLManager      *m_sqlManager;
   Manager         *m_manager;
   EscribaManager  *m_escriba_manager;
   NoteListManager *m_note_list_manager;
@@ -51,15 +62,6 @@ private:
   NoteDatabase     *m_notes;
   NotebookDatabase *m_notebooks;
   TagDatabase      *m_tags;
-
-public slots:
-  void userButtonClicked();
-  void addNewNote();
-  void view_default();
-  void view_minimal();
-  void view_focus();
-  void search();
-  void focusSearchbar();
 };
 
 #endif // NOTES_H

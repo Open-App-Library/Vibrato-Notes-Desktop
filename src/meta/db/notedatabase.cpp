@@ -6,9 +6,10 @@
 
 #include <helper-io.hpp>
 
-NoteDatabase::NoteDatabase()
+NoteDatabase::NoteDatabase(SQLManager *sqlManager) :
+  m_sqlManager(sqlManager)
 {
-
+  loadSQL();
 }
 
 QList<Note *> NoteDatabase::list() const
@@ -78,6 +79,13 @@ void NoteDatabase::clearNotes()
   for (int i = m_list.size()-1; i >= 0; i--) {
     removeNote(i);
   }
+}
+
+void NoteDatabase::loadSQL()
+{
+  QVector<Note*> notes = m_sqlManager->notes();
+  for (Note *note : notes)
+    addNote(note);
 }
 
 void NoteDatabase::loadJSON(QJsonDocument jsonDocument)

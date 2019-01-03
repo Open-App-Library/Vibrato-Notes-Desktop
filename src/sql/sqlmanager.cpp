@@ -22,14 +22,15 @@ SQLManager::SQLManager(QObject *parent) : QObject(parent)
 
   // Check if 'notes' table exists. If not, create it and import tutorial note.
   if ( !m_sqldb.tables().contains("notes") )
-    qDebug("Import tutorial notes! Implement this");
+    m_shouldImportTutorialNotes = true;
 
   // Create any tables that are non-existent.
-  //  QSqlQuery query =
+  runScript(":sql/create.sql");
 
   // Sync to cloud
 
-  // load notes into database
+  if ( m_shouldImportTutorialNotes )
+    importTutorialNotes();
 }
 
 void SQLManager::close() {
@@ -582,4 +583,17 @@ bool SQLManager::removeTagFromNote(int noteID, int tagID) {
   q.bindValue(":tagID", tagID);
   q.exec();
   return logSqlError(q.lastError());
+}
+
+void SQLManager::importTutorialNotes() {
+  QString welcomeText = HelperIO::fileToQString(":/tutorial/1-welcome.md");
+  QDateTime now = QDateTime::currentDateTime();
+  Note welcome(-1, -1,
+               "Welcome to Vibrato Notes!",
+               welcomeText,
+               now, now,
+               true,
+               NOTEBOOK_DEFAULT_NOTEBOOK_ID,
+               {});
+  addNote(&welcome);
 }

@@ -123,7 +123,8 @@ RESOURCES += \
     $$PWD/resources/icons.qrc \
     $$PWD/resources/fonts.qrc \
     $$PWD/resources/qdarkstyle.qrc \
-    $$PWD/resources/sqlfiles.qrc
+    $$PWD/resources/sqlfiles.qrc \
+    $$PWD/resources/tutorial.qrc
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

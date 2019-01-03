@@ -12,16 +12,17 @@ MainWindow::MainWindow(QWidget *parent) :
 {
   ui->setupUi(this);
 
-  m_notes     = new NoteDatabase;
-  m_notebooks = new NotebookDatabase(m_notes);
-  m_tags      = new TagDatabase;
+  m_sqlManager        = new SQLManager();
+  m_notes     = new NoteDatabase(m_sqlManager);
+  m_notebooks = new NotebookDatabase(m_sqlManager, m_notes);
+  m_tags      = new TagDatabase(m_sqlManager);
   m_db        = new Database(m_notes, m_notebooks, m_tags);
 
-  m_notes->loadDummyNotes();
-  m_notebooks->loadDummyNotebooks();
-  m_tags->loadDummyTags();
+  // m_notes->loadDummyNotes();
+  // m_notebooks->loadDummyNotebooks();
+  // m_tags->loadDummyTags();
 
-  m_manager   = new Manager;
+  m_manager           = new Manager;
   m_tree_manager      = new TreeManager(ui->TheTree, m_db, m_manager);
   m_note_list_manager = new NoteListManager(ui->noteList, ui->noteListAddons, m_db, m_manager);
   m_escriba_manager   = new EscribaManager(ui->noteEditingArea, m_db, m_manager);

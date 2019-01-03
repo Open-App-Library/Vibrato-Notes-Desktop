@@ -77,6 +77,8 @@ public:
   bool addTagToNote(int noteID, int tagID, bool skip_duplicate_check=false);
   bool removeTagFromNote(int noteID, int tagID);
 
+  void importTutorialNotes();
+
 signals:
 
 public slots:
@@ -84,6 +86,8 @@ public slots:
 private:
   QString m_location;
   QSqlDatabase m_sqldb;
+
+  bool m_shouldImportTutorialNotes = false;
 
   QVector<Notebook*> m_getNotebooks(Notebook *parent=nullptr);
 

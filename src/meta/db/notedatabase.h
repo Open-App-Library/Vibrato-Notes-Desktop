@@ -8,6 +8,7 @@
 #define NOTELIST_H
 #include <QList>
 #include "../note.h"
+#include "../../sql/sqlmanager.h"
 
 #define NULL_INT -1
 
@@ -15,7 +16,7 @@ class NoteDatabase : public QObject
 {
   Q_OBJECT
 public:
-  NoteDatabase();
+  NoteDatabase(SQLManager *sqlManager);
 
   // Lists out the notes in the in-memory database
   QList<Note*> list() const;
@@ -30,8 +31,9 @@ public:
   void removeNotes(QVector<Note*> notes);
   void clearNotes();
 
-  void loadJSON(QJsonDocument jsonDocument);
+  void loadSQL();
 
+  void loadJSON(QJsonDocument jsonDocument);
   void loadDummyNotes();
 
   void removeNotesWithNotebookID(int notebookID);
@@ -54,6 +56,7 @@ private slots:
   void handleNoteFavoritedChanged(Note *note);
 
 private:
+  SQLManager *m_sqlManager;
   QList<Note*> m_list;
 
   QJsonValue get(QJsonObject obj, QString key);

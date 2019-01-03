@@ -3,12 +3,13 @@
 #include <QVector>
 #include "../notebook.h"
 #include "notedatabase.h"
+#include "../../sql/sqlmanager.h"
 
 class NotebookDatabase : public QObject
 {
   Q_OBJECT
 public:
-  NotebookDatabase(NoteDatabase *noteDatabase);
+  NotebookDatabase(SQLManager *sqlManager, NoteDatabase *noteDatabase);
   QVector<Notebook *> list() const;
   int               size() const;
   QVector<Notebook *> listRecursively() const;
@@ -28,8 +29,9 @@ public:
 
   Notebook *findNotebookWithID(int id);
 
-  void loadJSON(QJsonDocument jsonDocument);
+  void loadSQL();
 
+  void loadJSON(QJsonDocument jsonDocument);
   void loadDummyNotebooks();
 
   void jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent=nullptr);
@@ -55,6 +57,7 @@ signals:
   void shouldSetNotesInNotebookToDefaultNotebooks(QVector<int> notebookIDs);
 
 private:
+  SQLManager *m_sqlManager;
   QVector<Notebook*> m_list;
   NoteDatabase *m_noteDatabase;
 

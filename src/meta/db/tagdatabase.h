@@ -4,12 +4,13 @@
 #include <QVector>
 #include <QJsonDocument>
 #include "../tag.h"
+#include "../../sql/sqlmanager.h"
 
 class TagDatabase : public QObject
 {
   Q_OBJECT
 public:
-  TagDatabase();
+  TagDatabase(SQLManager *sqlManager);
   QVector<Tag*> list() const;
   int getUniqueTagID(int start, QVector<Tag*> tagList, Tag *tagToSync=nullptr);
   int getUniqueTagID(Tag *tagToSync=nullptr);
@@ -31,8 +32,9 @@ public:
   // *DEPRECATED*
   // Tag *findTagWithNameOrCreate(QString name);
 
-  void loadJSON(QJsonDocument jsonDocument);
+  void loadSQL();
 
+  void loadJSON(QJsonDocument jsonDocument);
   void loadDummyTags();
 
 private slots:
@@ -44,6 +46,7 @@ signals:
   void tagChanged(Tag *tag);
 
 private:
+  SQLManager *m_sqlManager;
   QVector<Tag*> m_list;
 };
 

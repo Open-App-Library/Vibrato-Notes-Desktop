@@ -6,10 +6,12 @@
 #include <helper-io.hpp>
 #include <QMessageBox>
 
-NotebookDatabase::NotebookDatabase(NoteDatabase *noteDatabase) :
+NotebookDatabase::NotebookDatabase(SQLManager *sqlManager, NoteDatabase *noteDatabase) :
+  m_sqlManager(sqlManager),
   m_noteDatabase(noteDatabase)
 {
   addNotebook(new Notebook(-1, -1, "Default Notebook"));
+  loadSQL();
 }
 
 QVector<Notebook *> NotebookDatabase::list() const
@@ -210,6 +212,13 @@ Notebook *NotebookDatabase::findNotebookWithID(int id)
       return notebook;
   }
   return nullptr;
+}
+
+void NotebookDatabase::loadSQL()
+{
+  QVector<Notebook*> notebooks = m_sqlManager->notebooks();
+  for (Notebook *notebook : notebooks)
+    addNotebook(notebook);
 }
 
 void NotebookDatabase::jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent)

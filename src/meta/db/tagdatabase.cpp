@@ -5,9 +5,10 @@
 #include "tagdatabase.h"
 #include <helper-io.hpp>
 
-TagDatabase::TagDatabase()
+TagDatabase::TagDatabase(SQLManager *sqlManager) :
+  m_sqlManager(sqlManager)
 {
-
+  loadSQL();
 }
 
 QVector<Tag *> TagDatabase::list() const
@@ -135,6 +136,13 @@ Tag *TagDatabase::findTagWithName(QString name)
 //   else
 //     return addTag(name);
 // }
+
+void TagDatabase::loadSQL()
+{
+  QVector<Tag*> tags = m_sqlManager->tags();
+  for (Tag *tag : tags)
+    addTag(tag);
+}
 
 void TagDatabase::loadJSON(QJsonDocument jsonDocument)
 {

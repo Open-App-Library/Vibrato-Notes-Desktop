@@ -118,7 +118,8 @@ void Notebook::removeChild(Notebook *child, bool dont_emit_change_signal)
     return;
   int index = m_children.indexOf(child);
   child->setParent(nullptr);
-  m_children.removeAt(index);
+  if (index > -1)
+    m_children.removeAt(index);
 
   if ( dont_emit_change_signal ) return;
   emit notebookChildrenChanged(this);

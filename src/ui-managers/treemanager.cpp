@@ -1,5 +1,6 @@
 #include "treemanager.h"
 #include "../../iconutils.h"
+#include <QDebug>
 
 TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manager) :
   m_tree_view(treeView),
@@ -319,7 +320,6 @@ void TreeManager::treeItemChanged(const QModelIndex &current, const QModelIndex 
       selectItem(previous, false);
       return;
     }
-
 
     if (item == m_all_notes)
       {   // Selected all notes label

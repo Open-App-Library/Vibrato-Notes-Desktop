@@ -21,7 +21,7 @@ public:
 
   ~BasicTreeItem();
 
-  enum TypeOfItem {Type_Notebook, Type_Tag, Type_SearchQuery};
+  enum TypeOfItem {Type_Notebook, Type_Tag, Type_SearchQuery, Type_Other};
 
   bool isNotebook() const;
   bool isTag() const;
