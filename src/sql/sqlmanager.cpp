@@ -73,7 +73,6 @@ ObjectList SQLManager::column(QString query, int column)
 
 Map SQLManager::row(QSqlQuery query, QStringList tableLabels) {
   ArrayOfMaps arr = rows(query, tableLabels);
-  qDebug() << arr;
   Map m;
   if ( arr.length() > 0)
     return arr[0];
@@ -206,7 +205,6 @@ QVector<Note*> SQLManager::Notes() {
                           trashed);
     notes.append(note);
 
-    qDebug() << "ADDED NOTE" << sync_id << id << title << text << date_created << date_modified << favorited << notebook << tags << trashed;
   }
   return notes;
 }
