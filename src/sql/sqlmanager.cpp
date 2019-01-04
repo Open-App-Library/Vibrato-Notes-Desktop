@@ -27,8 +27,6 @@ SQLManager::SQLManager(QObject *parent) : QObject(parent)
   // Create any tables that are non-existent.
   runScript(":sql/create.sql");
 
-  // Sync to cloud
-
   if ( m_shouldImportTutorialNotes )
     importTutorialNotes();
 }

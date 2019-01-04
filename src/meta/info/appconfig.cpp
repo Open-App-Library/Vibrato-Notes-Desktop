@@ -2,8 +2,8 @@
 #include "appconfig.h"
 #include "appinfo.h"
 
-static QSettings m_config(COMPANY, CONFIG);
-static QSettings m_meta_config(COMPANY, CONFIG_META);
+static QSettings m_config(NAME_SHORT, CONFIG);
+static QSettings m_meta_config(NAME_SHORT, CONFIG_META);
 
 QSettings *config() {
     return &m_config;

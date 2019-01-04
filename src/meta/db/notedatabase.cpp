@@ -179,7 +179,6 @@ bool NoteDatabase::noteWithIDExists(int noteID) const
 }
 
 void NoteDatabase::noteChanged(Note* note) {
-  qDebug() << "Updating note" << note->title() << note->syncId();
   m_sqlManager->updateNoteToDB(note);
 }
 
