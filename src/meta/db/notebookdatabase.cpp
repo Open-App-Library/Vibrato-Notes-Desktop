@@ -78,7 +78,9 @@ int NotebookDatabase::getUniqueNotebookID(Notebook *notebookToSync)
 
 Notebook *NotebookDatabase::addNotebook(QString title, Notebook *parent, QVector<Notebook*> children)
 {
-  Notebook *notebook = new Notebook(-1, getUniqueNotebookID(), title, parent, children);
+  Notebook *notebook = new Notebook(0, 0, title, parent, children);
+  m_sqlManager->addNotebook(notebook);
+  qDebug() << "Added notebook. It has an id of" << notebook->id();
   if (parent != nullptr && parent->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID)
     return nullptr;
   if (parent != nullptr)
@@ -143,7 +145,7 @@ void NotebookDatabase::removeNotebook(Notebook *notebook)
   // and if so, what data to prompt the user for.
   // * If no notes have to be deleted and the notebook has no children, we DON'T prompt the
   //   user and delete the notebook without warning.
-  // * If no notes have to be deleted and the ntoebook has children, we preset a warning
+  // * If no notes have to be deleted and the notebook has children, we present a warning
   //   that children notebooks will be deleted.
   // * If notes have to be deleted and the notebook has children, we will prompt the user
   //   both about whether they want the notes deleted and that children will be deleted.
@@ -184,6 +186,8 @@ void NotebookDatabase::removeNotebook(Notebook *notebook)
   // Otherwise, remove the notebook from its parent notebook.
   else
     notebook->parent()->removeChild(notebook);
+
+  m_sqlManager->deleteNotebook(notebook);
 
   // Free memory and emit a notebooksRemoved event.
   delete notebook;
@@ -242,6 +246,7 @@ void NotebookDatabase::jsonObjectToNotebookList(QJsonObject notebookObj, Noteboo
 
 void NotebookDatabase::notebookChanged_slot(Notebook *notebook)
 {
+  m_sqlManager->updateNotebookToDB(notebook);
   emit notebookChanged(notebook);
 }
 

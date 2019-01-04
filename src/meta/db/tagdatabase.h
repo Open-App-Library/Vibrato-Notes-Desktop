@@ -21,7 +21,6 @@ public:
   // an existing tag object availible with the same string as 'title'. (case-insensitive,
   // leading and trailing whitespace removed.)
   Tag *addTag(QString title);
-  Tag *addTag(int id, QString title);
 
   void removeTag(int index);
   void removeTag(Tag *tag);

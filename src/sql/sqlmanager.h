@@ -62,14 +62,17 @@ public:
   bool addNote(Note *note, bool getNewID=true);
   bool updateNoteToDB(Note *note);
   bool updateNoteFromDB(Note *note);
+  bool deleteNote(Note *note);
 
   bool addNotebook(Notebook *notebook, bool getNewID=true);
   bool updateNotebookToDB(Notebook *notebook);
   bool updateNotebookFromDB(Notebook *notebook);
+  bool deleteNotebook(Notebook *notebook, bool delete_children=true);
 
   bool addTag(Tag *tag, bool getNewID=true);
   bool updateTagToDB(Tag *tag);
   bool updateTagFromDB(Tag *tag);
+  bool deleteTag(Tag *tag);
 
   bool tagExists(int noteID, int tagID);
   // If skip_duplicate_check is set to true, it will not check for a duplicate entry

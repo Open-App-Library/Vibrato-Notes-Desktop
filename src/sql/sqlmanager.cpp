@@ -272,10 +272,9 @@ bool SQLManager::addNote(Note *note, bool getNewID)
   QStringList noteCols = noteColumns();
   QStringList columnPlaceholders;
 
-  if (getNewID) {
-    noteCols.removeOne("id");
-    noteCols.removeOne("sync_id");
-  }
+  noteCols.removeOne("sync_id");
+  if (getNewID) noteCols.removeOne("id");
+
   qDebug() << noteCols;
 
   for (QString col : noteCols)
@@ -288,7 +287,6 @@ bool SQLManager::addNote(Note *note, bool getNewID)
   QSqlQuery q;
   q.prepare(queryString);
 
-  q.bindValue(":sync_id" , note->syncId());
   if (!getNewID) q.bindValue(":id", note->id());
   q.bindValue(":title"         , note->title());
   q.bindValue(":text"          , note->text());
@@ -336,7 +334,6 @@ bool SQLManager::updateNoteToDB(Note* note) {
 
   QSqlRecord noteInDB = model.record(0);
 
-  noteInDB.setValue("sync_id", note->syncId());
   noteInDB.setValue("title", note->title());
   noteInDB.setValue("text", note->text());
   noteInDB.setValue("date_created", note->date_created());
@@ -408,10 +405,19 @@ bool SQLManager::updateNoteFromDB(Note* note) {
   return logSqlError(tags.lastError());
 }
 
+bool SQLManager::deleteNote(Note* note) {
+  QSqlQuery q;
+  q.prepare("DELETE FROM notes WHERE id = :id");
+  q.bindValue(":id", note->id());
+  q.exec();
+  return logSqlError(q.lastError());
+}
+
 bool SQLManager::addNotebook(Notebook* notebook, bool getNewID) {
   QStringList notebookCols = notebookColumns();
   QStringList columnPlaceholders;
 
+  notebookCols.removeOne("sync_id");
   if (getNewID) notebookCols.removeOne("id");
 
   for (QString col : notebookCols)
@@ -428,7 +434,6 @@ bool SQLManager::addNotebook(Notebook* notebook, bool getNewID) {
   if ( notebook->parent() != nullptr )
     parentID = notebook->parent()->id();
 
-  q.bindValue(":sync_id"          , notebook->syncId());
   if (!getNewID) q.bindValue(":id" , notebook->id());
   q.bindValue(":title"            , notebook->title());
   q.bindValue(":parent"           , parentID);
@@ -437,6 +442,7 @@ bool SQLManager::addNotebook(Notebook* notebook, bool getNewID) {
 
   // Set the ID
   int newID = q.lastInsertId().toInt();
+  qDebug() << getNewID << newID;
   if ( getNewID )
     notebook->setId( newID );
   if ( newID != notebook->id() )
@@ -461,7 +467,6 @@ bool SQLManager::updateNotebookToDB(Notebook* notebook) {
   if ( notebook->parent() != nullptr)
     parentID = notebook->parent()->id();
 
-  notebookInDB.setValue("sync_id", notebook->syncId());
   notebookInDB.setValue("title", notebook->title());
   notebookInDB.setValue("parent", parentID);
 
@@ -489,11 +494,33 @@ bool SQLManager::updateNotebookFromDB(Notebook* notebook) {
 
   return true;
 }
-//////////////////
+
+bool SQLManager::deleteNotebook(Notebook* notebook, bool delete_children) {
+  // Delete notebook
+  QSqlQuery q;
+  q.prepare("DELETE FROM notebooks WHERE id = :id");
+  q.bindValue(":id", notebook->id());
+  q.exec();
+
+  // Change notes under this notebook to use default notebook
+  logSqlError(q.lastError());
+  q.prepare("UPDATE notes SET notebook = -1 WHERE notebook = :id");
+  q.bindValue(":id", notebook->id());
+  q.exec();
+
+  // Delete children
+  if ( delete_children )
+    for (Notebook *child : m_getNotebooks(notebook) )
+      deleteNotebook(child, false);
+
+  return logSqlError(q.lastError());
+}
+
 bool SQLManager::addTag(Tag *tag, bool getNewID) {
   QStringList tagCols = tagColumns();
   QStringList columnPlaceholders;
 
+  tagCols.removeOne("sync_id");
   if (getNewID) tagCols.removeOne("id");
 
   for (QString col : tagCols)
@@ -506,7 +533,6 @@ bool SQLManager::addTag(Tag *tag, bool getNewID) {
   QSqlQuery q;
   q.prepare(queryString);
 
-  q.bindValue(":sync_id"          , tag->syncId());
   if (!getNewID) q.bindValue(":id" , tag->id());
   q.bindValue(":title"            , tag->title());
 
@@ -533,7 +559,6 @@ bool SQLManager::updateTagToDB(Tag* tag) {
     qWarning() << "[Duplicate Tag SQLite3 Warning!] Found" << model.rowCount() << "of" << tag->title();
 
   QSqlRecord tagInDB = model.record(0);
-  tagInDB.setValue("sync_id", tag->syncId());
   tagInDB.setValue("title", tag->title());
   model.setRecord(0, tagInDB);
 
@@ -557,6 +582,18 @@ bool SQLManager::updateTagFromDB(Tag* tag) {
   tag->setTitle  ( tagRow["title"].toString() );
 
   return true;
+}
+
+bool SQLManager::deleteTag(Tag* tag) {
+  QSqlQuery q;
+  q.prepare("DELETE FROM tags WHERE id = :id");
+  q.bindValue(":id", tag->id());
+  q.exec();
+  logSqlError(q.lastError());
+  q.prepare("DELETE FROM notes_tags WHERE tag = :id");
+  q.bindValue(":id", tag->id());
+  q.exec();
+  return logSqlError(q.lastError());
 }
 
 bool SQLManager::tagExists(int noteID, int tagID) {

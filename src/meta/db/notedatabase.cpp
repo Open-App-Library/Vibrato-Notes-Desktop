@@ -28,6 +28,8 @@ Note *NoteDatabase::addNote(Note *note, bool addToSQL)
 
   if (addToSQL) m_sqlManager->addNote(note);
 
+  connect(note, &Note::noteChanged,
+          this, &NoteDatabase::noteChanged);
   connect(note, &Note::noteFavoritedChanged,
           this, &NoteDatabase::handleNoteFavoritedChanged);
   connect(note, &Note::noteTrashedOrRestored,
@@ -53,11 +55,8 @@ void NoteDatabase::removeNote(int index)
 {
   Note *note = m_list[index];
   int id = note->id();
-  disconnect(note, &Note::noteFavoritedChanged,
-             this, &NoteDatabase::noteFavoritedChanged);
-  disconnect(note, &Note::noteTrashedOrRestored,
-             this, &NoteDatabase::noteTrashedOrRestored);
   m_list.removeAt(index);
+  m_sqlManager->deleteNote(note);
   delete note;
   emit noteDeleted(id);
 }
@@ -177,6 +176,11 @@ bool NoteDatabase::noteWithIDExists(int noteID) const
     if (note->id() == noteID)
       return true;
   return false;
+}
+
+void NoteDatabase::noteChanged(Note* note) {
+  qDebug() << "Updating note" << note->title() << note->syncId();
+  m_sqlManager->updateNoteToDB(note);
 }
 
 void NoteDatabase::handleNoteFavoritedChanged(Note* note) {

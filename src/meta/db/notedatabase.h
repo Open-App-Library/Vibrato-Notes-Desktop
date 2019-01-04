@@ -53,6 +53,7 @@ signals:
   void noteFavoritedChanged(Note *note);
 
 private slots:
+  void noteChanged(Note *note);
   void handleNoteFavoritedChanged(Note *note);
 
 private:

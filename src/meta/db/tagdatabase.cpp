@@ -58,27 +58,25 @@ void TagDatabase::addTag(Tag *tag)
   m_list.append(tag);
   connect(tag, &Tag::tagChanged,
           this, &TagDatabase::tagChanged_slot);
+
   emit tagAdded(tag);
 }
 
 Tag *TagDatabase::addTag(QString title)
 {
-  return addTag(getUniqueTagID(), title);
-}
-
-Tag *TagDatabase::addTag(int id, QString title)
-{
   QString titleCleaned = title.trimmed();
   if ( title.isEmpty() )
     return nullptr;
 
+  // Check if tag exists. Return if so.
   Tag *existingTag = findTagWithName(titleCleaned);
+  if ( existingTag ) return existingTag;
 
-  if ( existingTag )
-    return existingTag;
-  Tag *tag = existingTag ? existingTag : new Tag(-1, id, title);
+  Tag *tag = new Tag(-1, -1, title);
+  m_sqlManager->addTag(tag); // Will fetch proper ID.
 
   addTag(tag);
+
   return tag;
 }
 
@@ -86,9 +84,10 @@ void TagDatabase::removeTag(int index)
 {
   Tag *tag = m_list[index];
   int id = tag->id();
-  disconnect(tag, &Tag::tagChanged,
-             this, &TagDatabase::tagChanged_slot);
+
+  m_sqlManager->deleteTag(tag);
   delete tag;
+
   m_list.removeAt(index);
   emit tagRemoved(id);
 }
@@ -166,5 +165,6 @@ void TagDatabase::loadDummyTags()
 
 void TagDatabase::tagChanged_slot(Tag *tag)
 {
+  m_sqlManager->updateTagToDB(tag);
   emit tagChanged(tag);
 }
