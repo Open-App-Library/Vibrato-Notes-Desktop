@@ -3,7 +3,12 @@
 mkdir -p qmake
 cd qmake
 
-if [ $1 == "help" ] || [ $1 == "h" ] || [ $1 == "-h" ] || [ $1 == "--help" ]; then
+if [ $# -lt 1 ]; then
+    echo "<==================================>"
+    echo "| Generating compile_commands.json |"
+    echo "<==================================>"
+    echo ""
+elif [ "$1" == "help" ] || [ "$1" == "h" ] || [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
     echo "gen_compile_commands.sh"
     echo "======================="
     echo "Generate a compile_commands.json file."
@@ -19,6 +24,9 @@ if [ $1 == "help" ] || [ $1 == "h" ] || [ $1 == "-h" ] || [ $1 == "--help" ]; th
 elif [ $1 == "clean" ]; then
     make clean
     rm -f ../compile_commands.json
+    exit
+else
+    echo "Unknown option \"$1\" :("
     exit
 fi
 
