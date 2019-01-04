@@ -5,9 +5,23 @@ cd qmake
 
 qmake -project "QT += testlib" ../VibratoNotes-desktop.pro
 
-if [ $1 == "clean" ]; then
+if [ $1 == "help" ] || [ $1 == "h" ] || [ $1 == "-h" ] || [ $1 == "--help" ]; then
+    echo "gen_compile_commands.sh"
+    echo "======================="
+    echo "Generate a compile_commands.json file."
+    echo ""
+    echo "Usage:"
+    echo "  * General Usage:"
+    echo "    ./gen_compile_commands.sh"
+    echo ""
+    echo "  * Clean your project:"
+    echo "    ./gen_compile_commands.sh clean"
+    echo ""
+    exit
+elif [ $1 == "clean" ]; then
     make clean
     rm -f ../compile_commands.json
+    exit
 fi
 
-bear -a -o ../compile_commands.json $BEAR_OPTIONS make
+bear -a -o ../compile_commands.json make
