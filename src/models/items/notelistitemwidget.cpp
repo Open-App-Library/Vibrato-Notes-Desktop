@@ -68,6 +68,12 @@ void NoteListItemWidget::noteTitleChanged(Note *note)
   updateLabels();
 }
 
+void NoteListItemWidget::noteTextChanged(Note *note)
+{
+  (void)note;
+  updateLabels();
+}
+
 void NoteListItemWidget::noteDateChanged(Note *note)
 {
   (void)note;
@@ -92,6 +98,8 @@ void NoteListItemWidget::toggleFavorited() {
 void NoteListItemWidget::connectSignals() {
   connect(m_note, &Note::noteTitleChanged,
           this, &NoteListItemWidget::noteTitleChanged);
+  connect(m_note, &Note::noteTextChanged,
+          this, &NoteListItemWidget::noteTextChanged);
   connect(m_note, &Note::noteDateCreatedChanged,
           this, &NoteListItemWidget::noteDateChanged);
   connect(m_note, &Note::noteDateModifiedChanged,
@@ -103,6 +111,8 @@ void NoteListItemWidget::connectSignals() {
 void NoteListItemWidget::disconnectSignals() {
   disconnect(m_note, &Note::noteTitleChanged,
              this, &NoteListItemWidget::noteTitleChanged);
+  disconnect(m_note, &Note::noteTextChanged,
+             this, &NoteListItemWidget::noteTextChanged);
   disconnect(m_note, &Note::noteDateCreatedChanged,
              this, &NoteListItemWidget::noteDateChanged);
   disconnect(m_note, &Note::noteDateModifiedChanged,

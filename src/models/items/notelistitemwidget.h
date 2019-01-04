@@ -44,6 +44,7 @@ private:
 private slots:
   void noteDateChanged(Note *note);
   void noteTitleChanged(Note *note);
+  void noteTextChanged(Note *note);
 };
 
 #endif // NOTELISTITEMWIDGET_H
