@@ -61,9 +61,15 @@ Notebook *Notebook::parent() const
 
 void Notebook::setParent(Notebook *parent)
 {
-  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
-    return;
-  m_parent = parent;
+  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID ) return;
+
+  if (m_parent != nullptr)
+    m_parent->removeChild_primitive(this);
+  setParent_primitive(parent);
+  if (m_parent != nullptr)
+    m_parent->addChild_primitive(this);
+
+  emit notebookChildrenChanged(parent);
   emit notebookParentChanged(this);
   emit notebookChanged(this);
 }
@@ -102,26 +108,42 @@ void Notebook::setChildren(const QVector<Notebook *> &children)
 
 void Notebook::addChild(Notebook *child)
 {
-  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
-    return;
-  if (child->parent() != nullptr)
-    child->parent()->removeChild(child, true);
-  m_children.append(child);
-  child->setParent(this);
+  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID ) return;
+
+  child->parent()->removeChild_primitive(child);
+  child->setParent_primitive(this);
+  addChild_primitive(child);
+
+  emit notebookParentChanged(child);
   emit notebookChildrenChanged(this);
   emit notebookChanged(this);
 }
 
-void Notebook::removeChild(Notebook *child, bool dont_emit_change_signal)
+void Notebook::removeChild(Notebook *child)
 {
   if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
     return;
-  int index = m_children.indexOf(child);
-  child->setParent(nullptr);
-  if (index > -1)
-    m_children.removeAt(index);
 
-  if ( dont_emit_change_signal ) return;
+  removeChild_primitive(child);
+  child->setParent_primitive(nullptr);
+
+  emit notebookParentChanged(child);
   emit notebookChildrenChanged(this);
   emit notebookChanged(this);
+}
+
+void Notebook::setParent_primitive(Notebook *parent)
+{
+  m_parent = parent;
+}
+
+void Notebook::addChild_primitive(Notebook *child)
+{
+  m_children.append(child);
+}
+
+void Notebook::removeChild_primitive(Notebook *child)
+{
+  int index = m_children.indexOf(child);
+  if (index > -1) m_children.removeAt(index);
 }

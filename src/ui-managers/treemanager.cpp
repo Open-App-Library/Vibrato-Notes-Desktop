@@ -121,6 +121,11 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   // Load databases
   loadNotebooksFromNotebookDatabase( m_db->notebookDatabase() );
   loadTagsFromTagDatabase( m_db->tagDatabase() );
+
+  m_editNotebookParentDialog = new Notebook_EditParent( m_db->notebookDatabase() );
+
+  connect(m_editNotebookParentDialog, &Notebook_EditParent::changedParent,
+          this, &TreeManager::changedNotebookHierarchy);
 }
 
 TreeManager::~TreeManager()
@@ -480,7 +485,8 @@ void TreeManager::contextRenameNotebook()
 
 void TreeManager::contextEditNotebookHierarchy()
 {
-
+  if ( m_currentContextIndex->isNotebook() )
+    m_editNotebookParentDialog->exec( m_currentContextIndex->object().notebook );
 }
 
 void TreeManager::contextNewTag()
@@ -508,6 +514,11 @@ void TreeManager::contextRemoveSearchQuery()
 {
   if ( m_currentContextModelIndex.isValid() )
     removeSearchQuery(m_currentContextIndex);
+}
+
+void TreeManager::changedNotebookHierarchy() {
+  // Inefficient! But it works for now
+  loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
 }
 
 void TreeManager::treeContextMenu(const QPoint &point)

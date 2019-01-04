@@ -18,6 +18,7 @@
 #include "../meta/db/database.h"
 #include "manager.h"
 #include "notelistmanager.h"
+#include "../../ui/notebook_editparent.h"
 
 class TreeManager : public QObject
 {
@@ -77,7 +78,7 @@ public:
   // If item == nullptr (default) it will try to delete the selected item.
   void removeSearchQuery(BasicTreeItem *item=nullptr);
 
-public slots:
+private slots:
   void tagAdded(Tag *tag);
   void tagRemoved(int tagID);
   void tagChanged(Tag *tag);
@@ -96,6 +97,8 @@ public slots:
   void contextRenameTag();
 
   void contextRemoveSearchQuery();
+
+  void changedNotebookHierarchy();
 
 private:
   TreeModel       *m_tree_model;
@@ -135,6 +138,8 @@ private:
 
   BasicTreeItem *m_currentContextIndex = nullptr;
   QModelIndex   m_currentContextModelIndex;
+
+  Notebook_EditParent *m_editNotebookParentDialog;
 
   void add_no_notebooks_placeholder();
   void add_no_tags_placeholder();

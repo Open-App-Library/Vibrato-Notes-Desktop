@@ -262,6 +262,11 @@ void NotebookDatabase::notebookTitleChanged_slot(Notebook *notebook)
 
 void NotebookDatabase::notebookParentChanged_slot(Notebook *notebook)
 {
+  // If the notebook does not have a parent and it is not in the root list
+  // add it to the root list.
+  if ( notebook->parent() == nullptr &&
+       !m_list.contains(notebook) )
+    m_list.append(notebook);
   emit notebookParentChanged(notebook);
 }
 

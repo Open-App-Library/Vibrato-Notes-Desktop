@@ -1,14 +1,99 @@
 #include "notebook_editparent.h"
 #include "ui_notebook_editparent.h"
 
-Notebook_EditParent::Notebook_EditParent(QWidget *parent) :
+Notebook_EditParent::Notebook_EditParent(NotebookDatabase *notebookDatabase, QWidget *parent) :
   QDialog(parent),
-  ui(new Ui::Notebook_EditParent)
+  ui(new Ui::Notebook_EditParent),
+  m_notebookDatabase(notebookDatabase)
 {
   ui->setupUi(this);
+  setModal(true);
+
+  treeWidget = ui->treeWidget;
+  buttonBox  = ui->buttonBox;
+
+  connect(buttonBox, &QDialogButtonBox::accepted,
+          this, &Notebook_EditParent::okButtonClicked);
 }
 
 Notebook_EditParent::~Notebook_EditParent()
 {
   delete ui;
+}
+
+Notebook *Notebook_EditParent::notebook() const {
+  return m_curNotebook;
+}
+
+void Notebook_EditParent::setNotebook(Notebook *notebook)
+{
+  m_curNotebook = notebook;
+  treeWidget->clear();
+  addNotebooks();
+  treeWidget->expandAll();
+}
+
+void Notebook_EditParent::addNotebooks(Notebook* parentNotebook,
+                                       TreeItemWithID* parentTreeItem,
+                                       bool disable_children)
+{
+  QVector<Notebook*> notebooks;
+  if (parentNotebook == nullptr)
+    notebooks = m_notebookDatabase->list();
+  else
+    notebooks = parentNotebook->children();
+
+  for ( Notebook *notebook : notebooks ) {
+    QString title = notebook->id() == -1 ? "(No parent)" : notebook->title();
+    TreeItemWithID *newItem = new TreeItemWithID(title, notebook->id());
+
+    // Disable the tree item iff disable_children or the notebook is
+    // the current notebook (You can't be a parent of yourself!)
+    bool is_disabled = disable_children || notebook == m_curNotebook;
+
+    newItem->setDisabled( is_disabled );
+
+    if (parentTreeItem == nullptr)
+      treeWidget->addTopLevelItem(newItem);
+    else
+      parentTreeItem->addChild(newItem);
+
+    if (notebook->children().count() > 0)
+      addNotebooks(notebook, newItem, is_disabled);
+  }
+}
+
+int Notebook_EditParent::exec()
+{
+  return QDialog::exec();
+}
+
+int Notebook_EditParent::exec(Notebook *notebook)
+{
+  setNotebook(notebook);
+  return exec();
+}
+
+void Notebook_EditParent::okButtonClicked()
+{
+  // If no items are selected, exit.
+  if (treeWidget->selectedItems().length() == 0)  return;
+
+  // Get the single selected item.
+  TreeItemWithID *selectedItem =
+    static_cast<TreeItemWithID*>(treeWidget->selectedItems()[0]);
+
+  int newID = selectedItem->id();
+
+  // If the parent ID hasn't changed, exit.
+  int curParentID = -1;
+  if ( m_curNotebook->parent() != nullptr )
+    curParentID = m_curNotebook->parent()->id();
+  if ( curParentID == newID )
+    return;
+  Notebook *newParent = nullptr;
+  if (newID != -1) newParent = m_notebookDatabase->findNotebookWithID(newID);
+  m_curNotebook->setParent(newParent);
+
+  emit changedParent();
 }

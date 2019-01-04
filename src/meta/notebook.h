@@ -31,7 +31,14 @@ public:
   void setChildren(const QVector<Notebook *> &children);
 
   void addChild(Notebook *child);
-  void removeChild(Notebook *child, bool dont_emit_change_signal=false);
+  void removeChild(Notebook *child);
+
+  // These functions should not be used in the majority of cases
+  // They do not have the safety checks of the other notebook
+  // manipulation functions.
+  void setParent_primitive(Notebook *parent);
+  void addChild_primitive(Notebook *child);
+  void removeChild_primitive(Notebook *child);
 
 signals:
   void notebookChanged(Notebook *notebook);
@@ -49,6 +56,7 @@ private:
   QString m_title;
   Notebook *m_parent=nullptr;
   QVector<Notebook*> m_children;
+
   // Below are some todo items that are needed for sharing notes
   // TODO: Implement user
   // TODO: implement shared_with
