@@ -273,8 +273,6 @@ bool SQLManager::addNote(Note *note, bool getNewID)
   noteCols.removeOne("sync_id");
   if (getNewID) noteCols.removeOne("id");
 
-  qDebug() << noteCols;
-
   for (QString col : noteCols)
     columnPlaceholders.append( QString(":%1").arg(col) );
 
@@ -440,7 +438,7 @@ bool SQLManager::addNotebook(Notebook* notebook, bool getNewID) {
 
   // Set the ID
   int newID = q.lastInsertId().toInt();
-  qDebug() << getNewID << newID;
+
   if ( getNewID )
     notebook->setId( newID );
   if ( newID != notebook->id() )
@@ -464,8 +462,6 @@ bool SQLManager::updateNotebookToDB(Notebook* notebook) {
   int parentID = -1;
   if ( notebook->parent() != nullptr)
     parentID = notebook->parent()->id();
-
-  qDebug() << "Updating notebook" << notebook->title() << parentID << "To database";
 
   notebookInDB.setValue("title", notebook->title());
   notebookInDB.setValue("parent", parentID);
