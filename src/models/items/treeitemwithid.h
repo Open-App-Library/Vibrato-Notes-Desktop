@@ -6,15 +6,15 @@
 
 class TreeItemWithID : public QObject, public QTreeWidgetItem
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    TreeItemWithID(QString label, int id);
-    int id() const;
+  TreeItemWithID(QString label, int id);
+  int id() const;
 
 public slots:
-    void setID(int id);
+  void setID(int id);
 private:
-    int m_id = TREE_ITEM_UNKNOWN;
+  int m_id = TREE_ITEM_UNKNOWN;
 };
 
 #endif // TREEITEMWITHID_H

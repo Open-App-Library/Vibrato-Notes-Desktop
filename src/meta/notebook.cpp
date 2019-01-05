@@ -1,4 +1,5 @@
 #include "notebook.h"
+#include <QDebug>
 
 Notebook::Notebook(int syncId, int id, QString title, Notebook *parent, QVector<Notebook*> children) :
   m_syncId(syncId),

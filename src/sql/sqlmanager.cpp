@@ -465,6 +465,8 @@ bool SQLManager::updateNotebookToDB(Notebook* notebook) {
   if ( notebook->parent() != nullptr)
     parentID = notebook->parent()->id();
 
+  qDebug() << "Updating notebook" << notebook->title() << parentID << "To database";
+
   notebookInDB.setValue("title", notebook->title());
   notebookInDB.setValue("parent", parentID);
 

@@ -32,7 +32,7 @@ private slots:
 
   void notebookAddedOrRemoved(void);
 
-  signals:
+signals:
   void notebookChanged();
 
 private:

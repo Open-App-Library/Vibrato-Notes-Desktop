@@ -1,6 +1,6 @@
 #include "notebook_editparent.h"
 #include "ui_notebook_editparent.h"
-
+#include <QDebug>
 Notebook_EditParent::Notebook_EditParent(NotebookDatabase *notebookDatabase, QWidget *parent) :
   QDialog(parent),
   ui(new Ui::Notebook_EditParent),
@@ -49,8 +49,13 @@ void Notebook_EditParent::addNotebooks(Notebook* parentNotebook,
 
     // Disable the tree item iff disable_children or the notebook is
     // the current notebook (You can't be a parent of yourself!)
-    bool is_disabled = disable_children || notebook == m_curNotebook;
+    bool is_disabled =
+      disable_children ||
+      notebook == m_curNotebook;
 
+    qDebug() << notebook->title() << disable_children << (notebook == m_curNotebook) << (notebook == m_curNotebook->parent());
+
+    // Disable if is_disabled or if is current notebook's parent
     newItem->setDisabled( is_disabled );
 
     if (parentTreeItem == nullptr)

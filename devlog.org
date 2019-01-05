@@ -30,4 +30,7 @@ This file tracks the weekly development progress on Vibrato Notes - new features
 *** Fixed bugs while renaming tags
 * 2019
 ** January 1 - 5
+*** You can now save notes!
+*** Notes load & sync locally using SQLite3
 *** Created SQLManager and unit-tests for it.
+*** You can change the hierarchy of notebook

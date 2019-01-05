@@ -15,11 +15,7 @@ public:
   QVector<Notebook *> listRecursively() const;
   QVector<Notebook *> listRecursively(const QVector<Notebook*> notebookList) const;
 
-  // Functions that will help return a new ID that is unused.
-  int getUniqueNotebookID(int start, QVector<Notebook*> notebookList={}, Notebook *notebookToSync=nullptr);
-  int getUniqueNotebookID(Notebook *notebookToSync=nullptr);
-
-  Notebook *addNotebook(QString title="New Notebook", Notebook *parent=nullptr, QVector<Notebook*> children={});
+  Notebook *addNotebook(QString title="Untitled Notebook", Notebook *parent=nullptr);
   void addNotebook(Notebook *notebook);
   void addNotebook(Notebook *notebook, Notebook *parent);
 
@@ -36,6 +32,8 @@ public:
 
   void jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent=nullptr);
 
+  void connectNotebook(Notebook *notebook);
+
 private slots:
   void notebookChanged_slot(Notebook *notebook);
   void notebookIDChanged_slot(Notebook *notebook);
@@ -43,6 +41,7 @@ private slots:
   void notebookParentChanged_slot(Notebook *notebook);
   void notebookChildrenChanged_slot(Notebook *notebook);
   void handleNotebookParentRequest(Notebook *notebook, int requestedParentID);
+
 signals:
   void notebookAdded(Notebook *notebook);
   void notebooksRemoved(QVector<int> notebookIDs);

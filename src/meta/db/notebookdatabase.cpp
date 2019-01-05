@@ -1,4 +1,3 @@
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -43,46 +42,12 @@ QVector<Notebook*> NotebookDatabase::listRecursively(const QVector<Notebook*> no
   return the_list;
 }
 
-int NotebookDatabase::getUniqueNotebookID(int start, QVector<Notebook*> notebookList, Notebook *notebookToSync)
- {
-  // If notebookList is empty AND we have at least one notebook availible.
-  if (notebookList.length() == 0 && list().length() > 0)
-    notebookList = listRecursively();
-
-  // Loop through notebook list. If ID == start (The current index we're testing)
-  // that means that the ID is NOT unique and we must find a new one. Increment
-  // by one!
-  for ( Notebook* n : notebookList )
-    if ( n->id() == start ) // Can't use this ID; it's taken.
-      return getUniqueNotebookID(start+1, notebookList);
-
-  // If we made it this far in the function, it means that the ID we are testing
-  // is indeed unique.
-  return start;
-}
-
-int NotebookDatabase::getUniqueNotebookID(Notebook *notebookToSync)
+Notebook *NotebookDatabase::addNotebook(QString title, Notebook *parent)
 {
-  // TODO: Create a graphic called 'The Sync Hash' that
-  //       explains how cloud-syncing works.
-
-  // Search for a unique notebook ID.
-  // If you have notebook ID #1 and create a new notebook, the next ID will
-  // most likely be two. For this reason, we set the start index to search
-  // for a new ID to the list length + 1 as it is likely unused.
-  //   Tip: If the *notebookToSync parameter is passed, and the user has
-  //        connected the cloud.
-  QVector<Notebook*> notebookList = listRecursively();
-  return getUniqueNotebookID(notebookList.length()+1, notebookList, notebookToSync);
-}
-
-Notebook *NotebookDatabase::addNotebook(QString title, Notebook *parent, QVector<Notebook*> children)
-{
-  Notebook *notebook = new Notebook(0, 0, title, parent, children);
-  m_sqlManager->addNotebook(notebook);
-  qDebug() << "Added notebook. It has an id of" << notebook->id();
   if (parent != nullptr && parent->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID)
     return nullptr;
+  Notebook *notebook = new Notebook(0, 0, title, parent);
+  m_sqlManager->addNotebook(notebook);
   if (parent != nullptr)
     parent->addChild(notebook);
   addNotebook(notebook);
@@ -93,18 +58,7 @@ void NotebookDatabase::addNotebook(Notebook *notebook)
 {
   if (notebook->parent() == nullptr)
     m_list.append(notebook);
-  connect(notebook, &Notebook::notebookChanged,
-          this, &NotebookDatabase::notebookChanged_slot);
-  connect(notebook, &Notebook::notebookIDChanged,
-          this, &NotebookDatabase::notebookIDChanged_slot);
-  connect(notebook, &Notebook::notebookTitleChanged,
-          this, &NotebookDatabase::notebookTitleChanged_slot);
-  connect(notebook, &Notebook::notebookParentChanged,
-          this, &NotebookDatabase::notebookParentChanged_slot);
-  connect(notebook, &Notebook::notebookChildrenChanged,
-          this, &NotebookDatabase::notebookChildrenChanged_slot);
-  connect(notebook, &Notebook::requestedParentWithID,
-          this, &NotebookDatabase::handleNotebookParentRequest);
+  connectNotebook(notebook);
   emit notebookAdded(notebook);
 }
 
@@ -221,8 +175,14 @@ Notebook *NotebookDatabase::findNotebookWithID(int id)
 void NotebookDatabase::loadSQL()
 {
   QVector<Notebook*> notebooks = m_sqlManager->notebooks();
-  for (Notebook *notebook : notebooks)
+  QVector<Notebook*> notebooks_to_connect;
+  for (Notebook *notebook : notebooks) {
     addNotebook(notebook);
+    notebooks_to_connect.append( listRecursively(notebook->children()) );
+  }
+
+  for (Notebook *notebook : notebooks_to_connect)
+    connectNotebook(notebook);
 }
 
 void NotebookDatabase::jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent)
@@ -265,8 +225,9 @@ void NotebookDatabase::notebookParentChanged_slot(Notebook *notebook)
   // If the notebook does not have a parent and it is not in the root list
   // add it to the root list.
   if ( notebook->parent() == nullptr &&
-       !m_list.contains(notebook) )
+       !m_list.contains(notebook) ) {
     m_list.append(notebook);
+  }
   emit notebookParentChanged(notebook);
 }
 
@@ -296,6 +257,22 @@ void NotebookDatabase::loadJSON(QJsonDocument jsonDocument)
   for (int i = 0; i < notebookArray.size(); i++) {
     jsonObjectToNotebookList( notebookArray[i].toObject() );
   }
+}
+
+void NotebookDatabase::connectNotebook(Notebook *notebook)
+{
+  connect(notebook, &Notebook::notebookChanged,
+          this, &NotebookDatabase::notebookChanged_slot);
+  connect(notebook, &Notebook::notebookIDChanged,
+          this, &NotebookDatabase::notebookIDChanged_slot);
+  connect(notebook, &Notebook::notebookTitleChanged,
+          this, &NotebookDatabase::notebookTitleChanged_slot);
+  connect(notebook, &Notebook::notebookParentChanged,
+          this, &NotebookDatabase::notebookParentChanged_slot);
+  connect(notebook, &Notebook::notebookChildrenChanged,
+          this, &NotebookDatabase::notebookChildrenChanged_slot);
+  connect(notebook, &Notebook::requestedParentWithID,
+          this, &NotebookDatabase::handleNotebookParentRequest);
 }
 
 void NotebookDatabase::loadDummyNotebooks()
