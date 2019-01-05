@@ -94,10 +94,8 @@ void TagDatabase::removeTag(int index)
 
 void TagDatabase::removeTag(Tag *tag)
 {
-  qDebug() << "Attempting to remove tag" << tag->title();
   for ( int i=m_list.length()-1; i>=0; i--)
     if ( m_list.at(i) == tag ) {
-      qDebug() << "Found tag at" << i;
       removeTag(i);
       break;
     }
