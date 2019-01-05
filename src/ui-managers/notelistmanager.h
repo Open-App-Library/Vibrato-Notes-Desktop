@@ -46,6 +46,11 @@ public:
   void addNotebookToFilter(Notebook *notebook);
   void addTagToFilter(Tag *tag);
 
+  int curViewType() const;
+  int curViewType_ItemID() const;
+  Notebook *curViewType_Notebook() const;
+  Tag *curViewType_Tag() const;
+
   void disconnectCurrentView();
   void showAllNotesView();
   void showFavoritesView();

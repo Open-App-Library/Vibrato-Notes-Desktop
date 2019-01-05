@@ -147,6 +147,30 @@ void NoteListManager::addTagToFilter(Tag *tag)
   m_proxyModel->addTagToFilter(tag);
 }
 
+int NoteListManager::curViewType() const
+{
+  return m_curViewType;
+}
+
+int NoteListManager::curViewType_ItemID() const
+{
+  return m_curViewType_ItemID;
+}
+
+Notebook *NoteListManager::curViewType_Notebook() const
+{
+  if (m_curViewType != View_Notebook)
+    return nullptr;
+  return m_curViewType_Notebook;
+}
+
+Tag *NoteListManager::curViewType_Tag() const
+{
+  if (m_curViewType != View_Tag)
+    return nullptr;
+  return m_curViewType_Tag;
+}
+
 void NoteListManager::disconnectCurrentView() {
   ///
   // Notebook View Deactivation

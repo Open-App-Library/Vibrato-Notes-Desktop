@@ -39,8 +39,10 @@ public:
   void selectedNoteChanged(Note *n);
 
 public slots:
-  void userButtonClicked();
   void addNewNote();
+  void addNewNotebook();
+  void addNewTag();
+  void userButtonClicked();
   void view_default();
   void view_minimal();
   void view_focus();

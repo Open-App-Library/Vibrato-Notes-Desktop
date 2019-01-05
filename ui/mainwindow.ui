@@ -288,20 +288,13 @@ border-bottom: 0;
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <widget class="QMenu" name="menuExport">
-     <property name="title">
-      <string>Export</string>
-     </property>
-     <addaction name="actionPDF"/>
-     <addaction name="actionHTML"/>
-    </widget>
     <widget class="QMenu" name="menuNew">
      <property name="title">
       <string>New</string>
@@ -311,15 +304,13 @@ border-bottom: 0;
      <addaction name="actionTag"/>
     </widget>
     <addaction name="menuNew"/>
-    <addaction name="actionImport_Notes"/>
-    <addaction name="menuExport"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
     </property>
     <addaction name="actionCopy"/>
-    <addaction name="actionSave"/>
+    <addaction name="actionCut"/>
     <addaction name="actionPaste"/>
    </widget>
    <widget class="QMenu" name="menuAccount">
@@ -338,7 +329,6 @@ border-bottom: 0;
       <string>Theme</string>
      </property>
      <addaction name="actionDefault"/>
-     <addaction name="actionBreeze_Dark"/>
     </widget>
     <addaction name="actionGeneral"/>
     <addaction name="menuTheme"/>
@@ -356,13 +346,15 @@ border-bottom: 0;
      <addaction name="action_viewFocus"/>
     </widget>
     <addaction name="menuLayout"/>
-    <addaction name="actionShow_Menubar"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
     <addaction name="actionAbout"/>
+    <addaction name="actionRoadmap"/>
+    <addaction name="actionBug_reports"/>
+    <addaction name="actionFeature_requests"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -371,29 +363,9 @@ border-bottom: 0;
    <addaction name="menuSettings"/>
    <addaction name="menuHelp"/>
   </widget>
-  <action name="actionImport_Notes">
-   <property name="text">
-    <string>Import</string>
-   </property>
-  </action>
-  <action name="actionPDF">
-   <property name="text">
-    <string>PDF</string>
-   </property>
-  </action>
-  <action name="actionHTML">
-   <property name="text">
-    <string>HTML</string>
-   </property>
-  </action>
   <action name="actionCopy">
    <property name="text">
     <string>Copy</string>
-   </property>
-  </action>
-  <action name="actionSave">
-   <property name="text">
-    <string>Cut</string>
    </property>
   </action>
   <action name="actionPaste">
@@ -415,15 +387,24 @@ border-bottom: 0;
    <property name="text">
     <string>Note</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
   </action>
   <action name="actionNotebook">
    <property name="text">
     <string>Notebook</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+N</string>
+   </property>
   </action>
   <action name="actionTag">
    <property name="text">
     <string>Tag</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+N</string>
    </property>
   </action>
   <action name="actionGeneral">
@@ -442,19 +423,6 @@ border-bottom: 0;
     <string>Default</string>
    </property>
   </action>
-  <action name="actionBreeze">
-   <property name="text">
-    <string>Breeze</string>
-   </property>
-  </action>
-  <action name="actionBreeze_Dark">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Dark</string>
-   </property>
-  </action>
   <action name="action_ViewDefault">
    <property name="text">
     <string>Default</string>
@@ -470,20 +438,29 @@ border-bottom: 0;
     <string>Minimal</string>
    </property>
   </action>
-  <action name="actionShow_Menubar">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Show Menubar</string>
-   </property>
-  </action>
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionRoadmap">
+   <property name="text">
+    <string>Roadmap</string>
+   </property>
+  </action>
+  <action name="actionBug_reports">
+   <property name="text">
+    <string>Bug reports</string>
+   </property>
+  </action>
+  <action name="actionFeature_requests">
+   <property name="text">
+    <string>Feature requests</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="text">
+    <string>Cut</string>
    </property>
   </action>
  </widget>

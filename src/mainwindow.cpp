@@ -18,10 +18,6 @@ MainWindow::MainWindow(QWidget *parent) :
   m_tags      = new TagDatabase(m_sqlManager);
   m_db        = new Database(m_notes, m_notebooks, m_tags);
 
-  // m_notes->loadDummyNotes();
-  // m_notebooks->loadDummyNotebooks();
-  // m_tags->loadDummyTags();
-
   m_manager           = new Manager;
   m_tree_manager      = new TreeManager(ui->TheTree, m_db, m_manager);
   m_note_list_manager = new NoteListManager(ui->noteList, ui->noteListAddons, m_db, m_manager);
@@ -83,6 +79,14 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(ui->searchBar, &QLineEdit::returnPressed,
           this, &MainWindow::search);
 
+  // File Menu
+  connect(ui->actionNote, &QAction::triggered,     // New Note
+          this, &MainWindow::addNewNote);
+  connect(ui->actionNotebook, &QAction::triggered, // New Notebook
+          this, &MainWindow::addNewNotebook);
+  connect(ui->actionTag, &QAction::triggered,      // New Tag
+          this, &MainWindow::addNewTag);
+
   // -------------
   // SHORTCUT KEYS
   // -------------
@@ -137,6 +141,16 @@ void MainWindow::addNewNote()
   m_note_list_manager->add_note( m_notes->addDefaultNote() ); // Create a new note
   m_tree_manager->gotoAllNotesTab(); // Go to the All Notes tab.
   m_note_list_manager->openIndexInEditor(0); // Select the first note (Newest note)
+}
+
+void MainWindow::addNewNotebook()
+{
+  m_notebooks->addNotebook(NOTEBOOK_DEFAULT_TITLE, m_note_list_manager->curViewType_Notebook());
+}
+
+void MainWindow::addNewTag()
+{
+  m_tags->addTag(TAG_DEFAULT_TITLE);
 }
 
 void MainWindow::view_default()

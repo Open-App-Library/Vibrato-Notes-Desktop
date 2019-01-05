@@ -34,3 +34,5 @@ This file tracks the weekly development progress on Vibrato Notes - new features
 *** Notes load & sync locally using SQLite3
 *** Created SQLManager and unit-tests for it.
 *** You can change the hierarchy of notebook
+*** File>>New - a new way to create notes, notebooks and tags
+*** Creation shortcut keys - New Note (Ctrl+n), New Notebook (Ctrl+Shift+n), New Tag (Ctrl+Alt+n).
