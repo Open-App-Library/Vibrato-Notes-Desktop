@@ -3,6 +3,8 @@
 #include <QDialog>
 #include <QPushButton>
 #include <QListWidget>
+#include <QCompleter>
+#include <QStringListModel>
 #include "../../meta/note.h"
 #include "../../meta/db/database.h"
 #include "../../models/items/listitemwithid.h"
@@ -44,6 +46,9 @@ private:
   QListWidget *m_tagList;
   QPushButton *m_removeTagButton;
   QLineEdit   *m_tagInput;
+
+  QCompleter *m_completer;
+  QStringListModel *m_completionList;
 
   Database *m_db=nullptr;
   Note *m_note=nullptr;

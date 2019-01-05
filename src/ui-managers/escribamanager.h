@@ -83,6 +83,9 @@ private:
 
   Note_EditNotebook *m_editNotebookDialog = nullptr;
   Note_EditTags     *m_editTagsDialog = nullptr;
+
+  QCompleter *m_completer;
+  QStringListModel *m_completionList;
 };
 
 #endif

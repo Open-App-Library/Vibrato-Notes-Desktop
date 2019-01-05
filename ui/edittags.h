@@ -6,30 +6,30 @@
 #include "../src/models/items/listitemwithid.h"
 
 namespace Ui {
-	class EditTags;
+  class EditTags;
 }
 
 class EditTags : public QDialog
 {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	explicit EditTags(Database *db, QWidget *parent = nullptr);
-	~EditTags();
-	void addTag(Tag *tag);
-	void loadTags();
+  explicit EditTags(Database *db, QWidget *parent = nullptr);
+  ~EditTags();
+  void addTag(Tag *tag);
+  void loadTags();
 
 private slots:
-	void tagAdded(Tag *tag);
-	void tagChanged(Tag *tag);
+  void tagAdded(Tag *tag);
+  void tagChanged(Tag *tag);
 
 private:
-	Ui::EditTags *ui;
-	Database *m_db;
+  Ui::EditTags *ui;
+  Database *m_db;
 
-	typedef struct { Tag *tag; ListItemWithID *item;} t_tagItem;
+  typedef struct { Tag *tag; ListItemWithID *item;} t_tagItem;
 
-	QVector<t_tagItem> m_tagItems;
+  QVector<t_tagItem> m_tagItems;
 };
 
 #endif // EDITTAGS_H
