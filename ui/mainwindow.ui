@@ -328,7 +328,8 @@ border-bottom: 0;
      <property name="title">
       <string>Theme</string>
      </property>
-     <addaction name="actionDefault"/>
+     <addaction name="actionThemeDefault"/>
+     <addaction name="actionThemeDark"/>
     </widget>
     <addaction name="actionGeneral"/>
     <addaction name="menuTheme"/>
@@ -412,12 +413,15 @@ border-bottom: 0;
     <string>General</string>
    </property>
   </action>
-  <action name="actionDefault">
+  <action name="actionThemeDefault">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="checked">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Default</string>
@@ -461,6 +465,20 @@ border-bottom: 0;
   <action name="actionCut">
    <property name="text">
     <string>Cut</string>
+   </property>
+  </action>
+  <action name="actionThemeDark">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Dark</string>
    </property>
   </action>
  </widget>

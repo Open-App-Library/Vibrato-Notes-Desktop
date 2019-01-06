@@ -33,6 +33,7 @@ public:
   void jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent=nullptr);
 
   void connectNotebook(Notebook *notebook);
+  void disconnectNotebook(Notebook *notebook);
 
 private slots:
   void notebookChanged_slot(Notebook *notebook);

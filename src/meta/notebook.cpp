@@ -126,9 +126,7 @@ void Notebook::removeChild(Notebook *child)
     return;
 
   removeChild_primitive(child);
-  child->setParent_primitive(nullptr);
 
-  emit notebookParentChanged(child);
   emit notebookChildrenChanged(this);
   emit notebookChanged(this);
 }

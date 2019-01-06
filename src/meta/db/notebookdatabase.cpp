@@ -275,6 +275,22 @@ void NotebookDatabase::connectNotebook(Notebook *notebook)
           this, &NotebookDatabase::handleNotebookParentRequest);
 }
 
+void NotebookDatabase::disconnectNotebook(Notebook *notebook)
+{
+  disconnect(notebook, &Notebook::notebookChanged,
+          this, &NotebookDatabase::notebookChanged_slot);
+  disconnect(notebook, &Notebook::notebookIDChanged,
+          this, &NotebookDatabase::notebookIDChanged_slot);
+  disconnect(notebook, &Notebook::notebookTitleChanged,
+          this, &NotebookDatabase::notebookTitleChanged_slot);
+  disconnect(notebook, &Notebook::notebookParentChanged,
+          this, &NotebookDatabase::notebookParentChanged_slot);
+  disconnect(notebook, &Notebook::notebookChildrenChanged,
+          this, &NotebookDatabase::notebookChildrenChanged_slot);
+  disconnect(notebook, &Notebook::requestedParentWithID,
+          this, &NotebookDatabase::handleNotebookParentRequest);
+}
+
 void NotebookDatabase::loadDummyNotebooks()
 {
   clearNotebooks();
