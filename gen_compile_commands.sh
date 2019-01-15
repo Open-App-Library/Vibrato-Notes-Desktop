@@ -30,5 +30,7 @@ else
     exit
 fi
 
-qmake -project "QT += testlib" ../VibratoNotes-desktop.pro
+echo "QT += testlib" > VibratoNotes.pro
+echo "include(../VibratoNotes-Desktop.pro)" >> VibratoNotes.pro
+qmake VibratoNotes.pro
 bear -a -o ../compile_commands.json make
