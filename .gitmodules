@@ -1,3 +1,6 @@
 [submodule "src/text-editor"]
 	path = src/text-editor
 	url = git@gitlab.com:Open-App-Library/escriba.git
+[submodule "src/cloud/api"]
+	path = src/cloud/api
+	url = git@gitlab.com:Open-App-Library/qt-vibrato-cloud-api-library.git
