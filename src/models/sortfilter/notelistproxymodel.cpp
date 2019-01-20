@@ -6,7 +6,6 @@
 #define FTS_FUZZY_MATCH_IMPLEMENTATION
 #include <fts_fuzzy_match.hpp>
 #include <helper-io.hpp>
-
 #include <QDebug>
 
 NoteListProxyModel::NoteListProxyModel(QListView *view, Database *db) :
@@ -37,6 +36,28 @@ QVariant NoteListProxyModel::data(const QModelIndex &index, int role) const
   }
 
   return QVariant();
+}
+
+void NoteListProxyModel::processNoteListItemPayloads() {
+  if ( noteListItemPayloads.length() == 0 )
+    return;
+
+  struct noteListItemPayload
+    payload = noteListItemPayloads.at(0);
+
+  QModelIndex index = payload.index;
+  Note *note = payload.note;
+
+  if ( !m_view->indexWidget(index) &&
+       index.isValid() ) {
+    QWidget *widget = new NoteListItemWidget(item->note());
+    m_view->setIndexWidget( index, widget );
+    item->setWidget(widget);
+    if ( m_view->currentIndex() == index )
+      item->setSelectedStyle(true);
+  }
+
+  noteListItemPayloads.removeFirst();
 }
 
 void NoteListProxyModel::setSortingMethod(int sortingMethod)

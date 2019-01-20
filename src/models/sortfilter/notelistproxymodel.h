@@ -65,6 +65,13 @@ private:
   int m_favorites_filter=FavoritesFilterDisabled;
   int m_trashed_filter=TrashHidden;
 
+  struct noteListItemPayload {
+    QModelIndex index;
+    Note *note;
+  };
+  QVector<struct noteListItemPayload> noteListItemPayloads;
+  void processNoteListItemPayloads();
+
   // Searching notes
   int m_search_filter=SearchOff;
   QString m_searchQuery;
