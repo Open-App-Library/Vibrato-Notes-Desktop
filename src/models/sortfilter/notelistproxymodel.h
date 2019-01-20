@@ -8,9 +8,11 @@
 #define NOTELISTPROXYMODEL_H
 #include <QSortFilterProxyModel>
 #include <QListView>
+#include <QVector>
 #include "../items/notelistitem.h"
 #include "../items/notelistitemwidget.h"
 #include "../../meta/db/database.h"
+#include <QTimer>
 
 class NoteListProxyModel : public QSortFilterProxyModel
 {
@@ -55,6 +57,8 @@ signals:
   void invalidatedFilter();
 
 private:
+  QModelIndex m_selectedRow;
+
   QListView *m_view;
   int m_sortingMethod=DateModified;
   Database *m_db;
@@ -65,16 +69,21 @@ private:
   int m_favorites_filter=FavoritesFilterDisabled;
   int m_trashed_filter=TrashHidden;
 
-  struct noteListItemPayload {
-    QModelIndex index;
-    Note *note;
-  };
-  QVector<struct noteListItemPayload> noteListItemPayloads;
-  void processNoteListItemPayloads();
-
   // Searching notes
   int m_search_filter=SearchOff;
   QString m_searchQuery;
+
+  QTimer *noteListItemTimer;
+  struct noteListItemPayload {
+    QModelIndex index;
+    NoteListItem *item;
+  };
+  QVector<struct noteListItemPayload> noteListItemPayloads;
+  void addNoteListItemPayload(QModelIndex index, NoteListItem *item);
+
+public slots:
+  void processNoteListItemPayloads();
+
 };
 
 #endif // NOTELISTPROXYMODEL_H

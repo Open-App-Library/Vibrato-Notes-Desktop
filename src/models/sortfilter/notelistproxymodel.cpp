@@ -14,6 +14,10 @@ NoteListProxyModel::NoteListProxyModel(QListView *view, Database *db) :
   m_db(db)
 {
   setDynamicSortFilter(true);
+
+  noteListItemTimer = new QTimer(this);
+  connect(noteListItemTimer, SIGNAL(timeout()), this, SLOT(processNoteListItemPayloads()));
+  noteListItemTimer->start(20);
 }
 
 QVariant NoteListProxyModel::data(const QModelIndex &index, int role) const
@@ -28,14 +32,20 @@ QVariant NoteListProxyModel::data(const QModelIndex &index, int role) const
   NoteListItem *item = static_cast<NoteListItem*>( realIndex.internalPointer() );
 
   if ( !m_view->indexWidget(index) ) {
-    QWidget *widget = new NoteListItemWidget(item->note());
-    m_view->setIndexWidget( index, widget );
-    item->setWidget(widget);
-    if ( m_view->currentIndex() == index )
-      item->setSelectedStyle(true);
+    struct noteListItemPayload payload;
+    payload.index = index;
+    payload.item = item;
+    const_cast<NoteListProxyModel*>(this)->addNoteListItemPayload(index, item);
   }
 
   return QVariant();
+}
+
+void NoteListProxyModel::addNoteListItemPayload(QModelIndex index, NoteListItem *item) {
+  struct noteListItemPayload payload;
+  payload.index = index;
+  payload.item = item;
+  noteListItemPayloads.append(payload);
 }
 
 void NoteListProxyModel::processNoteListItemPayloads() {
@@ -44,17 +54,14 @@ void NoteListProxyModel::processNoteListItemPayloads() {
 
   struct noteListItemPayload
     payload = noteListItemPayloads.at(0);
-
   QModelIndex index = payload.index;
-  Note *note = payload.note;
+  NoteListItem *item = payload.item;
 
   if ( !m_view->indexWidget(index) &&
        index.isValid() ) {
     QWidget *widget = new NoteListItemWidget(item->note());
     m_view->setIndexWidget( index, widget );
     item->setWidget(widget);
-    if ( m_view->currentIndex() == index )
-      item->setSelectedStyle(true);
   }
 
   noteListItemPayloads.removeFirst();
@@ -67,6 +74,7 @@ void NoteListProxyModel::setSortingMethod(int sortingMethod)
 
 void NoteListProxyModel::invalidateFilter()
 {
+  noteListItemPayloads.clear();
   QSortFilterProxyModel::invalidateFilter();
   emit invalidatedFilter();
 }

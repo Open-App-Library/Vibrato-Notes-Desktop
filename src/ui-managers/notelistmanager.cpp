@@ -358,14 +358,9 @@ void NoteListManager::noteListItemChanged(const QModelIndex &current_proxy, cons
   QModelIndex previous = m_proxyModel->mapToSource(previous_proxy);
   if ( current == previous )
     return;
-  if ( previous.isValid() && previous_proxy.isValid() ) {
-    NoteListItem *prevItem = static_cast<NoteListItem*>(previous.internalPointer());
-    prevItem->setSelectedStyle(false);
-  }
 
   if ( current.isValid() && current_proxy.isValid() ) {
     NoteListItem *curItem = static_cast<NoteListItem*>(current.internalPointer());
-    curItem->setSelectedStyle(true);
     emit selectedNote( curItem->note() );
   }
 }
