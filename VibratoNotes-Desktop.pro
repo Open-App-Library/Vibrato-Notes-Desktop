@@ -52,14 +52,14 @@ SOURCES += \
     $$PWD/ui/note_edittags.cpp \
     $$PWD/src/models/items/listitemwithid.cpp \
     $$PWD/src/models/sortfilter/notelistproxymodel.cpp \
-    $$PWD/src/models/items/notelistitemwidget.cpp \
     $$PWD/ui/edittags.cpp \
     $$PWD/src/models/views/customtreeview.cpp \
     $$PWD/ui/trashitem.cpp \
     $$PWD/src/ui-managers/notelist-views/trashview.cpp \
     $$PWD/src/ui-managers/notelist-views/genericview.cpp \
     $$PWD/ui/notebook_editparent.cpp \
-    $$PWD/src/sql/sqlmanager.cpp
+    $$PWD/src/sql/sqlmanager.cpp \
+    src/models/delegates/noteitemdelegate.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -91,14 +91,14 @@ HEADERS += \
     $$PWD/ui/note_edittags.h \
     $$PWD/src/models/items/listitemwithid.h \
     $$PWD/src/models/sortfilter/notelistproxymodel.h \
-    $$PWD/src/models/items/notelistitemwidget.h \
     $$PWD/ui/edittags.h \
     $$PWD/src/models/views/customtreeview.h \
     $$PWD/ui/trashitem.h \
     $$PWD/src/ui-managers/notelist-views/trashview.h \
     $$PWD/src/ui-managers/notelist-views/genericview.h \
     $$PWD/ui/notebook_editparent.h \
-    $$PWD/src/sql/sqlmanager.h
+    $$PWD/src/sql/sqlmanager.h \
+    src/models/delegates/noteitemdelegate.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview

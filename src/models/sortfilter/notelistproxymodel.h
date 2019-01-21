@@ -10,9 +10,8 @@
 #include <QListView>
 #include <QVector>
 #include "../items/notelistitem.h"
-#include "../items/notelistitemwidget.h"
 #include "../../meta/db/database.h"
-#include <QTimer>
+#include "../delegates/noteitemdelegate.h"
 
 class NoteListProxyModel : public QSortFilterProxyModel
 {
@@ -57,6 +56,8 @@ signals:
   void invalidatedFilter();
 
 private:
+  NoteItemDelegate *m_delegate;
+
   QModelIndex m_selectedRow;
 
   QListView *m_view;
@@ -72,17 +73,6 @@ private:
   // Searching notes
   int m_search_filter=SearchOff;
   QString m_searchQuery;
-
-  QTimer *noteListItemTimer;
-  struct noteListItemPayload {
-    QModelIndex index;
-    NoteListItem *item;
-  };
-  QVector<struct noteListItemPayload> noteListItemPayloads;
-  void addNoteListItemPayload(QModelIndex index, NoteListItem *item);
-
-public slots:
-  void processNoteListItemPayloads();
 
 };
 

@@ -13,6 +13,9 @@ class CustomListView : public QListView
 public:
     CustomListView(QWidget *parent=nullptr);
 
+    // Empty function to prevent mouse press event.
+    void mousePressEvent(QMouseEvent *event) override;
+
 public slots:
     void currentChanged(const QModelIndex &current, const QModelIndex &previous) override;
 
