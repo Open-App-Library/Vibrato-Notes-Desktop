@@ -52,6 +52,9 @@ public:
 
   NoteListItem *item(int row);
 
+private slots:
+  void noteChanged(Note *note);
+
 signals:
   void invalidatedFilter();
 

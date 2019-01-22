@@ -29,7 +29,7 @@ Note *NoteDatabase::addNote(Note *note, bool addToSQL)
   if (addToSQL) m_sqlManager->addNote(note);
 
   connect(note, &Note::noteChanged,
-          this, &NoteDatabase::noteChanged);
+          this, &NoteDatabase::slot_noteChanged);
   connect(note, &Note::noteFavoritedChanged,
           this, &NoteDatabase::handleNoteFavoritedChanged);
   connect(note, &Note::noteTrashedOrRestored,
@@ -178,8 +178,9 @@ bool NoteDatabase::noteWithIDExists(int noteID) const
   return false;
 }
 
-void NoteDatabase::noteChanged(Note* note) {
+void NoteDatabase::slot_noteChanged(Note* note) {
   m_sqlManager->updateNoteToDB(note);
+  emit noteChanged(note);
 }
 
 void NoteDatabase::handleNoteFavoritedChanged(Note* note) {

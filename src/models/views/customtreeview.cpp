@@ -4,7 +4,11 @@
 CustomTreeView::CustomTreeView(QWidget *parent) :
   QTreeView(parent)
 {
-  this->setEditTriggers(QTreeView::EditKeyPressed);
+  setEditTriggers(QTreeView::EditKeyPressed);
+
+  setDragEnabled(true);
+  setAcceptDrops(true);
+  setDragDropMode(QAbstractItemView::InternalMove);
 }
 
 void CustomTreeView::mousePressEvent(QMouseEvent *event)

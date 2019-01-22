@@ -62,11 +62,6 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   connect(m_notebookRename, &QAction::triggered,
           this, &TreeManager::contextRenameNotebook);
 
-  m_notebookEditHierarchy = new QAction(tr("&Edit notebook hierarchy"));
-  m_notebookContextMenu->addAction(m_notebookEditHierarchy);
-  connect(m_notebookEditHierarchy, &QAction::triggered,
-          this, &TreeManager::contextEditNotebookHierarchy);
-
   m_notebookDelete = new QAction(tr("&Delete notebook"));
   m_notebookContextMenu->addAction(m_notebookDelete);
   connect(m_notebookDelete, &QAction::triggered,
@@ -540,17 +535,14 @@ void TreeManager::treeContextMenu(const QPoint &point)
       showEditingControls = true;
 
     m_notebookRename->setVisible(showEditingControls);
-    m_notebookEditHierarchy->setVisible(showEditingControls);
     m_notebookDelete->setVisible(showEditingControls);
 
     // Don't allow editing of default notebook
     if ( item->isNotebook() && item->object().notebook->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID ) {
       m_notebookRename->setDisabled(true);
-      m_notebookEditHierarchy->setDisabled(true);
       m_notebookDelete->setDisabled(true);
     } else {
       m_notebookRename->setDisabled(false);
-      m_notebookEditHierarchy->setDisabled(false);
       m_notebookDelete->setDisabled(false);
     }
 

@@ -121,7 +121,6 @@ private:
   QMenu *m_notebookContextMenu;
   QAction *m_notebookNew;
   QAction *m_notebookRename;
-  QAction *m_notebookEditHierarchy;
   QAction *m_notebookDelete;
 
   QMenu *m_tagContextMenu;

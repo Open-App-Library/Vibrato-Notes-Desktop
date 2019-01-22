@@ -33,6 +33,14 @@ public:
 
   QModelIndex getItem(BasicTreeItem *item, QModelIndex parent=QModelIndex());
 
+  Qt::DropActions supportedDropActions() const override;
+  Qt::DropActions supportedDragActions() const override;
+
+  QStringList mimeTypes() const override;
+  QMimeData *mimeData(const QModelIndexList &indexes) const override;
+  bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex & parent) override;
+
+
 private:
   BasicTreeItem *m_rootItem;
   QVector<QModelIndex> m_recurseChildren(QModelIndex parent=QModelIndex());

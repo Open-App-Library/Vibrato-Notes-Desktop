@@ -48,12 +48,13 @@ public:
 signals:
   // Important: 'Trashed' means the *Note is set as trashed=true.
   //            'Deleted' means the *Note was deleted and removed from database. (Permanent)
+  void noteChanged(Note *note);
   void noteTrashedOrRestored(Note *note, bool trashed);
   void noteDeleted(int noteID);
   void noteFavoritedChanged(Note *note);
 
 private slots:
-  void noteChanged(Note *note);
+  void slot_noteChanged(Note *note);
   void handleNoteFavoritedChanged(Note *note);
 
 private:

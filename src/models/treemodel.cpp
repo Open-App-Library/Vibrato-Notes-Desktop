@@ -4,10 +4,11 @@
 #include <QStringList>
 #include <QDebug>
 #include <QIcon>
+#include <QMimeData>
 
 TreeModel::TreeModel(QObject *parent) :
   QAbstractItemModel(parent),
-  m_rootItem( new BasicTreeItem("Vibrato Tree") )
+  m_rootItem( new BasicTreeItem("Root") )
 {
   // TreeModel Constructor
 }
@@ -72,13 +73,10 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
   BasicTreeItem *item = static_cast<BasicTreeItem*>(index.internalPointer());
 
   Qt::ItemFlags flags = QAbstractItemModel::flags(index);
-
-  // If a label, make not selectable.
-  if ( !item->selectable() )
-    flags &= ~Qt::ItemIsSelectable;
-
-  if ( item->isNotebook() || item->isTag() )
-    flags |= Qt::ItemIsEditable;
+  flags.setFlag(Qt::ItemIsSelectable, item->selectable());
+  flags.setFlag(Qt::ItemIsEditable, item->isNotebook() || item->isTag());
+  flags.setFlag(Qt::ItemIsDropEnabled, item->isNotebook());
+  flags.setFlag(Qt::ItemIsDragEnabled, item->isNotebook() || item->isTag());
 
   return flags;
 }
@@ -175,4 +173,79 @@ QModelIndex TreeModel::getItem(BasicTreeItem *item, QModelIndex parent) {
       return childrenCheck;
   }
   return QModelIndex();
+}
+
+Qt::DropActions TreeModel::supportedDropActions() const
+{
+    return Qt::MoveAction;
+}
+
+Qt::DropActions TreeModel::supportedDragActions() const
+{
+    return Qt::MoveAction;
+}
+
+QStringList TreeModel::mimeTypes() const
+{
+    return QStringList() << "application/vibrato-basictreeitem" << "image/*";
+}
+
+QMimeData *TreeModel::mimeData(const QModelIndexList &indexes) const
+{
+    QMimeData *mimeData = new QMimeData();
+    QByteArray encodedData;
+
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+    foreach (QModelIndex index, indexes) {
+        if (index.isValid()) {
+            QString data;
+            QModelIndex curIndex = index;
+            int invalidCount = 0;
+            while (curIndex.isValid() && invalidCount < 2) {
+                data = data.append(QString("%1").arg(curIndex.row()));
+                curIndex = curIndex.parent();
+                if (curIndex.isValid() && invalidCount == 0)
+                    data +=",";
+                if (!curIndex.isValid())
+                    invalidCount++;
+            }
+            stream << data;
+        }
+    }
+
+
+    mimeData->setData("application/vibrato-basictreeitem", encodedData);
+    return mimeData;
+}
+
+bool TreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex & parent)
+{
+    if (action == Qt::IgnoreAction)
+        return true;
+
+    if (!data->hasFormat("application/vibrato-basictreeitem"))
+        return false;
+
+    if (column > 0)
+        return false;
+
+    QByteArray encodedData = data->data("application/vibrato-basictreeitem");
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+
+    QString mimeString;
+    stream >> mimeString;
+
+    QStringList rowParents = mimeString.split(",");
+    QModelIndex theIndex = QModelIndex();
+    for ( int i = rowParents.length()-1; i >= 0; i-- ) {
+        int rowNum = rowParents.at(i).toInt();
+        theIndex = index(rowNum, 0, theIndex);
+    }
+
+    if (theIndex.isValid()) {
+        BasicTreeItem *source = static_cast<BasicTreeItem*>(theIndex.internalPointer());
+    }
+
+    return true;
 }

@@ -17,6 +17,9 @@ NoteListProxyModel::NoteListProxyModel(QListView *view, Database *db) :
 
   m_delegate = new NoteItemDelegate(m_view, this);
   m_view->setItemDelegate(m_delegate);
+
+  connect(m_db->noteDatabase(), &NoteDatabase::noteChanged,
+          this, &NoteListProxyModel::noteChanged);
 }
 
 QVariant NoteListProxyModel::data(const QModelIndex &index, int role) const
@@ -244,4 +247,20 @@ NoteListItem *NoteListProxyModel::item(int row)
   if ( !i.isValid() ) return nullptr;
 
   return static_cast<NoteListItem*>( mapToSource(i).internalPointer() );
+}
+
+void NoteListProxyModel::noteChanged(Note* note) {
+  QModelIndex theIndex = QModelIndex();
+
+  for (int i=0; i<rowCount(); i++) {
+    QModelIndex curIndex = index(i, 0);
+    QModelIndex realCurIndex = mapToSource(curIndex);
+    NoteListItem *item = static_cast<NoteListItem*>( realCurIndex.internalPointer() );
+    if (item->note() == note)
+      theIndex = curIndex;
+  }
+
+  // if (theIndex.isValid())
+  //   m_view->viewport()->repaint();
+  emit dataChanged(theIndex, theIndex);
 }
