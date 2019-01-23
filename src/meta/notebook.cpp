@@ -20,7 +20,7 @@ QUuid Notebook::syncHash() const
 
 void Notebook::setSyncHash(QUuid syncHash)
 {
-  if ( defaufltNotebook() )
+  if ( defaultNotebook() )
     return;
   m_sync_hash = syncHash;
   emit syncHashChanged(this);
@@ -34,7 +34,7 @@ QString Notebook::title() const
 void Notebook::setTitle(const QString &title)
 {
   // If Default Notebook or title is empty, return.
-  if ( defaufltNotebook() ||
+  if ( defaultNotebook() ||
        title.trimmed().isEmpty() )
     return;
   m_title = title;
@@ -59,7 +59,7 @@ Notebook *Notebook::parent() const
 
 void Notebook::setParent(Notebook *parent)
 {
-  if ( defaufltNotebook() ) return;
+  if ( defaultNotebook() ) return;
 
   if (m_parent != nullptr)
     m_parent->removeChild_primitive(this);
@@ -93,7 +93,7 @@ QVector<Notebook *> Notebook::recurseChildren(Notebook* parent) const
 
 void Notebook::setChildren(const QVector<Notebook *> &children)
 {
-  if ( defaufltNotebook() )
+  if ( defaultNotebook() )
     return;
   m_children = children;
   emit childrenChanged(this);
@@ -102,7 +102,7 @@ void Notebook::setChildren(const QVector<Notebook *> &children)
 
 void Notebook::addChild(Notebook *child)
 {
-  if ( defaufltNotebook() ) return;
+  if ( defaultNotebook() ) return;
 
   child->parent()->removeChild_primitive(child);
   child->setParent_primitive(this);
@@ -115,7 +115,7 @@ void Notebook::addChild(Notebook *child)
 
 void Notebook::removeChild(Notebook *child)
 {
-  if ( defaufltNotebook() )
+  if ( defaultNotebook() )
     return;
 
   removeChild_primitive(child);
@@ -168,10 +168,10 @@ void Notebook::setEncrypted(bool encrypted)
   emit changed(this);
 }
 
-bool Notebook::defaufltNotebook() const
+bool Notebook::defaultNotebook() const
 {
   // Check if a blank UUID
-  return m_sync_hash == QUuid();
+  return m_sync_hash == nullptr;
 }
 
 void Notebook::handleChange(Notebook *notebook)
