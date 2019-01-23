@@ -33,24 +33,21 @@ public:
 
   void loadSQL();
 
-  void loadJSON(QJsonDocument jsonDocument);
-  void loadDummyNotes();
+  void removeNotesWithNotebookSyncHash(QUuid notebookSyncHash);
+  void removeNotesWithNotebookSyncHashes(QVector<QUuid> notebookSyncHashes);
 
-  void removeNotesWithNotebookID(int notebookID);
-  void removeNotesWithNotebookIDs(QVector<int> notebookIDs);
+  void removeTagFromNotes(QUuid tagSyncHash);
 
-  void removeTagFromNotes(int tagID);
+  QVector<Note*> findNotesWithNotebookIDs(QVector<QUuid> notebookIDs);
 
-  QVector<Note*> findNotesWithNotebookIDs(QVector<int> notebookIDs);
-
-  bool noteWithIDExists(int noteID) const;
+  bool noteWithSyncHashExists(QUuid syncHash) const;
 
 signals:
   // Important: 'Trashed' means the *Note is set as trashed=true.
   //            'Deleted' means the *Note was deleted and removed from database. (Permanent)
   void noteChanged(Note *note);
   void noteTrashedOrRestored(Note *note, bool trashed);
-  void noteDeleted(int noteID);
+  void noteDeleted(QUuid noteSyncHash);
   void noteFavoritedChanged(Note *note);
 
 private slots:
@@ -61,7 +58,6 @@ private:
   SQLManager *m_sqlManager;
   QList<Note*> m_list;
 
-  QJsonValue get(QJsonObject obj, QString key);
 };
 
 #endif // NOTELIST_H
