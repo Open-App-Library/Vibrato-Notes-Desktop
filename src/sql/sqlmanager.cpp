@@ -286,8 +286,8 @@ bool SQLManager::addNote(Note *note, bool getNewID)
   if (!getNewID) q.bindValue(":id", note->id());
   q.bindValue(":title"         , note->title());
   q.bindValue(":text"          , note->text());
-  q.bindValue(":date_created"  , note->date_created());
-  q.bindValue(":date_modified" , note->date_modified());
+  q.bindValue(":date_created"  , note->dateCreated());
+  q.bindValue(":date_modified" , note->dateModified());
   q.bindValue(":favorited"     , note->favorited());
   q.bindValue(":notebook"      , note->notebook());
   q.bindValue(":trashed"       , note->trashed());
@@ -332,8 +332,8 @@ bool SQLManager::updateNoteToDB(Note* note) {
 
   noteInDB.setValue("title", note->title());
   noteInDB.setValue("text", note->text());
-  noteInDB.setValue("date_created", note->date_created());
-  noteInDB.setValue("date_modified", note->date_modified());
+  noteInDB.setValue("date_created", note->dateCreated());
+  noteInDB.setValue("date_modified", note->dateModified());
   noteInDB.setValue("favorited", note->favorited());
   noteInDB.setValue("notebook", note->notebook());
   noteInDB.setValue("trashed", note->trashed());
@@ -381,8 +381,8 @@ bool SQLManager::updateNoteFromDB(Note* note) {
   note->setId            ( noteRow["id"].toInt() );
   note->setTitle         ( noteRow["title"].toString() );
   note->setText          ( noteRow["text"].toString() );
-  note->setDate_created  ( noteRow["date_created"].toDateTime() );
-  note->setDate_modified ( noteRow["date_modified"].toDateTime() );
+  note->setDateCreated  ( noteRow["date_created"].toDateTime() );
+  note->setDateModified ( noteRow["date_modified"].toDateTime() );
   note->setFavorited     ( noteRow["favorited"].toBool() );
   note->setNotebook      ( noteRow["notebook"].toInt() );
   note->setTrashed       ( noteRow["trashed"].toBool() );
@@ -483,7 +483,7 @@ bool SQLManager::updateNotebookFromDB(Notebook* notebook) {
   if ( !logSqlError(query.lastError()) )
     return false;
 
-  notebook->setSyncId ( notebookRow["sync_id"].toInt() );
+  notebook->setSyncHash ( notebookRow["sync_id"].toInt() );
   notebook->setId     ( notebookRow["id"].toInt() );
   notebook->setTitle  ( notebookRow["title"].toString() );
   notebook->requestParentChangeToID( notebookRow["parent"].toInt());

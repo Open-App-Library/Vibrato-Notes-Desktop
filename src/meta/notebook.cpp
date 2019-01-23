@@ -1,42 +1,29 @@
 #include "notebook.h"
 #include <QDebug>
 
-Notebook::Notebook(int syncId, int id, QString title, Notebook *parent, QVector<Notebook*> children) :
-  m_syncId(syncId),
-  m_id(id),
+Notebook::Notebook(QUuid sync_hash, QString title, QDateTime date_modified, Notebook *parent, int row, bool encrypted) :
+  m_sync_hash(sync_hash),
   m_title(title),
+  m_date_modified(date_modified),
   m_parent(parent),
-  m_children(children)
+  m_row(row),
+  m_encrypted(encrypted)
 {
+  connect(this, &Notebook::changed,
+          this, &Notebook::handleChange);
 }
 
-int Notebook::syncId() const
+QUuid Notebook::syncHash() const
 {
-  return m_syncId;
+  return m_sync_hash;
 }
 
-void Notebook::setSyncId(int syncId)
+void Notebook::setSyncHash(QUuid syncHash)
 {
-  if ( m_syncId == NOTEBOOK_DEFAULT_NOTEBOOK_ID ||
-       m_syncId   == NOTEBOOK_DEFAULT_NOTEBOOK_ID)
+  if ( defaufltNotebook() )
     return;
-  m_syncId = syncId;
-  emit notebookSyncIDChanged(this);
-}
-
-int Notebook::id() const
-{
-  return m_id;
-}
-
-void Notebook::setId(int id)
-{
-  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID ||
-       id   == NOTEBOOK_DEFAULT_NOTEBOOK_ID)
-    return;
-  m_id = id;
-  emit notebookIDChanged(this);
-  emit notebookChanged(this);
+  m_sync_hash = syncHash;
+  emit syncHashChanged(this);
 }
 
 QString Notebook::title() const
@@ -47,12 +34,22 @@ QString Notebook::title() const
 void Notebook::setTitle(const QString &title)
 {
   // If Default Notebook or title is empty, return.
-  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID ||
+  if ( defaufltNotebook() ||
        title.trimmed().isEmpty() )
     return;
   m_title = title;
-  emit notebookTitleChanged(this);
-  emit notebookChanged(this);
+  emit titleChanged(this);
+  emit changed(this);
+}
+
+QDateTime Notebook::dateModified() const
+{
+  return m_date_modified;
+}
+
+void Notebook::setDateModified(QDateTime dateModified)
+{
+  m_date_modified = dateModified;
 }
 
 Notebook *Notebook::parent() const
@@ -62,7 +59,7 @@ Notebook *Notebook::parent() const
 
 void Notebook::setParent(Notebook *parent)
 {
-  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID ) return;
+  if ( defaufltNotebook() ) return;
 
   if (m_parent != nullptr)
     m_parent->removeChild_primitive(this);
@@ -70,9 +67,9 @@ void Notebook::setParent(Notebook *parent)
   if (m_parent != nullptr)
     m_parent->addChild_primitive(this);
 
-  emit notebookChildrenChanged(parent);
-  emit notebookParentChanged(this);
-  emit notebookChanged(this);
+  emit childrenChanged(parent);
+  emit parentChanged(this);
+  emit changed(this);
 }
 
 QVector<Notebook *> Notebook::children() const
@@ -96,35 +93,35 @@ QVector<Notebook *> Notebook::recurseChildren(Notebook* parent) const
 
 void Notebook::setChildren(const QVector<Notebook *> &children)
 {
-  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
+  if ( defaufltNotebook() )
     return;
   m_children = children;
-  emit notebookChildrenChanged(this);
-  emit notebookChanged(this);
+  emit childrenChanged(this);
+  emit changed(this);
 }
 
 void Notebook::addChild(Notebook *child)
 {
-  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID ) return;
+  if ( defaufltNotebook() ) return;
 
   child->parent()->removeChild_primitive(child);
   child->setParent_primitive(this);
   addChild_primitive(child);
 
-  emit notebookParentChanged(child);
-  emit notebookChildrenChanged(this);
-  emit notebookChanged(this);
+  emit parentChanged(child);
+  emit childrenChanged(this);
+  emit changed(this);
 }
 
 void Notebook::removeChild(Notebook *child)
 {
-  if ( m_id == NOTEBOOK_DEFAULT_NOTEBOOK_ID )
+  if ( defaufltNotebook() )
     return;
 
   removeChild_primitive(child);
 
-  emit notebookChildrenChanged(this);
-  emit notebookChanged(this);
+  emit childrenChanged(this);
+  emit changed(this);
 }
 
 void Notebook::setParent_primitive(Notebook *parent)
@@ -141,4 +138,43 @@ void Notebook::removeChild_primitive(Notebook *child)
 {
   int index = m_children.indexOf(child);
   if (index > -1) m_children.removeAt(index);
+}
+
+int Notebook::row() const
+{
+  return m_row;
+}
+
+void Notebook::setRow(int row)
+{
+  if ( row == m_row ) return;
+
+  m_row = row;
+  emit rowChanged(this);
+  emit changed(this);
+}
+
+bool Notebook::encrypted() const
+{
+  return m_encrypted;
+}
+
+void Notebook::setEncrypted(bool encrypted)
+{
+  if ( encrypted == m_encrypted ) return;
+
+  m_encrypted = encrypted;
+  emit encryptedChanged(this);
+  emit changed(this);
+}
+
+bool Notebook::defaufltNotebook() const
+{
+  // Check if a blank UUID
+  return m_sync_hash == QUuid();
+}
+
+void Notebook::handleChange(Notebook *notebook)
+{
+  notebook->setDateModified( QDateTime::currentDateTime() );
 }

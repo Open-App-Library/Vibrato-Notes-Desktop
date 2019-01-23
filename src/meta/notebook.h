@@ -7,7 +7,6 @@
 #include <QDateTime>
 
 #define NOTEBOOK_DEFAULT_TITLE "Untitled Notebook"
-#define NOTEBOOK_DEFAULT_NOTEBOOK_ID -1
 
 class Notebook : public QObject
 {
@@ -20,18 +19,21 @@ public:
            int row = -255,
            bool encrypted = false);
 
-  int syncId() const;
-  void setSyncId(int syncId);
+  // Sync Hash
+  QUuid syncHash() const;
+  void setSyncHash(QUuid syncHash);
 
-  int id() const;
-  void setId(int id);
-
+  // Title
   QString title() const;
   void setTitle(const QString &title);
 
+  // Date Modified
+  QDateTime dateModified() const;
+  void setDateModified(QDateTime dateModified);
+
+  // Parent & Child functions
   Notebook *parent() const;
   void setParent(Notebook *parent);
-  void requestParentChangeToID(int parentID);
 
   QVector<Notebook *> children() const;
   QVector<Notebook *> recurseChildren(Notebook* parent=nullptr) const;
@@ -47,6 +49,15 @@ public:
   void addChild_primitive(Notebook *child);
   void removeChild_primitive(Notebook *child);
 
+  int row() const;
+  void setRow(int row);
+
+  bool encrypted() const;
+  void setEncrypted(bool encrypted);
+
+  // Returns true if default notebook
+  bool defaufltNotebook() const;
+
 signals:
   // General change signal - When any property is changed.
   void changed(Notebook *notebook);
@@ -61,6 +72,9 @@ signals:
   void encryptedChanged(Notebook *notebook);
 
   void deletingNotebook();
+
+private slots:
+  void handleChange(Notebook *notebook);
 
 private:
   QUuid m_sync_hash;

@@ -16,8 +16,8 @@ public:
   Note(QUuid sync_hash = QUuid::createUuid(),
        QString title = "",
        QString text = "",
-       QDateTime date_created = QDateTime::currentDateTime(),
-       QDateTime date_modified = QDateTime::currentDateTime(),
+       QDateTime dateCreated = QDateTime::currentDateTime(),
+       QDateTime dateModified = QDateTime::currentDateTime(),
        // TODO: user field
        QUuid notebook = QUuid(),
        QVector<QUuid> tags = {},
@@ -39,16 +39,16 @@ public:
   void    setText(const QString text);
 
   // Date created
-  QDateTime date_created() const;
-  QString date_created_str() const; // ex. January 26, 1965
-  QString date_created_str_informative() const; // ex. January 26, 1965 at 12:30pm EST
-  void setDate_created(const QDateTime &date_created);
+  QDateTime dateCreated() const;
+  QString dateCreatedStr() const; // ex. January 26, 1965
+  QString dateCreatedStrInformative() const; // ex. January 26, 1965 at 12:30pm EST
+  void setDateCreated(const QDateTime &dateCreated);
 
   // Date modified
-  QDateTime date_modified() const;
-  QString date_modified_str(); // ex. 5 minutes ago
-  QString date_modified_str_informative(); // ex. January 26, 1965 at 12:30pm EST
-  void setDate_modified(const QDateTime &date_modified);
+  QDateTime dateModified() const;
+  QString dateModifiedStr(); // ex. 5 minutes ago
+  QString dateModifiedStrInformative(); // ex. January 26, 1965 at 12:30pm EST
+  void setDateModified(const QDateTime &dateModified);
 
   // Notebook
   QUuid notebook() const;
@@ -76,9 +76,6 @@ public:
   static bool byDateModifiedAsc(const Note *n1, const Note *n2);
   static bool byDateModifiedDesc(const Note *n1, const Note *n2);
 
-private slots:
-  void handleNoteChange(Note *note, bool updateDateModified=true);
-
 signals:
   // The general signal for whenever something changes
   void changed(Note *note, bool updateDateModified=true);
@@ -94,7 +91,10 @@ signals:
   void encryptedChanged(Note *note);
   void trashed(Note *note);
   void restored(Note *note);
-  void trashedOrRestored(Note *note, bool trashed);
+  void trashedOrRestored(Note *note, bool _trashed);
+
+private slots:
+  void handleChange(Note *note, bool updateDateModified=true);
 
 private:
   QUuid        m_sync_hash;

@@ -17,7 +17,7 @@ Note::Note(QUuid sync_hash, QString title, QString text, QDateTime date_created,
   m_trashed(trashed)
 {
   connect(this, &Note::changed,
-          this, &Note::handleNoteChange);
+          this, &Note::handleChange);
 }
 
 QUuid Note::syncHash() const
@@ -63,22 +63,22 @@ void Note::setText(const QString text)
   emit textChanged( this );
 }
 
-QDateTime Note::date_created() const
+QDateTime Note::dateCreated() const
 {
   return m_date_created;
 }
 
-QString Note::date_created_str() const
+QString Note::dateCreatedStr() const
 {
   return m_date_created.toString("MMMM d, yyyy");
 }
 
-QString Note::date_created_str_informative() const
+QString Note::dateCreatedStrInformative() const
 {
   return informativeDate( m_date_created );
 }
 
-void Note::setDate_created(const QDateTime &date_created)
+void Note::setDateCreated(const QDateTime &date_created)
 {
   if (!QString::compare(m_date_created.toString(), date_created.toString())) // If dates are same, exit
     return;
@@ -88,12 +88,12 @@ void Note::setDate_created(const QDateTime &date_created)
 }
 
 
-QDateTime Note::date_modified() const
+QDateTime Note::dateModified() const
 {
   return m_date_modified;
 }
 
-QString Note::date_modified_str()
+QString Note::dateModifiedStr()
 {
 
 #ifdef UNIT_TEST
@@ -147,12 +147,12 @@ QString Note::date_modified_str()
   return QString("%1 %2 ago").arg(HelperIO::numberToString(amount, true), unit);
 }
 
-QString Note::date_modified_str_informative()
+QString Note::dateModifiedStrInformative()
 {
   return informativeDate( m_date_modified );
 }
 
-void Note::setDate_modified(const QDateTime &date_modified)
+void Note::setDateModified(const QDateTime &date_modified)
 {
   if (!QString::compare(m_date_modified.toString(), date_modified.toString())) // If dates are same, exit
     return;
@@ -229,12 +229,6 @@ void Note::setTrashed(bool _trashed) {
   else           emit restored(this);
 }
 
-void Note::handleNoteChange(Note *note, bool updateDateModified)
-{
-  if ( updateDateModified )
-    note->setDate_modified( QDateTime::currentDateTime() );
-}
-
 QString Note::informativeDate(QDateTime date) const
 {
   QString dateStr = date.toString("MMMM d, yyyy");
@@ -254,20 +248,26 @@ bool compareTwoDateTimes(QDateTime t1, QDateTime t2, char comparisonSymbol) {
 
 bool Note::byDateCreatedAsc(const Note *n1, const Note *n2)
 {
-  return compareTwoDateTimes( n1->date_created(), n2->date_created(), '<' );
+  return compareTwoDateTimes( n1->dateCreated(), n2->dateCreated(), '<' );
 }
 
 bool Note::byDateCreatedDesc(const Note *n1, const Note *n2)
 {
-  return compareTwoDateTimes( n1->date_created(), n2->date_created(), '>' );
+  return compareTwoDateTimes( n1->dateCreated(), n2->dateCreated(), '>' );
 }
 
 bool Note::byDateModifiedAsc(const Note *n1, const Note *n2)
 {
-  return compareTwoDateTimes( n1->date_modified(), n2->date_modified(), '<' );
+  return compareTwoDateTimes( n1->dateModified(), n2->dateModified(), '<' );
 }
 
 bool Note::byDateModifiedDesc(const Note *n1, const Note *n2)
 {
-  return compareTwoDateTimes( n1->date_modified(), n2->date_modified(), '>' );
+  return compareTwoDateTimes( n1->dateModified(), n2->dateModified(), '>' );
+}
+
+void Note::handleChange(Note *note, bool updateDateModified)
+{
+  if ( updateDateModified )
+    note->setDateModified( QDateTime::currentDateTime() );
 }

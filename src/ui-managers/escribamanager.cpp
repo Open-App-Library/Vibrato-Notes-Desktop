@@ -270,11 +270,11 @@ void EscribaManager::updateDateWidgets(void)
   if ( m_curNote == nullptr )
     return;
   //QString cur = m_curNote->date_created().toString()
-  m_dateCreatedWidget->setText( "<strong>Created:</strong> " + m_curNote->date_created_str() );
-  m_dateCreatedWidget->setToolTip( m_curNote->date_created_str_informative() );
+  m_dateCreatedWidget->setText( "<strong>Created:</strong> " + m_curNote->dateCreatedStr() );
+  m_dateCreatedWidget->setToolTip( m_curNote->dateCreatedStrInformative() );
 
-  m_dateModifiedWidget->setText( "<strong>Modified:</strong> " + m_curNote->date_modified_str() );
-  m_dateModifiedWidget->setToolTip( m_curNote->date_modified_str_informative() );
+  m_dateModifiedWidget->setText( "<strong>Modified:</strong> " + m_curNote->dateModifiedStr() );
+  m_dateModifiedWidget->setToolTip( m_curNote->dateModifiedStrInformative() );
 }
 
 void EscribaManager::updateFavoriteButton(void) {

@@ -80,7 +80,7 @@ void NoteItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
         // Date
         font.setWeight(QFont::Normal);
         painter->setFont(font);
-        painter->drawText(QPoint(option.rect.x()+10, option.rect.y()+43), item->note()->date_created_str());
+        painter->drawText(QPoint(option.rect.x()+10, option.rect.y()+43), item->note()->dateCreatedStr());
 
 
         // The Excerpt

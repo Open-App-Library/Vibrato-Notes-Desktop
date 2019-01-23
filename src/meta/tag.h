@@ -2,35 +2,62 @@
 #define TAG_H
 #include <QObject>
 #include <QString>
+#include <QUuid>
+#include <QDateTime>
 
 #define TAG_DEFAULT_TITLE "Untitled Tag"
-#define TAG_DEFAULT_TAG_ID -1
 
 class Tag : public QObject
 {
   Q_OBJECT
 public:
-  Tag(int syncId, int id, QString title="Untitled Tag");
+  Tag(QUuid     sync_hash     = QUuid::createUuid(),
+      QString   title         = "Untitled Tag",
+      QDateTime date_modified = QDateTime::currentDateTime(),
+      int       row           = -255,
+      bool      encrypted     = false);
 
-  int syncId() const;
-  void setSyncId(int syncId);
+  // Sync Hash
+  QUuid syncHash() const;
+  void setSyncHash(QUuid syncHash);
 
-  int id() const;
-  void setId(int id);
-
+  // Title
   QString title() const;
-  void setTitle(const QString &value);
+  void setTitle(const QString value);
+
+  // Date Modified
+  QDateTime dateModified() const;
+  void setDateModified(QDateTime dateModified);
+
+  // Row
+  int row() const;
+  void setRow(int row);
+
+  // Encrypted
+  bool encrypted() const;
+  void setEncrypred(bool encrypted);
 
 signals:
-  void tagChanged(Tag *tag);
-  void tagSyncIDChanged(Tag *tag);
-  void tagIDChanged(Tag *tag);
-  void tagTitleChanged(Tag *tag);
+  // General change function - whenever any property is changed
+  void changed(Tag *tag);
+
+  // Property signals
+  void syncHashChanged(Tag *tag);
+  void titleChanged(Tag *tag);
+  void dateModifiedChanged(Tag *tag);
+  void rowChanged(Tag *tag);
+  void encryptedChanged(Tag *tag);
+
+private slots:
+  void handleChange(Tag *tag);
 
 private:
-  int     m_syncId;
-  int     m_id;
-  QString m_title;
+  QUuid     m_sync_hash;
+  QString   m_title;
+  QDateTime m_date_modified;
+  int       m_row;
+  bool      m_encrypted;
+
 };
 
 #endif // TAG_H
