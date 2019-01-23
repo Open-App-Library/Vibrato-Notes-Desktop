@@ -75,7 +75,9 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
   Qt::ItemFlags flags = QAbstractItemModel::flags(index);
   flags.setFlag(Qt::ItemIsSelectable, item->selectable());
   flags.setFlag(Qt::ItemIsEditable, item->isNotebook() || item->isTag());
-  flags.setFlag(Qt::ItemIsDropEnabled, item->isNotebook());
+  flags.setFlag(Qt::ItemIsDropEnabled,
+                (item->isNotebook() && item->id() != -1) ||
+                (item->isNotebooksLabel() || item->isTagsLabel()));
   flags.setFlag(Qt::ItemIsDragEnabled, item->isNotebook() || item->isTag());
 
   return flags;
@@ -244,8 +246,53 @@ bool TreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int r
     }
 
     if (theIndex.isValid()) {
-        BasicTreeItem *source = static_cast<BasicTreeItem*>(theIndex.internalPointer());
+        BasicTreeItem *sourceItem = static_cast<BasicTreeItem*>(theIndex.internalPointer());
+        BasicTreeItem *destParentItem = static_cast<BasicTreeItem*>(parent.internalPointer());
+
+        enum contentTypes {NotebookType, TagType};
+        int contentType;
+
+        if (sourceItem->isNotebook() && (destParentItem->isNotebook() ||
+                                         destParentItem->isNotebooksLabel())) {
+            contentType = NotebookType;
+        }
+        else if (sourceItem->isTag() && (destParentItem->isTag() ||
+                                         destParentItem->isTagsLabel())) {
+            contentType = TagType;
+        }
+        else {
+            return false;
+        }
+
+
+        // Do not allow users to make a child of the sourceItem the sourceItem's new parent.
+        QVector<BasicTreeItem*> destBlacklist;
+        destBlacklist += sourceItem->recurseChildren();
+        if ( destBlacklist.contains(destParentItem) ) {
+            return false;
+        }
+
+        // First task is to make the items under the correct parent/hierarchy
+        if ( sourceItem->parentItem() != destParentItem ) {
+            sourceItem->parentItem()->removeChild(sourceItem); // Remove from old parent
+            destParentItem->appendChild(sourceItem);
+        }
+
+        // The 'row' includes itself. This fixes it.
+        if (theIndex.row() < row)
+            row -= 1;
+
+        // Don't allow the user to put their notebook above the default
+        if (destParentItem->isNotebooksLabel())
+            row = row < 1 ? 1 : row;
+
+        // Next we adjust the row order
+        destParentItem->moveChild(sourceItem, row);
+
+        emit layoutChanged();
+
+        return true;
     }
 
-    return true;
+    return false;
 }

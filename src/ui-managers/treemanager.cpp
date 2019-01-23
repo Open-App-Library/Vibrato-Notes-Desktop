@@ -25,6 +25,8 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   // Make notebooks and tags labels not selectable.
   m_notebooks->setSelectable(false);
   m_tags->setSelectable(false);
+  m_notebooks->setIsNotebooksLabel();
+  m_tags->setIsTagsLabel();
 
   m_all_notes->setIcon( IconUtils::requestDarkIcon("document-new") );
   m_favorites->setIcon( IconUtils::requestDarkIcon("draw-star") );
@@ -116,11 +118,6 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   // Load databases
   loadNotebooksFromNotebookDatabase( m_db->notebookDatabase() );
   loadTagsFromTagDatabase( m_db->tagDatabase() );
-
-  m_editNotebookParentDialog = new Notebook_EditParent( m_db->notebookDatabase() );
-
-  connect(m_editNotebookParentDialog, &Notebook_EditParent::changedParent,
-          this, &TreeManager::changedNotebookHierarchy);
 }
 
 TreeManager::~TreeManager()
@@ -407,8 +404,40 @@ void TreeManager::tagChanged(Tag *tag)
 
 void TreeManager::notebookAdded(Notebook *notebook)
 {
-  // Inefficient! But it works for now
-  loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
+  /*
+   * First we must figure out the path of parents.
+   * For example, a "Burrito" notebook might return this parentPath
+   * [Recipes, Mexican Recipes, Mexican Lunch Recipes]
+   */
+  QVector<Notebook*> parentPath;
+  Notebook *curParent = notebook->parent();
+  while (curParent != nullptr) {
+      parentPath.prepend(curParent);
+      curParent = curParent->parent();
+  }
+
+  /*
+   * Using our knowledge of the parentPath, we must figure out what
+   * BasicTreeItem out notebook should be added to.
+   */
+  BasicTreeItem *curItem = m_notebooks;
+  for (Notebook *parent : parentPath) {
+      BasicTreeItem *startingItem = curItem;
+      for (BasicTreeItem *item : curItem->children()) {
+          if (item->isNotebook() && item->object().notebook == parent) {
+              curItem = item;
+          }
+      }
+      if (curItem == startingItem) {
+          // To prevent infinite loops, if the notebook is not found in the
+          // parent path. Set the item to m_notebooks and break.
+          curItem = m_notebooks;
+          break;
+      }
+  }
+
+  addNotebook(notebook, curItem);
+  update();
 
   // If user wants to open a notebook for editing
   if ( m_openNewNotebookForEditing ) {
@@ -432,8 +461,6 @@ void TreeManager::notebookAdded(Notebook *notebook)
 
 void TreeManager::notebooksRemoved(QVector<int> notebookIDs)
 {
-  // Lazy way. Re-draws notebook tree. The proper way would be to simply remove a single BasicTreeItem.
-  // TODO: Implement TreeManager::notebooksRemoved the proper way!
   bool wasViewingDeletedNotebook = false;
   if ( m_curItem->isNotebook() &&
        notebookIDs.contains( m_curItem->id() ) )
@@ -441,7 +468,13 @@ void TreeManager::notebooksRemoved(QVector<int> notebookIDs)
       wasViewingDeletedNotebook = true;
     }
 
-  loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
+  for (BasicTreeItem *item : m_notebooks->recurseChildren()) {
+      if (item->isNotebook() && notebookIDs.contains(item->id())) {
+          item->parentItem()->removeChild(item);
+          update();
+          break;
+      }
+  }
 
   if ( wasViewingDeletedNotebook ) {
     QModelIndex all_notes_index = m_tree_model->index(0, 0);
@@ -478,12 +511,6 @@ void TreeManager::contextRenameNotebook()
     m_tree_view->edit(m_currentContextModelIndex);
 }
 
-void TreeManager::contextEditNotebookHierarchy()
-{
-  if ( m_currentContextIndex->isNotebook() )
-    m_editNotebookParentDialog->exec( m_currentContextIndex->object().notebook );
-}
-
 void TreeManager::contextNewTag()
 {
   // Make sure the next tag is opened for editing (Renaming)
@@ -509,11 +536,6 @@ void TreeManager::contextRemoveSearchQuery()
 {
   if ( m_currentContextModelIndex.isValid() )
     removeSearchQuery(m_currentContextIndex);
-}
-
-void TreeManager::changedNotebookHierarchy() {
-  // Inefficient! But it works for now
-  loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
 }
 
 void TreeManager::treeContextMenu(const QPoint &point)

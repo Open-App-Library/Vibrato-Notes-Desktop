@@ -75,10 +75,6 @@ void Notebook::setParent(Notebook *parent)
   emit notebookChanged(this);
 }
 
-void Notebook::requestParentChangeToID(int parentID) {
-  emit requestedParentWithID(this, parentID);
-}
-
 QVector<Notebook *> Notebook::children() const
 {
   return m_children;

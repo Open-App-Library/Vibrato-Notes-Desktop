@@ -45,7 +45,17 @@ bool BasicTreeItem::isTag() const
 
 bool BasicTreeItem::isSearchQuery() const
 {
-  return m_type == Type_SearchQuery;
+    return m_type == Type_SearchQuery;
+}
+
+bool BasicTreeItem::isNotebooksLabel() const
+{
+    return m_type == Type_NotebooksLabel;
+}
+
+bool BasicTreeItem::isTagsLabel() const
+{
+    return m_type == Type_TagsLabel;
 }
 
 bool BasicTreeItem::selectable() const
@@ -138,6 +148,16 @@ void BasicTreeItem::setSearchQuery(QString searchQuery) {
   m_searchQuery = searchQuery.trimmed();
 }
 
+void BasicTreeItem::setIsNotebooksLabel()
+{
+    m_type = Type_NotebooksLabel;
+}
+
+void BasicTreeItem::setIsTagsLabel()
+{
+    m_type = Type_TagsLabel;
+}
+
 BasicTreeItem *BasicTreeItem::getChild(int row) const
 {
   return m_childItems.value(row);
@@ -168,6 +188,34 @@ void BasicTreeItem::removeChild(BasicTreeItem *item)
 
   // Remove the child
   removeChild(index);
+}
+
+void BasicTreeItem::moveChild(int row, int newRow)
+{
+    // Ensure values are greater than zero
+    row = row < 0 ? 0 : row;
+    newRow = newRow < 0 ? 0 : newRow;
+
+    // Ensure values are no greater than max size
+    int max = children().length()-1;
+    row = row > max ? max : row;
+    newRow = newRow > max ? max : newRow;
+
+    // QVector::move
+    m_childItems.move(row, newRow);
+}
+
+void BasicTreeItem::moveChild(BasicTreeItem *item, int newRow)
+{
+    int counter = 0;
+    for (BasicTreeItem *child : children()) {
+        if (child == item) {
+            moveChild(counter, newRow);
+            break;
+        }
+        counter++;
+    }
+
 }
 
 QVector<BasicTreeItem *> BasicTreeItem::children() const

@@ -90,15 +90,12 @@ private slots:
   void contextNewNotebook();
   void contextDeleteNotebook();
   void contextRenameNotebook();
-  void contextEditNotebookHierarchy();
 
   void contextNewTag();
   void contextDeleteTag();
   void contextRenameTag();
 
   void contextRemoveSearchQuery();
-
-  void changedNotebookHierarchy();
 
 private:
   TreeModel       *m_tree_model;
@@ -137,8 +134,6 @@ private:
 
   BasicTreeItem *m_currentContextIndex = nullptr;
   QModelIndex   m_currentContextModelIndex;
-
-  Notebook_EditParent *m_editNotebookParentDialog;
 
   void add_no_notebooks_placeholder();
   void add_no_tags_placeholder();

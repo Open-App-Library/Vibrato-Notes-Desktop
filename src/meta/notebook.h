@@ -3,6 +3,8 @@
 #include <QString>
 #include <QVector>
 #include <QObject>
+#include <QUuid>
+#include <QDateTime>
 
 #define NOTEBOOK_DEFAULT_TITLE "Untitled Notebook"
 #define NOTEBOOK_DEFAULT_NOTEBOOK_ID -1
@@ -11,7 +13,12 @@ class Notebook : public QObject
 {
   Q_OBJECT
 public:
-  Notebook(int syncId, int id, QString title, Notebook *parent=nullptr, QVector<Notebook*> children={});
+  Notebook(QUuid sync_hash = QUuid::createUuid(),
+           QString title = "",
+           QDateTime date_modified = QDateTime::currentDateTime(),
+           Notebook *parent = nullptr,
+           int row = -255,
+           bool encrypted = false);
 
   int syncId() const;
   void setSyncId(int syncId);
@@ -41,26 +48,28 @@ public:
   void removeChild_primitive(Notebook *child);
 
 signals:
-  void notebookChanged(Notebook *notebook);
-  void notebookSyncIDChanged(Notebook *notebook);
-  void notebookIDChanged(Notebook *notebook);
-  void notebookTitleChanged(Notebook *notebook);
-  void notebookParentChanged(Notebook *notebook);
-  void requestedParentWithID(Notebook *notebook, int requestedParentID);
-  void notebookChildrenChanged(Notebook *notebook);
+  // General change signal - When any property is changed.
+  void changed(Notebook *notebook);
+
+  // Property signals
+  void syncHashChanged(Notebook *notebook);
+  void titleChanged(Notebook *notebook);
+  void dateModifiedChanged(Notebook *notebook);
+  void parentChanged(Notebook *notebook);
+  void childrenChanged(Notebook *notebook);
+  void rowChanged(Notebook *notebook);
+  void encryptedChanged(Notebook *notebook);
+
   void deletingNotebook();
 
 private:
-  int m_syncId;
-  int m_id;
-  QString m_title;
-  Notebook *m_parent=nullptr;
+  QUuid m_sync_hash;
+  QString m_title = "";
+  QDateTime m_date_modified;
+  Notebook *m_parent;
   QVector<Notebook*> m_children;
-
-  // Below are some todo items that are needed for sharing notes
-  // TODO: Implement user
-  // TODO: implement shared_with
-  // TODO: implement is_public
+  int m_row;
+  bool m_encrypted;
 };
 
 #endif // NOTEBOOK_H

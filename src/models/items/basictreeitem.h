@@ -21,11 +21,13 @@ public:
 
   ~BasicTreeItem();
 
-  enum TypeOfItem {Type_Notebook, Type_Tag, Type_SearchQuery, Type_Other};
+  enum TypeOfItem {Type_Notebook, Type_Tag, Type_SearchQuery, Type_NotebooksLabel, Type_TagsLabel, Type_Other};
 
   bool isNotebook() const;
   bool isTag() const;
   bool isSearchQuery() const;
+  bool isNotebooksLabel() const;
+  bool isTagsLabel() const;
   bool isOther() const;
 
   bool selectable() const;
@@ -48,10 +50,15 @@ public:
   QString searchQuery() const;
   void setSearchQuery(QString searchQuery);
 
+  void setIsNotebooksLabel();
+  void setIsTagsLabel();
+
   BasicTreeItem *getChild(int index) const;
   BasicTreeItem *appendChild(BasicTreeItem *child);
   void removeChild(int index);
   void removeChild(BasicTreeItem *item);
+  void moveChild(int row, int newRow);
+  void moveChild(BasicTreeItem *item, int newRow);
   QVector<BasicTreeItem*> children() const;
   QVector<BasicTreeItem*> recurseChildren() const;
   int childCount() const;
