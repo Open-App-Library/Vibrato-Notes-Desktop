@@ -205,6 +205,23 @@ void NotebookDatabase::childrenChanged_slot(Notebook *notebook)
   emit childrenChanged(notebook);
 }
 
+void NotebookDatabase::handleNotebookParentRequest(Notebook *notebook, QUuid parentSyncHash)
+{
+  for (Notebook *n : listRecursively()) {
+    if (n->syncHash() == parentSyncHash) {
+      QVector<QUuid> sync_hash_blacklist = {notebook->syncHash()};
+      for (Notebook *child : notebook->recurseChildren())
+        sync_hash_blacklist.append(child->syncHash());
+      // If not a child of notebook, change parent
+      if ( !sync_hash_blacklist.contains(n->syncHash()) ) {
+        n->addChild(notebook);
+        return;
+      }
+    }
+  }
+
+}
+
 void NotebookDatabase::connectNotebook(Notebook *notebook)
 {
   connect(notebook, &Notebook::changed,
@@ -217,6 +234,8 @@ void NotebookDatabase::connectNotebook(Notebook *notebook)
           this, &NotebookDatabase::parentChanged_slot);
   connect(notebook, &Notebook::childrenChanged,
           this, &NotebookDatabase::childrenChanged_slot);
+  connect(notebook, &Notebook::requestedParentWithSyncHash,
+          this, &NotebookDatabase::handleNotebookParentRequest);
 }
 
 void NotebookDatabase::disconnectNotebook(Notebook *notebook)
@@ -231,4 +250,6 @@ void NotebookDatabase::disconnectNotebook(Notebook *notebook)
              this, &NotebookDatabase::parentChanged_slot);
   disconnect(notebook, &Notebook::childrenChanged,
              this, &NotebookDatabase::childrenChanged_slot);
+  disconnect(notebook, &Notebook::requestedParentWithSyncHash,
+             this, &NotebookDatabase::handleNotebookParentRequest);
 }

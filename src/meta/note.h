@@ -59,15 +59,15 @@ public:
   void setTags(const QVector<QUuid> &value);
 
   // Favorited
-  bool isFavorited() const;
+  bool favorited() const;
   void setFavorited(bool favorited);
 
   // Encrypted
-  bool isEncrypted() const;
+  bool encrypted() const;
   void setEncrypted(bool encrypted);
 
   // Trashed
-  bool isTrashed() const;
+  bool trashed() const;
   void setTrashed(bool trashed);
 
   // Sorting comparison functions for your convenience.

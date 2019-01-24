@@ -38,6 +38,8 @@ private slots:
   void parentChanged_slot(Notebook *notebook);
   void childrenChanged_slot(Notebook *notebook);
 
+  void handleNotebookParentRequest(Notebook *notebook, QUuid parentSyncHash);
+
 signals:
   void changed(Notebook *notebook);
 

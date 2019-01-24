@@ -56,7 +56,10 @@ public:
   void setEncrypted(bool encrypted);
 
   // Returns true if default notebook
-  bool defaufltNotebook() const;
+  bool defaultNotebook() const;
+
+  // Requests the notebookDatabase to change the parent of this notebook
+  void requestParentWithSyncHash(QUuid parentSyncHash);
 
 signals:
   // General change signal - When any property is changed.
@@ -72,6 +75,7 @@ signals:
   void encryptedChanged(Notebook *notebook);
 
   void deletingNotebook();
+  void requestedParentWithSyncHash(Notebook *notebook, QUuid parentSyncHash);
 
 private slots:
   void handleChange(Notebook *notebook);

@@ -174,6 +174,10 @@ bool Notebook::defaultNotebook() const
   return m_sync_hash == nullptr;
 }
 
+void Notebook::requestParentWithSyncHash(QUuid parentSyncHash) {
+  emit requestedParentWithSyncHash(this, parentSyncHash);
+}
+
 void Notebook::handleChange(Notebook *notebook)
 {
   notebook->setDateModified( QDateTime::currentDateTime() );
