@@ -86,27 +86,27 @@ void EscribaManager::setNote( Note *note )
   ///
   // Save current note and disconnect signals/slots
   ///
-  bool curNoteExists = m_db->noteDatabase()->noteWithIDExists(m_id) && m_id != -1;
+  bool curNoteExists = m_db->noteDatabase()->noteWithSyncHashExists(m_sync_hash) && m_sync_hash != nullptr;
   if (m_curNote != nullptr && curNoteExists ) {
     m_curNote->setTitle( m_titleWidget->text() );
     m_curNote->setText( m_editor->toMarkdown() );
-    disconnect(m_curNote, &Note::noteChanged,
+    disconnect(m_curNote, &Note::changed,
                this, &EscribaManager::noteChanged);
-    disconnect(m_curNote, &Note::noteIdChanged,
-               this, &EscribaManager::noteIDChanged);
-    disconnect(m_curNote, &Note::noteNotebookChanged,
+    disconnect(m_curNote, &Note::syncHashChanged,
+               this, &EscribaManager::noteSyncHashChanged);
+    disconnect(m_curNote, &Note::notebookChanged,
                this, &EscribaManager::noteNotebookChanged);
-    disconnect(m_curNote, &Note::noteFavoritedChanged,
+    disconnect(m_curNote, &Note::favoritedChanged,
                this, &EscribaManager::updateFavoriteButton);
-    disconnect(m_curNote, &Note::noteTrashedOrRestored,
+    disconnect(m_curNote, &Note::trashedOrRestored,
             this, &EscribaManager::updateTrashButton);
   } else if (!curNoteExists) {
     m_curNote = nullptr;
-    m_id = -1;
+    m_sync_hash = nullptr;
   }
 
   if ( m_curNotebook != nullptr )
-    disconnect(m_curNotebook, &Notebook::notebookChanged,
+    disconnect(m_curNotebook, &Notebook::changed,
             this, &EscribaManager::notebookChanged);
 
   ///
@@ -128,30 +128,30 @@ void EscribaManager::setNote( Note *note )
 
   // Change to requested note
   m_curNote = note;
-  m_id = m_curNote->id();
-  connect(m_curNote, &Note::noteChanged,
+  m_sync_hash = m_curNote->syncHash();
+  connect(m_curNote, &Note::changed,
           this, &EscribaManager::noteChanged);
-  connect(m_curNote, &Note::noteNotebookChanged,
+  connect(m_curNote, &Note::notebookChanged,
           this, &EscribaManager::noteNotebookChanged);
-  connect(m_curNote, &Note::noteIdChanged,
-          this, &EscribaManager::noteIDChanged);
-  connect(m_curNote, &Note::noteFavoritedChanged,
+  connect(m_curNote, &Note::syncHashChanged,
+          this, &EscribaManager::noteSyncHashChanged);
+  connect(m_curNote, &Note::favoritedChanged,
           this, &EscribaManager::updateFavoriteButton);
-  connect(m_curNote, &Note::noteTrashedOrRestored,
+  connect(m_curNote, &Note::trashedOrRestored,
           this, &EscribaManager::updateTrashButton);
   m_titleWidget->setText(note->title());
   m_editor->setMarkdown(note->text());
   updateTagsButtonCounter();
 
   // Setting up notebook
-  Notebook *notebook = m_db->notebookDatabase()->findNotebookWithID(m_curNote->notebook());
+  Notebook *notebook = m_db->notebookDatabase()->findNotebookWithSyncHash(m_curNote->notebook());
   m_curNotebook = notebook;
 
   if ( m_curNotebook != nullptr ) {
-    m_notebook_id = m_curNotebook->id();
-    connect(m_curNotebook, &Notebook::notebookChanged,
+    m_notebook_sync_hash = m_curNotebook->syncHash();
+    connect(m_curNotebook, &Notebook::changed,
             this, &EscribaManager::notebookChanged);
-  } else m_notebook_id = NOTEBOOK_DEFAULT_NOTEBOOK_ID;
+  } else m_notebook_sync_hash = nullptr;
 
   updateNotebookWidget();
   updateFavoriteButton();
@@ -204,7 +204,7 @@ void EscribaManager::openNotebookEditor()
     return;
 
   // If dialog is not a nullptr and its note ID is not equal to the new note, delete it.
-  if (m_editNotebookDialog != nullptr && m_editNotebookDialog->note()->id() != m_curNote->id()) {
+  if (m_editNotebookDialog != nullptr && m_editNotebookDialog->note()->syncHash() != m_curNote->syncHash()) {
     delete m_editNotebookDialog;
     m_editNotebookDialog = nullptr;
   }
@@ -222,7 +222,7 @@ void EscribaManager::openTagsEditor()
     return;
 
   // If dialog is not a nullptr and its note ID is not equal to the new note, delete it.
-  if (m_editTagsDialog != nullptr && m_editTagsDialog->note()->id() != m_curNote->id()) {
+  if (m_editTagsDialog != nullptr && m_editTagsDialog->note()->syncHash() != m_curNote->syncHash()) {
     delete m_editNotebookDialog;
     m_editTagsDialog = nullptr;
   }
@@ -311,31 +311,31 @@ void EscribaManager::trashNote() {
   deselect();
 }
 
-void EscribaManager::aNoteWasRemoved(int noteID) {
-  if ( m_id == noteID ) {
-    m_id = -1;
+void EscribaManager::aNoteWasRemoved(QUuid noteSyncHash) {
+  if ( m_sync_hash == noteSyncHash ) {
+    m_sync_hash = nullptr;
     m_curNote = nullptr; // Set to nullptr since note is deleted.
     m_curNotebook = nullptr;
     deselect();
   }
 }
 
-void EscribaManager::notebooksRemoved(QVector<int> notebookIDs) {
-  if ( notebookIDs.contains( m_notebook_id ))
+void EscribaManager::notebooksRemoved(QVector<QUuid> notebookSyncHashes) {
+  if ( notebookSyncHashes.contains( m_notebook_sync_hash ))
     m_curNotebook = nullptr;
 }
 
-void EscribaManager::noteIDChanged(Note* note) {
-  m_id = note->id();
+void EscribaManager::noteSyncHashChanged(Note* note) {
+  m_sync_hash = note->syncHash();
 }
 
 void EscribaManager::notebookChanged(Notebook *notebook)
 {
-  m_notebook_id = notebook->id();
+  m_notebook_sync_hash = notebook->syncHash();
   updateNotebookWidget();
 }
 
 void EscribaManager::noteNotebookChanged(Note *note) {
-  m_curNotebook = m_db->notebookDatabase()->findNotebookWithID( note->notebook() );
+  m_curNotebook = m_db->notebookDatabase()->findNotebookWithSyncHash( note->notebook() );
   updateNotebookWidget();
 }

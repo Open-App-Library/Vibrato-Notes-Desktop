@@ -20,7 +20,6 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
   // description support.
   m_noteListAddonsUi->description->hide();
 
-  m_filter = new NoteFilter( m_db );
   m_model = new NoteListModel(view, m_db->noteDatabase());
   m_proxyModel = new NoteListProxyModel(view, m_db);
   m_proxyModel->setSourceModel(m_model);
@@ -40,10 +39,10 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
   connect(m_proxyModel, &NoteListProxyModel::invalidatedFilter,
           this, &NoteListManager::ensureCurrentNoteIsSelected);
 
-  connect(m_db->notebookDatabase(), &NotebookDatabase::notebooksRemoved,
+  connect(m_db->notebookDatabase(), &NotebookDatabase::removed,
           this, &NoteListManager::notebooksDeleted);
 
-  connect(m_db->tagDatabase(), &TagDatabase::tagRemoved,
+  connect(m_db->tagDatabase(), &TagDatabase::removed,
           this, &NoteListManager::tagDeleted);
 
   connect(m_db->noteDatabase(), &NoteDatabase::noteFavoritedChanged,
@@ -52,20 +51,14 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
   connect(m_db->noteDatabase(), &NoteDatabase::noteTrashedOrRestored,
           this, &NoteListManager::trashedOrRestored);
 
-  connect(m_db->notebookDatabase(), &NotebookDatabase::notebookChanged,
+  connect(m_db->notebookDatabase(), &NotebookDatabase::changed,
           this, &NoteListManager::aNotebookChanged);
-  connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
+  connect(m_db->tagDatabase(), &TagDatabase::changed,
           this, &NoteListManager::aTagChanged);
-
-  // commented outff for now. This is potentially a more efficient way to set indexWidgets
-  // however it has a slight graphical bug when loading a lot of notes.
-  //    connect(m_proxyModel, &QSortFilterProxyModel::rowsInserted,
-  //            this, &NoteListManager::rowsInsertedInProxy);
 }
 
 NoteListManager::~NoteListManager()
 {
-  delete m_filter;
   delete m_noteListAddonsUi;
 }
 
@@ -152,9 +145,9 @@ int NoteListManager::curViewType() const
   return m_curViewType;
 }
 
-int NoteListManager::curViewType_ItemID() const
+QUuid NoteListManager::curViewType_ItemSyncHash() const
 {
-  return m_curViewType_ItemID;
+  return m_curViewType_ItemSyncHash;
 }
 
 Notebook *NoteListManager::curViewType_Notebook() const
@@ -241,7 +234,7 @@ void NoteListManager::showNotebookView(Notebook *notebook)
     return;
 
   m_curViewType = View_Notebook;
-  m_curViewType_ItemID = notebook->id();
+  m_curViewType_ItemSyncHash = notebook->syncHash();
   m_curViewType_Notebook = notebook;
 
   clearFilter(false);
@@ -252,13 +245,13 @@ void NoteListManager::showNotebookView(Notebook *notebook)
 
   // Set the metricsLabel to the amount of notes the notebook
   // contains. It also checks with child notebook IDs.
-  QVector<int> notebook_ids = {notebook->id()};
+  QVector<QUuid> notebook_sync_hashes = {notebook->syncHash()};
   QVector<Notebook*> children = notebook->recurseChildren();
   int noteCount = 0;
   for (Notebook *child : children)
-    notebook_ids.append( child->id() );
+    notebook_sync_hashes.append( child->syncHash() );
   for (Note *note : m_db->noteDatabase()->list() )
-    if ( notebook_ids.contains( note->notebook() ) )
+    if ( notebook_sync_hashes.contains( note->notebook() ) )
       noteCount++;
   setMetrics(noteCount, "note");
 }
@@ -272,7 +265,7 @@ void NoteListManager::showTagView(Tag *tag)
     return;
 
   m_curViewType = View_Tag;
-  m_curViewType_ItemID = tag->id();
+  m_curViewType_ItemSyncHash = tag->syncHash();
   m_curViewType_Tag = tag;
 
   clearFilter(false);
@@ -282,7 +275,7 @@ void NoteListManager::showTagView(Tag *tag)
 
   int tagCount = 0;
   for ( Note *note : m_db->noteDatabase()->list() )
-    if ( note->tags().contains(tag->id()) )
+    if ( note->tags().contains(tag->syncHash()) )
       tagCount++;
   setMetrics(tagCount, "note");
 }
@@ -384,16 +377,16 @@ void NoteListManager::managerIsReady() {
           this, &NoteListManager::escribaDeselected);
 }
 
-void NoteListManager::notebooksDeleted(QVector<int> notebookIDs) {
+void NoteListManager::notebooksDeleted(QVector<QUuid> notebookSyncHashes) {
   // If the current notebook gets deleted, set the value to nullptr for safety.
   if ( m_curViewType == View_Notebook &&
-       notebookIDs.contains(m_curViewType_ItemID) )
+       notebookSyncHashes.contains(m_curViewType_ItemSyncHash) )
     m_curViewType_Notebook = nullptr;
 }
 
-void NoteListManager::tagDeleted(int tagID) {
+void NoteListManager::tagDeleted(QUuid tagSyncHash) {
   if ( m_curViewType == View_Tag &&
-       m_curViewType_ItemID == tagID )
+       m_curViewType_ItemSyncHash == tagSyncHash )
     m_curViewType_Tag = nullptr;
 }
 
@@ -430,19 +423,3 @@ void NoteListManager::aTagChanged(Tag* tag) {
 void NoteListManager::removeSearchQuery() {
   m_manager->treeManager()->removeSearchQuery();
 }
-
-// This is potentially a more efficient way to set indexWidgets
-// however it has a slight graphical bug when loading a lot of notes.
-// void NoteListManager::rowsInsertedInProxy(const QModelIndex &parent, int start, int end)
-// {
-//   (void)parent;
-
-//   for (int i = start; i <= end; i++) {
-//     QModelIndex index = m_proxyModel->index(i,0);
-//     QModelIndex sourceIndex = m_proxyModel->mapToSource(index);
-//     if ( m_proxyModel->filterAcceptsRow(sourceIndex.row(), QModelIndex()) ) {
-//       NoteListItem *item = static_cast<NoteListItem*>( sourceIndex.internalPointer() );
-//       m_view->setIndexWidget(index, new NoteListItemWidget( item->note() ));
-//     }
-//   }
-// }
