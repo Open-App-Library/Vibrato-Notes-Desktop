@@ -80,3 +80,8 @@ void Tag::setEncrypred(bool encrypted)
   emit encryptedChanged(this);
   emit changed(this);
 }
+
+void Tag::handleChange(Tag *tag)
+{
+  tag->setDateModified( QDateTime::currentDateTime() );
+}

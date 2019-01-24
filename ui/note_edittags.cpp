@@ -29,7 +29,7 @@ Note_EditTags::Note_EditTags(Database *db, Note *note, QWidget *parent) :
 
   loadNotesTags();
 
-  connect(note, &Note::noteChanged,
+  connect(note, &Note::changed,
           this, &Note_EditTags::noteChanged);
   connect(m_removeTagButton, &QPushButton::clicked,
           this, &Note_EditTags::removeTagsFromNote);
@@ -40,11 +40,11 @@ Note_EditTags::Note_EditTags(Database *db, Note *note, QWidget *parent) :
   connect(m_tagList, &QListWidget::currentItemChanged,
           this, &Note_EditTags::currentItemChanged);
 
-  connect(m_db->tagDatabase(), &TagDatabase::tagRemoved,
+  connect(m_db->tagDatabase(), &TagDatabase::removed,
           this, &Note_EditTags::updateTagsCompletionList);
-  connect(m_db->tagDatabase(), &TagDatabase::tagAdded,
+  connect(m_db->tagDatabase(), &TagDatabase::added,
           this, &Note_EditTags::updateTagsCompletionList);
-  connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
+  connect(m_db->tagDatabase(), &TagDatabase::changed,
           this, &Note_EditTags::updateTagsCompletionList);
 
   // Create a qcompleter
@@ -97,18 +97,19 @@ void Note_EditTags::removeTagsFromNote()
   if ( selItemsArray.length() == 0)
     return;
 
-  QVector<int> tags = m_note->tags();
+  QVector<QUuid> tags = m_note->tags();
   QVector<int> remove_list;
   for (int i=0; i < selItemsArray.length(); i++) {
     ListItemWithID *sel = static_cast<ListItemWithID*>( selItemsArray.at(i) );
 
-    int id = sel->id();
-    Tag *t = m_db->tagDatabase()->findTagWithID(id);
+    QUuid sync_hash = sel->syncHash();
+    Tag *t = m_db->tagDatabase()->findTagWithSyncHash(sync_hash);
     if (t == nullptr)
       continue;
 
-    if ( tags.contains(id) )
-      remove_list.append(tags.indexOf(id));
+    if ( tags.contains(sync_hash) )
+      remove_list.append(tags.indexOf(sync_hash));
+
   }
 
   // sort remove list (ascending)
@@ -152,7 +153,7 @@ void Note_EditTags::clearList()
 
 void Note_EditTags::addTagToList(Tag *tag)
 {
-  ListItemWithID *item = new ListItemWithID(tag->title(), tag->id());
+  ListItemWithID *item = new ListItemWithID(tag->title(), tag->syncHash());
   m_listItems.append(item);
 
   m_tagList->addItem(item);
@@ -162,9 +163,9 @@ void Note_EditTags::loadNotesTags()
 {
   clearList();
   // Now add everything else
-  QVector<int> tags = m_note->tags();
+  QVector<QUuid> tags = m_note->tags();
   for ( int i=0; i<tags.length(); i++ ) {
-    Tag *t = m_db->tagDatabase()->findTagWithID( tags.at(i) );
+    Tag *t = m_db->tagDatabase()->findTagWithSyncHash( tags.at(i) );
     if ( t == nullptr)
       continue;
     addTagToList(t);

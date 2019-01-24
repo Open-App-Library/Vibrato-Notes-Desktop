@@ -8,9 +8,9 @@ EditTags::EditTags(Database *db, QWidget *parent) :
 {
   ui->setupUi(this);
 
-  connect(m_db->tagDatabase(), &TagDatabase::tagAdded,
+  connect(m_db->tagDatabase(), &TagDatabase::added,
           this, &EditTags::tagAdded);
-  connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
+  connect(m_db->tagDatabase(), &TagDatabase::changed,
           this, &EditTags::tagChanged);
 }
 
@@ -21,7 +21,7 @@ EditTags::~EditTags()
 
 void EditTags::addTag(Tag *tag)
 {
-  ListItemWithID *item = new ListItemWithID(tag->title(), tag->id());
+  ListItemWithID *item = new ListItemWithID(tag->title(), tag->syncHash());
   ui->tagList->addItem(item);
   t_tagItem tagItem;
   tagItem.tag = tag;

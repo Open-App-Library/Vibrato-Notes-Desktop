@@ -23,8 +23,6 @@ public:
 
   Note *note();
 
-  int selectedTag() const;
-
   virtual void keyPressEvent(QKeyEvent *event) override;
 
 private slots:

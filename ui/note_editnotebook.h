@@ -22,8 +22,6 @@ public:
 
   Note *note();
 
-  int selectedNotebook() const;
-
 private slots:
   void noteChanged(void);
   void selectNotebook();

@@ -6,7 +6,7 @@ TrashItem::TrashItem(Note *note, QListWidget *parent) :
   QListWidgetItem(parent),
   ui(new Ui::TrashItem),
   m_note(note),
-  m_noteID(note->id())
+  m_noteSyncHash(note->syncHash())
 {
   widget = new QWidget();
   ui->setupUi(widget);
@@ -25,7 +25,7 @@ TrashItem::TrashItem(Note *note, QListWidget *parent) :
   connect(ui->restoreButton, &QToolButton::pressed,
           this, &TrashItem::emitRestoreNoteSignal);
 
-  connect(note, &Note::noteRestored,
+  connect(note, &Note::restored,
           this, &TrashItem::handlePleaseDeleteTrashItem);
 
   updateLabels();
@@ -55,9 +55,9 @@ Note *TrashItem::note() const
   return m_note;
 }
 
-int TrashItem::noteID() const
+QUuid TrashItem::noteSyncHash() const
 {
-  return m_noteID;
+  return m_noteSyncHash;
 }
 
 void TrashItem::emitDeleteNoteSignal() {
@@ -67,8 +67,6 @@ void TrashItem::emitDeleteNoteSignal() {
 
 void TrashItem::emitRestoreNoteSignal() {
   emit restoreNote(m_note);
-  // Don't need pleaseDeleteTrashItem since it is already going to fire off
-  // when the note is restored.
 }
 
 void TrashItem::handleItemCheckedOrUnchecked(void)

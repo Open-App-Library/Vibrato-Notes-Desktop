@@ -50,6 +50,17 @@ void NotebookDatabase::addNotebook(Notebook *notebook)
   emit added(notebook);
 }
 
+void NotebookDatabase::addNotebook(Notebook *notebook, Notebook *parent)
+{
+  notebook->setParent(parent);
+  m_sqlManager->addNotebook(notebook);
+  if (parent != nullptr)
+    parent->addChild(notebook);
+  addNotebook(notebook);
+}
+
+
+
 void NotebookDatabase::removeNotebook(QUuid syncHash)
 {
   removeNotebook( findNotebookWithSyncHash(syncHash) );
