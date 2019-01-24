@@ -108,6 +108,7 @@ void TagDatabase::loadSQL()
 
 void TagDatabase::changed_slot(Tag *tag)
 {
+  qDebug() << tag->title() << "Changed!" << tag->row();
   m_sqlManager->updateTagToDB(tag);
   emit changed(tag);
 }

@@ -13,7 +13,7 @@ class Notebook : public QObject
   Q_OBJECT
 public:
   Notebook(QUuid sync_hash = QUuid::createUuid(),
-           QString title = "",
+           QString title =NOTEBOOK_DEFAULT_TITLE,
            QDateTime date_modified = QDateTime::currentDateTime(),
            Notebook *parent = nullptr,
            int row = -255,

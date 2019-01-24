@@ -14,7 +14,7 @@ class Note : public QObject
 
 public:
   Note(QUuid sync_hash = QUuid::createUuid(),
-       QString title = "",
+       QString title = NOTE_DEFAULT_TITLE,
        QString text = "",
        QDateTime dateCreated = QDateTime::currentDateTime(),
        QDateTime dateModified = QDateTime::currentDateTime(),

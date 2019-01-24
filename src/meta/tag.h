@@ -12,7 +12,7 @@ class Tag : public QObject
   Q_OBJECT
 public:
   Tag(QUuid     sync_hash     = QUuid::createUuid(),
-      QString   title         = "Untitled Tag",
+      QString   title         = TAG_DEFAULT_TITLE,
       QDateTime date_modified = QDateTime::currentDateTime(),
       int       row           = -255,
       bool      encrypted     = false);
@@ -27,7 +27,7 @@ public:
 
   // Date Modified
   QDateTime dateModified() const;
-  void setDateModified(QDateTime dateModified);
+  void setDateModified(QDateTime dateModified, bool emitChangeSignal=true);
 
   // Row
   int row() const;

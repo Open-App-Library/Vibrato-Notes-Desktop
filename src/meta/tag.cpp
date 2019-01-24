@@ -44,13 +44,14 @@ QDateTime Tag::dateModified() const
   return m_date_modified;
 }
 
-void Tag::setDateModified(QDateTime dateModified)
+void Tag::setDateModified(QDateTime dateModified, bool emitChangeSignal)
 {
   if ( dateModified == m_date_modified ) return;
 
   m_date_modified = dateModified;
   emit dateModifiedChanged(this);
-  emit changed(this);
+  if (emitChangeSignal)
+    emit changed(this);
 }
 
 int Tag::row() const
@@ -83,5 +84,5 @@ void Tag::setEncrypred(bool encrypted)
 
 void Tag::handleChange(Tag *tag)
 {
-  tag->setDateModified( QDateTime::currentDateTime() );
+  tag->setDateModified( QDateTime::currentDateTime(), false );
 }

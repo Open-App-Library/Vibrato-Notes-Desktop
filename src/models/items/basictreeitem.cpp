@@ -71,8 +71,10 @@ void BasicTreeItem::setSelectable(bool selectable)
 bool BasicTreeItem::isOther() const
 {
   return
-    m_type != Type_Notebook    &&
-    m_type != Type_Tag         &&
+    m_type != Type_Notebook       &&
+    m_type != Type_Tag            &&
+    m_type != Type_NotebooksLabel &&
+    m_type != Type_TagsLabel      &&
     m_type != Type_SearchQuery;
 }
 

@@ -225,13 +225,17 @@ QVector<Notebook*> SQLManager::m_getNotebooks(Notebook *parent) {
   QVector<Notebook*> notebooks;
   QSqlQuery q;
 
-  QUuid parentSyncHash = nullptr;
-  if ( parent != nullptr) parentSyncHash = parent->syncHash();
+  QString queryString;
+  if (parent == nullptr)
+    queryString = "SELECT %1 FROM notebooks WHERE parent IS NULL ORDER BY row ASC";
+  else
+    queryString = "SELECT %1 FROM notebooks WHERE parent = :sync_hash ORDER BY row ASC";
 
-  QString queryString =
-    QString("select %1 from notebooks where parent = :sync_hash").arg( notebookColumns().join(", ") );
+  queryString = queryString.arg( notebookColumns().join(", ") );
+
   q.prepare(queryString);
-  q.bindValue(":sync_hash", parentSyncHash.toString(QUuid::WithoutBraces));
+  if (parent != nullptr)
+    q.bindValue(":sync_hash", parent->syncHash().toString(QUuid::WithoutBraces));
   q.exec();
   MapVector notebookResults = rows(q, notebookColumns());
 
@@ -252,7 +256,7 @@ QVector<Notebook*> SQLManager::m_getNotebooks(Notebook *parent) {
 QVector<Tag*> SQLManager::tags() {
   QVector<Tag*> tags;
   QString queryString =
-    QString("select %1 from tags").arg( tagColumns().join(", ") );
+    QString("select %1 from tags ORDER BY row ASC").arg( tagColumns().join(", ") );
   MapVector tagResults = rows(queryString, tagColumns());
 
   for ( Map tagMap : tagResults) {
@@ -417,9 +421,9 @@ bool SQLManager::addNotebook(Notebook* notebook) {
   QSqlQuery q;
   q.prepare(queryString);
 
-  QUuid parentSyncHash = nullptr;
+  QString parentSyncHash;
   if ( notebook->parent() != nullptr )
-    parentSyncHash = notebook->parent()->syncHash();
+    parentSyncHash = notebook->parent()->syncHash().toString(QUuid::WithoutBraces);
 
   q.bindValue(":sync_hash"        , notebook->syncHash().toString(QUuid::WithoutBraces));
   q.bindValue(":title"            , notebook->title());
@@ -539,6 +543,9 @@ bool SQLManager::updateTagToDB(Tag* tag) {
 
   QSqlRecord tagInDB = model.record(0);
   tagInDB.setValue("title", tag->title());
+  tagInDB.setValue("date_modified", tag->dateModified());
+  tagInDB.setValue("row", tag->row());
+  tagInDB.setValue("encrypted", tag->encrypted());
   model.setRecord(0, tagInDB);
 
   return logSqlError(model.lastError());
@@ -590,8 +597,8 @@ bool SQLManager::addTagToNote(QUuid noteSyncHash, QUuid tagSyncHash, bool skip_d
   QSqlQuery q;
   q.prepare("INSERT INTO notes_tags (note, tag) VALUES "
             "(:noteSyncHash, :tagSyncHash)");
-  q.bindValue(":noteSyncHash", noteSyncHash);
-  q.bindValue(":tagSyncHash", tagSyncHash);
+  q.bindValue(":noteSyncHash", noteSyncHash.toString(QUuid::WithoutBraces));
+  q.bindValue(":tagSyncHash", tagSyncHash.toString(QUuid::WithoutBraces));
   q.exec();
   return logSqlError(q.lastError());
 }
