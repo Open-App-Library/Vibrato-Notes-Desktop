@@ -1,30 +1,34 @@
-create table if not exists notes (
-sync_id integer unique,
-id integer primary key autoincrement,
-title text,
-text text,
-date_created datetime,
-date_modified timetime,
-favorited boolean,
-notebook integer references notebooks(id),
-trashed boolean
+CREATE TABLE IF NOT EXISTS notes (
+  sync_hash STRING UNIQUE,
+  title TEXT,
+  text TEXT,
+  date_created DATETIME,
+  date_modified DATETIME,
+  notebook STRING REFERENCES notebooks(sync_hash),
+  favorited BOOLEAN,
+  encrypted BOOLEAN,
+  trashed BOOLEAN
 );
 
-create table if not exists notebooks (
-sync_id integer unique,
-id integer primary key autoincrement, -- my cool thing
-title text,
-parent integer references notebooks(id)
+CREATE TABLE if NOT EXISTS notebooks (
+  sync_hash INTEGER unique,
+  title TEXT,
+  date_modified DATETIME,
+  parent STRING REFERENCES notebooks(sync_hash),
+  row INTEGER,
+  encrypted BOOLEAN
 );
 
-create table if not exists tags (
-sync_id integer unique,
-id integer primary key autoincrement,
-title text
+CREATE TABLE IF NOT EXISTS tags (
+  sync_hash INTEGER UNIQUE,
+  title TEXT,
+  date_modified DATETIME,
+  row INTEGER,
+  encrypted BOOLEAN
 );
 
 -- Many-to-many relationship between notes and tags
-create table if not exists notes_tags (
-note integer references notes(id),
-tag integer references tags(id)
+CREATE TABLE IF NOT EXISTS notes_tags (
+  note STRING REFERENCES notes(sync_hash),
+  tag INTEGER REFERENCES tags(sync_hash)
 );
