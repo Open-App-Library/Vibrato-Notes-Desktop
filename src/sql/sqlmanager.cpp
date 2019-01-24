@@ -197,7 +197,7 @@ QVector<Note*> SQLManager::notes() {
 
     // Parse a tags array
     QVector<QUuid> tags;
-    QString tagVariantsQuery = QString("select tag from notes_tags where note = %1").arg(sync_hash);
+    QString tagVariantsQuery = QString("select tag from notes_tags where note = \"%1\"").arg(sync_hash);
     for ( QVariant tagVariant : column(tagVariantsQuery) )
       tags.append( tagVariant.toString() );
 
@@ -231,7 +231,7 @@ QVector<Notebook*> SQLManager::m_getNotebooks(Notebook *parent) {
   QString queryString =
     QString("select %1 from notebooks where parent = :sync_hash").arg( notebookColumns().join(", ") );
   q.prepare(queryString);
-  q.bindValue(":sync_hash", parentSyncHash);
+  q.bindValue(":sync_hash", parentSyncHash.toString(QUuid::WithoutBraces));
   q.exec();
   MapVector notebookResults = rows(q, notebookColumns());
 
@@ -282,7 +282,7 @@ bool SQLManager::addNote(Note *note)
   QSqlQuery q;
   q.prepare(queryString);
 
-  q.bindValue(":sync_hash"     , note->syncHash());
+  q.bindValue(":sync_hash"     , note->syncHash().toString(QUuid::WithoutBraces));
   q.bindValue(":title"         , note->title());
   q.bindValue(":text"          , note->text());
   q.bindValue(":date_created"  , note->dateCreated());
@@ -299,7 +299,7 @@ bool SQLManager::addNote(Note *note)
   for ( QUuid tagSyncHash : note->tags() ) {
     tagQ.prepare("insert into notes_tags (note, tag) values "
               "(:noteSyncHash, :tagSyncHash)");
-    tagQ.bindValue(":noteSyncHash", note->syncHash());
+    tagQ.bindValue(":noteSyncHash", note->syncHash().toString(QUuid::WithoutBraces));
     tagQ.bindValue(":tagSyncHash", tagSyncHash);
     tagQ.exec();
     logSqlError(tagQ.lastError());
@@ -313,9 +313,10 @@ bool SQLManager::updateNoteToDB(Note* note) {
   ///
   // Update the note
   ///
+
   QSqlTableModel model;
   model.setTable("notes");
-  model.setFilter( QString("sync_hash = %1").arg(note->syncHash().toString(QUuid::WithoutBraces)) );
+  model.setFilter( QString("sync_hash = \"%1\"").arg(note->syncHash().toString(QUuid::WithoutBraces)) );
   model.select();
 
   if ( model.rowCount() > 1 )
@@ -337,7 +338,7 @@ bool SQLManager::updateNoteToDB(Note* note) {
   // Update the note's tags
   ///
   QString noteTagsQuery
-    = QString("select note, tag from notes_tags where note = %1").arg(note->syncHash().toString(QUuid::WithoutBraces));
+    = QString("select note, tag from notes_tags where note = \"%1\"").arg(note->syncHash().toString(QUuid::WithoutBraces));
   VariantList curTagObjects = column(noteTagsQuery, 1);
   QVector<QUuid> curTagSyncIDs;
   for (QVariant obj : curTagObjects)
@@ -362,7 +363,7 @@ bool SQLManager::updateNoteFromDB(Note* note) {
   QString queryString
     = QString("select %1 from notes where sync_hash = :sync_hash").arg(noteColumns().join(", "));
   query.prepare( queryString );
-  query.bindValue(":sync_hash", note->syncHash());
+  query.bindValue(":sync_hash", note->syncHash().toString(QUuid::WithoutBraces));
   query.exec();
 
   if (!logSqlError(query.lastError()) )
@@ -382,7 +383,7 @@ bool SQLManager::updateNoteFromDB(Note* note) {
 
   QSqlTableModel tags;
   tags.setTable("notes_tags");
-  tags.setFilter( QString("note = %1").arg(note->syncHash().toString(QUuid::WithoutBraces)) );
+  tags.setFilter( QString("note = \"%1\"").arg(note->syncHash().toString(QUuid::WithoutBraces)) );
   tags.select();
 
   QVector<QUuid> tagList;
@@ -397,7 +398,7 @@ bool SQLManager::updateNoteFromDB(Note* note) {
 bool SQLManager::deleteNote(Note* note) {
   QSqlQuery q;
   q.prepare("DELETE FROM notes WHERE sync_hash = :sync_hash");
-  q.bindValue(":sync_hash", note->syncHash());
+  q.bindValue(":sync_hash", note->syncHash().toString(QUuid::WithoutBraces));
   q.exec();
   return logSqlError(q.lastError());
 }
@@ -420,7 +421,7 @@ bool SQLManager::addNotebook(Notebook* notebook) {
   if ( notebook->parent() != nullptr )
     parentSyncHash = notebook->parent()->syncHash();
 
-  q.bindValue(":sync_hash"        , notebook->syncHash());
+  q.bindValue(":sync_hash"        , notebook->syncHash().toString(QUuid::WithoutBraces));
   q.bindValue(":title"            , notebook->title());
   q.bindValue(":date_modified"    , notebook->dateModified());
   q.bindValue(":parent"           , parentSyncHash);
@@ -436,7 +437,7 @@ bool SQLManager::addNotebook(Notebook* notebook) {
 bool SQLManager::updateNotebookToDB(Notebook* notebook) {
   QSqlTableModel model;
   model.setTable("notebooks");
-  model.setFilter( QString("sync_hash = %1").arg(notebook->syncHash().toString(QUuid::WithoutBraces)) );
+  model.setFilter( QString("sync_hash = \"%1\"").arg(notebook->syncHash().toString(QUuid::WithoutBraces)) );
   model.select();
 
   if ( model.rowCount() > 1 )
@@ -464,7 +465,7 @@ bool SQLManager::updateNotebookFromDB(Notebook* notebook) {
   QString queryString
     = QString("select %1 from notebooks where sync_hash = :sync_hash").arg(notebookColumns().join(", "));
   query.prepare( queryString );
-  query.bindValue(":sync_hash", notebook->syncHash());
+  query.bindValue(":sync_hash", notebook->syncHash().toString(QUuid::WithoutBraces));
   query.exec();
   Map notebookRow = row(query, notebookColumns());
 
@@ -484,13 +485,13 @@ bool SQLManager::deleteNotebook(Notebook* notebook, bool delete_children) {
   // Delete notebook
   QSqlQuery q;
   q.prepare("DELETE FROM notebooks WHERE sync_hash = :sync_hash");
-  q.bindValue(":sync_hash", notebook->syncHash());
+  q.bindValue(":sync_hash", notebook->syncHash().toString(QUuid::WithoutBraces));
   q.exec();
 
   // Change notes under this notebook to use default notebook
   logSqlError(q.lastError());
   q.prepare("UPDATE notes SET notebook = NULL WHERE notebook = :sync_hash");
-  q.bindValue(":sync_hash", notebook->syncHash());
+  q.bindValue(":sync_hash", notebook->syncHash().toString(QUuid::WithoutBraces));
   q.exec();
 
   // Delete children
@@ -515,7 +516,7 @@ bool SQLManager::addTag(Tag *tag) {
   QSqlQuery q;
   q.prepare(queryString);
 
-  q.bindValue(":sync_hash", tag->syncHash());
+  q.bindValue(":sync_hash", tag->syncHash().toString(QUuid::WithoutBraces));
   q.bindValue(":title", tag->title());
   q.bindValue(":date_modified", tag->title());
   q.bindValue(":row", tag->row());
@@ -530,7 +531,7 @@ bool SQLManager::addTag(Tag *tag) {
 bool SQLManager::updateTagToDB(Tag* tag) {
   QSqlTableModel model;
   model.setTable("tags");
-  model.setFilter( QString("sync_hash = %1").arg(tag->syncHash().toString(QUuid::WithoutBraces)) );
+  model.setFilter( QString("sync_hash = \"%1\"").arg(tag->syncHash().toString(QUuid::WithoutBraces)) );
   model.select();
 
   if ( model.rowCount() > 1 )
@@ -548,7 +549,7 @@ bool SQLManager::updateTagFromDB(Tag* tag) {
   QString queryString
     = QString("select %1 from tags where sync_hash = :sync_hash").arg(tagColumns().join(", "));
   query.prepare( queryString );
-  query.bindValue(":sync_hash", tag->syncHash());
+  query.bindValue(":sync_hash", tag->syncHash().toString(QUuid::WithoutBraces));
   query.exec();
   Map tagRow = row(query, tagColumns());
 
@@ -566,11 +567,11 @@ bool SQLManager::updateTagFromDB(Tag* tag) {
 bool SQLManager::deleteTag(Tag* tag) {
   QSqlQuery q;
   q.prepare("DELETE FROM tags WHERE sync_hash = :sync_hash");
-  q.bindValue(":sync_hash", tag->syncHash());
+  q.bindValue(":sync_hash", tag->syncHash().toString(QUuid::WithoutBraces));
   q.exec();
   logSqlError(q.lastError());
   q.prepare("DELETE FROM notes_tags WHERE tag = :sync_hash");
-  q.bindValue(":sync_hash", tag->syncHash());
+  q.bindValue(":sync_hash", tag->syncHash().toString(QUuid::WithoutBraces));
   q.exec();
   return logSqlError(q.lastError());
 }
@@ -578,7 +579,7 @@ bool SQLManager::deleteTag(Tag* tag) {
 bool SQLManager::tagExists(QUuid noteSyncHash, QUuid tagSyncHash) {
   QSqlTableModel model;
   model.setTable("notes_tags");
-  model.setFilter( QString("note = %1 and tag = %2").arg(noteSyncHash.toString(QUuid::WithoutBraces), tagSyncHash.toString(QUuid::WithoutBraces)) );
+  model.setFilter( QString("note = \"%1\" and tag = \"%2\"").arg(noteSyncHash.toString(QUuid::WithoutBraces), tagSyncHash.toString(QUuid::WithoutBraces)) );
   model.select();
   return model.rowCount() > 0;
 }

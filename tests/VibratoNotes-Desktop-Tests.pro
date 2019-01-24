@@ -2,7 +2,7 @@ QT += testlib
 
 include(../VibratoNotes-Desktop.pro)
 
-TARGET = UnitTests
+TARGET = vibrato-unittests
 TEMPLATE = app
 DEFINES += UNIT_TEST
 
