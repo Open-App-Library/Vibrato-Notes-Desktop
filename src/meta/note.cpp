@@ -187,7 +187,7 @@ void Note::setTags(const QVector<QUuid> &tags)
   emit tagsChanged( this );
 }
 
-bool Note::isFavorited() const
+bool Note::favorited() const
 {
   return m_favorited;
 }
@@ -201,7 +201,7 @@ void Note::setFavorited(bool favorited)
   emit favoritedChanged( this );
 }
 
-bool Note::isEncrypted() const
+bool Note::encrypted() const
 {
   return m_encrypted;
 }
@@ -215,7 +215,7 @@ void Note::setEncrypted(bool encrypted)
   emit encryptedChanged(this);
 }
 
-bool Note::isTrashed() const {
+bool Note::trashed() const {
   return m_trashed;
 }
 
