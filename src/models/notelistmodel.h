@@ -36,7 +36,7 @@ public:
   int rowCount(const QModelIndex &parent = QModelIndex()) const override;
   int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
-  void removeNoteItemWithID(int noteID);
+  void removeNoteItemWithSyncHash(QUuid syncHash);
 
 private:
   QListView *m_view;

@@ -55,9 +55,9 @@ public slots:
   void updateTrashButton(void);
 
 private slots:
-  void aNoteWasRemoved(int noteID);
-  void notebooksRemoved(QVector<int> notebookIDs);
-  void noteIDChanged(Note *note);
+  void aNoteWasRemoved(QUuid noteSyncHash);
+  void notebooksRemoved(QVector<QUuid> notebookSyncHashes);
+  void noteSyncHashChanged(Note *note);
   void notebookChanged(Notebook *notebook);
   void noteNotebookChanged(Note *note);
 
@@ -68,8 +68,8 @@ private:
   Ui::EscribaAddonsWidget *m_addons_ui;
   Note *m_curNote=nullptr;
   Notebook *m_curNotebook=nullptr;
-  int m_id=-1;
-  int m_notebook_id=NOTEBOOK_DEFAULT_NOTEBOOK_ID;
+  QUuid m_sync_hash=nullptr;
+  QUuid m_notebook_sync_hash=nullptr;
 
   QLineEdit *m_titleWidget;
   QLineEdit *m_tagsInputWidget;

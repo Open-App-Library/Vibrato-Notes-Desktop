@@ -76,7 +76,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
   flags.setFlag(Qt::ItemIsSelectable, item->selectable());
   flags.setFlag(Qt::ItemIsEditable, item->isNotebook() || item->isTag());
   flags.setFlag(Qt::ItemIsDropEnabled,
-                (item->isNotebook() && item->id() != -1) ||
+                (item->isNotebook() && item->syncHash() != nullptr) ||
                 (item->isNotebooksLabel() || item->isTagsLabel()));
   flags.setFlag(Qt::ItemIsDragEnabled, item->isNotebook() || item->isTag());
 

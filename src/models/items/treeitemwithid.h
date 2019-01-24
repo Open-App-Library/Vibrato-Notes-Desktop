@@ -1,20 +1,19 @@
 #ifndef TREEITEMWITHID_H
 #define TREEITEMWITHID_H
 #include <QTreeWidgetItem>
-
-#define TREE_ITEM_UNKNOWN -1
+#include <QUuid>
 
 class TreeItemWithID : public QObject, public QTreeWidgetItem
 {
   Q_OBJECT
 public:
-  TreeItemWithID(QString label, int id);
-  int id() const;
+  TreeItemWithID(QString label, QUuid syncHash);
+  QUuid syncHash() const;
 
 public slots:
-  void setID(int id);
+  void setSyncHash(QUuid syncHash);
 private:
-  int m_id = TREE_ITEM_UNKNOWN;
+  QUuid m_sync_hash = nullptr;
 };
 
 #endif // TREEITEMWITHID_H

@@ -57,8 +57,8 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
   NoteListItem *item = static_cast<NoteListItem*>(index.internalPointer());
   Note *note = item->note();
 
-  int curNotebookId = note->notebook();
-  QVector<int> tagIds = note->tags();
+  QUuid curNotebookSyncHash = note->notebook();
+  QVector<QUuid> tagSyncHashes = note->tags();
 
   bool passed_favorite_check = false;
   bool passed_trashed_check  = false;
@@ -104,10 +104,10 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
     if (!m_db->notebookDatabase()->listRecursively().contains(n))
       continue;
     QVector<Notebook*> childNotebooks = n->recurseChildren();
-    QVector<int> notebookIds = {n->id()};
+    QVector<QUuid> notebookSyncHasehs = {n->syncHash()};
     for (Notebook *child : childNotebooks)
-      notebookIds.append( child->id() );
-    if ( notebookIds.contains(curNotebookId) )
+      notebookSyncHasehs.append( child->syncHash() );
+    if ( notebookSyncHasehs.contains(curNotebookSyncHash) )
       passed_notebook_check = true;
   }
   if ( !passed_notebook_check )
@@ -117,7 +117,7 @@ bool NoteListProxyModel::filterAcceptsRow(int sourceRow,
   /// TAG FILTER ///
   //////////////////
   for ( Tag *t : m_tag_filter )
-    if ( tagIds.contains(t->id()) )
+    if ( tagSyncHashes.contains(t->syncHash()) )
       passed_tag_check = true;
 
   if ( !passed_tag_check )

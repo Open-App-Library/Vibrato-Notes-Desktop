@@ -38,13 +38,13 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db, Manager *manager) 
           this, &EscribaManager::openTagsEditor);
   connect(m_db->noteDatabase(), &NoteDatabase::noteDeleted,
           this, &EscribaManager::aNoteWasRemoved);
-  connect(m_db->notebookDatabase(), &NotebookDatabase::notebooksRemoved,
+  connect(m_db->notebookDatabase(), &NotebookDatabase::removed,
           this, &EscribaManager::notebooksRemoved);
-  connect(m_db->tagDatabase(), &TagDatabase::tagRemoved,
+  connect(m_db->tagDatabase(), &TagDatabase::removed,
           this, &EscribaManager::updateTagsCompletionList);
-  connect(m_db->tagDatabase(), &TagDatabase::tagAdded,
+  connect(m_db->tagDatabase(), &TagDatabase::added,
           this, &EscribaManager::updateTagsCompletionList);
-  connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
+  connect(m_db->tagDatabase(), &TagDatabase::changed,
           this, &EscribaManager::updateTagsCompletionList);
 
   // Create a qcompleter

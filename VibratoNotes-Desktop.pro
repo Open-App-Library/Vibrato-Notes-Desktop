@@ -41,7 +41,6 @@ SOURCES += \
     $$PWD/src/ui-managers/manager.cpp \
     $$PWD/src/ui-managers/treemanager.cpp \
     $$PWD/src/ui-managers/escribamanager.cpp \
-    $$PWD/src/meta/filter/notefilter.cpp \
     $$PWD/src/meta/db/database.cpp \
     $$PWD/src/models/items/notelistitem.cpp \
     $$PWD/src/models/notelistmodel.cpp \
@@ -79,7 +78,6 @@ HEADERS += \
     $$PWD/src/ui-managers/manager.h \
     $$PWD/src/ui-managers/treemanager.h \
     $$PWD/src/ui-managers/escribamanager.h \
-    $$PWD/src/meta/filter/notefilter.h \
     $$PWD/src/meta/db/database.h \
     $$PWD/src/models/items/notelistitem.h \
     $$PWD/src/models/notelistmodel.h \

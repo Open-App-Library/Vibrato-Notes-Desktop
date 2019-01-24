@@ -5,7 +5,7 @@ Database::Database(NoteDatabase *noteDatabase, NotebookDatabase *notebookDatabas
     m_notebook_database(notebookDatabase),
     m_tag_database(tagDatabase)
 {
-  connect(m_tag_database, &TagDatabase::tagRemoved,
+  connect(m_tag_database, &TagDatabase::removed,
           m_note_database, &NoteDatabase::removeTagFromNotes);
 }
 
@@ -28,6 +28,6 @@ void Database::addTagToNote(Note *note, QString tagString)
 {
   Tag *tag = m_tag_database->addTag(tagString);
   if ( tag == nullptr ) return;
-  if ( note->tags().indexOf(tag->id()) == -1 )
-    note->setTags( note->tags() << tag->id());
+  if ( note->tags().indexOf(tag->syncHash()) == -1 )
+    note->setTags( note->tags() << tag->syncHash());
 }

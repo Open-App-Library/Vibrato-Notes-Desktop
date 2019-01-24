@@ -9,7 +9,7 @@ NoteListModel::NoteListModel(QListView *view, NoteDatabase *noteDatabase) : QAbs
   m_noteDatabase = noteDatabase;
 
   connect(m_noteDatabase, &NoteDatabase::noteDeleted,
-          this, &NoteListModel::removeNoteItemWithID);
+          this, &NoteListModel::removeNoteItemWithSyncHash);
 }
 
 QVector<NoteListItem *> NoteListModel::noteItems() const
@@ -38,9 +38,6 @@ NoteListItem *NoteListModel::prependItem(Note *note)
   NoteListItem *i = m_noteItems.at(newIndex);
   i->setNote(note);
 
-  connect(i, &NoteListItem::noteDateChanged,
-          this, &NoteListModel::noteDateChanged);
-
   endInsertRows();
   return i;
 }
@@ -53,9 +50,6 @@ NoteListItem *NoteListModel::appendItem(Note *note)
   m_noteItems.append( new NoteListItem(nullptr));
   NoteListItem *i = m_noteItems.at(newIndex);
   i->setNote(note);
-
-  connect(i, &NoteListItem::noteDateChanged,
-          this, &NoteListModel::noteDateChanged);
 
   endInsertRows();
   return i;
@@ -152,9 +146,10 @@ int NoteListModel::rowCount(const QModelIndex &parent) const
   return m_noteItems.length();
 }
 
-void NoteListModel::removeNoteItemWithID(int noteID) {
+void NoteListModel::removeNoteItemWithSyncHash(QUuid syncHash)
+{
   for (int i=0; i<m_noteItems.length(); i++) {
-    if ( m_noteItems.at(i)->id() == noteID)
+    if ( m_noteItems.at(i)->syncHash() == syncHash)
       removeRow(i);
   }
 }

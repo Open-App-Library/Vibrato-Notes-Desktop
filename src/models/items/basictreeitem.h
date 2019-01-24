@@ -33,7 +33,7 @@ public:
   bool selectable() const;
   void setSelectable(bool selectable=true);
 
-  int id() const;
+  QUuid syncHash() const;
 
   QString   label() const;
   void      setLabel(QString label);
@@ -70,12 +70,12 @@ public:
 
 private slots:
   void notebookTitleChanged(Notebook *notebook);
-  void notebookIDChanged(Notebook *notebook);
+  void notebookSyncHashChanged(Notebook *notebook);
   void tagTitleChanged(Tag *tag);
-  void tagIDChanged(Tag *tag);
+  void tagSyncHashChanged(Tag *tag);
 
 private:
-  int m_id; // Grab ID of notebook or tag without accessing object. This is a safety feature.
+  QUuid m_sync_hash; // Grab ID of notebook or tag without accessing object. This is a safety feature.
   QString m_label;
   QIcon m_icon;
   int m_type; // Type_Notebook, Type_Tag, etc.

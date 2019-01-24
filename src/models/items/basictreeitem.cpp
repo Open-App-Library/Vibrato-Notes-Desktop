@@ -10,7 +10,7 @@ BasicTreeItem::BasicTreeItem(Notebook *notebook, BasicTreeItem *parent)
   setObjectNotebook(notebook);
   updateLabel();
   m_parentItem = parent;
-  m_id = notebook->id();
+  m_sync_hash = notebook->syncHash();
 }
 
 BasicTreeItem::BasicTreeItem(Tag *tag, BasicTreeItem *parent)
@@ -18,7 +18,7 @@ BasicTreeItem::BasicTreeItem(Tag *tag, BasicTreeItem *parent)
   setObjectTag(tag);
   updateLabel();
   m_parentItem = parent;
-  m_id = tag->id();
+  m_sync_hash = tag->syncHash();
 }
 
 BasicTreeItem::BasicTreeItem(const QString label, BasicTreeItem *parent)
@@ -76,9 +76,9 @@ bool BasicTreeItem::isOther() const
     m_type != Type_SearchQuery;
 }
 
-int BasicTreeItem::id() const
+QUuid BasicTreeItem::syncHash() const
 {
-  return m_id;
+  return m_sync_hash;
 }
 
 QString BasicTreeItem::label() const
@@ -121,10 +121,10 @@ void BasicTreeItem::setObjectNotebook(Notebook *notebook)
   m_object = blankObject;
   m_type = Type_Notebook;
   m_object.notebook = notebook;
-  connect(notebook, &Notebook::notebookTitleChanged,
+  connect(notebook, &Notebook::titleChanged,
           this, &BasicTreeItem::notebookTitleChanged);
-  connect(notebook, &Notebook::notebookIDChanged,
-          this, &BasicTreeItem::notebookIDChanged);
+  connect(notebook, &Notebook::syncHashChanged,
+          this, &BasicTreeItem::notebookSyncHashChanged);
 }
 
 void BasicTreeItem::setObjectTag(Tag *tag)
@@ -133,10 +133,10 @@ void BasicTreeItem::setObjectTag(Tag *tag)
   m_object = blankObject;
   m_type = Type_Tag;
   m_object.tag = tag;
-  connect(tag, &Tag::tagTitleChanged,
+  connect(tag, &Tag::titleChanged,
           this, &BasicTreeItem::tagTitleChanged);
-  connect(tag, &Tag::tagIDChanged,
-          this, &BasicTreeItem::tagIDChanged);
+  connect(tag, &Tag::syncHashChanged,
+          this, &BasicTreeItem::tagSyncHashChanged);
 }
 
 QString BasicTreeItem::searchQuery() const {
@@ -260,16 +260,16 @@ void BasicTreeItem::notebookTitleChanged(Notebook* notebook) {
   m_label = notebook->title();
 }
 
-void BasicTreeItem::notebookIDChanged(Notebook *notebook)
+void BasicTreeItem::notebookSyncHashChanged(Notebook *notebook)
 {
-  m_id = notebook->id();
+  m_sync_hash = notebook->syncHash();
 }
 
 void BasicTreeItem::tagTitleChanged(Tag* tag) {
   m_label = tag->title();
 }
 
-void BasicTreeItem::tagIDChanged(Tag *tag)
+void BasicTreeItem::tagSyncHashChanged(Tag *tag)
 {
-  m_id = tag->id();
+  m_sync_hash = tag->syncHash();
 }

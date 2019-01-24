@@ -1,23 +1,23 @@
 #include "listitemwithid.h"
 
-ListItemWithID::ListItemWithID(QString label, int id) :
+ListItemWithID::ListItemWithID(QString label, QUuid syncHash) :
     QListWidgetItem(),
-    m_id(id)
+    m_sync_hash(syncHash)
 {
     setText(label);
 }
 
-int ListItemWithID::id() const
+QUuid ListItemWithID::syncHash() const
 {
-    return m_id;
+  return m_sync_hash;
 }
 
 void ListItemWithID::setLabel(QString label)
 {
-	setText(label);
+  setText(label);
 }
 
-void ListItemWithID::setID(int id)
+void ListItemWithID::setSyncHash(QUuid syncHash)
 {
-    m_id = id;
+  m_sync_hash = syncHash;
 }
