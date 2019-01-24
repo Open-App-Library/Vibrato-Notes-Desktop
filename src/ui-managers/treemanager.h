@@ -72,7 +72,7 @@ public:
   void treeContextMenu(const QPoint &point);
 
   // Navigation
-  void openNotebookWithID(int notebookID);
+  void openNotebookWithSyncHash(QUuid notebookSyncHash);
 
   // Removes a treeitem if isSearchQuery().
   // If item == nullptr (default) it will try to delete the selected item.
@@ -80,11 +80,11 @@ public:
 
 private slots:
   void tagAdded(Tag *tag);
-  void tagRemoved(int tagID);
+  void tagRemoved(QUuid tagSyncHash);
   void tagChanged(Tag *tag);
 
   void notebookAdded(Notebook *notebook);
-  void notebooksRemoved(QVector<int> notebookIDs);
+  void notebooksRemoved(QVector<QUuid> notebookSyncHashes);
   void notebookChanged(Notebook *notebook);
 
   void contextNewNotebook();

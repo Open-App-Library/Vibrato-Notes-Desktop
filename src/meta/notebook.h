@@ -19,6 +19,8 @@ public:
            int row = -255,
            bool encrypted = false);
 
+  static Notebook *createBlankNotebook();
+
   // Sync Hash
   QUuid syncHash() const;
   void setSyncHash(QUuid syncHash);

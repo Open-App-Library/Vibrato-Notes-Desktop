@@ -104,15 +104,15 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   // Signal Connections
   connect(m_tree_view->selectionModel(), &QItemSelectionModel::currentChanged,
           this, &TreeManager::treeItemChanged);
-  connect(m_db->tagDatabase(), &TagDatabase::tagAdded,
+  connect(m_db->tagDatabase(), &TagDatabase::added,
           this, &TreeManager::tagAdded);
-  connect(m_db->tagDatabase(), &TagDatabase::tagRemoved,
+  connect(m_db->tagDatabase(), &TagDatabase::removed,
           this, &TreeManager::tagRemoved);
-  connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
+  connect(m_db->tagDatabase(), &TagDatabase::changed,
           this, &TreeManager::tagChanged);
-  connect(m_db->notebookDatabase(), &NotebookDatabase::notebookAdded,
+  connect(m_db->notebookDatabase(), &NotebookDatabase::added,
           this, &TreeManager::notebookAdded);
-  connect(m_db->notebookDatabase(), &NotebookDatabase::notebooksRemoved,
+  connect(m_db->notebookDatabase(), &NotebookDatabase::removed,
           this, &TreeManager::notebooksRemoved);
 
   // Load databases
@@ -381,10 +381,10 @@ void TreeManager::tagAdded(Tag *tag)
   }
 }
 
-void TreeManager::tagRemoved(int tagID) {
+void TreeManager::tagRemoved(QUuid tagSyncHash) {
   bool wasViewingDeletedTag = false;
   if ( m_curItem->isTag() &&
-       m_curItem->id() == tagID )
+       m_curItem->syncHash() == tagSyncHash )
     {
       wasViewingDeletedTag = true;
     }
@@ -459,17 +459,17 @@ void TreeManager::notebookAdded(Notebook *notebook)
   }
 }
 
-void TreeManager::notebooksRemoved(QVector<int> notebookIDs)
+void TreeManager::notebooksRemoved(QVector<QUuid> notebookSyncHashes)
 {
   bool wasViewingDeletedNotebook = false;
   if ( m_curItem->isNotebook() &&
-       notebookIDs.contains( m_curItem->id() ) )
+       notebookSyncHashes.contains( m_curItem->syncHash() ) )
     {
       wasViewingDeletedNotebook = true;
     }
 
   for (BasicTreeItem *item : m_notebooks->recurseChildren()) {
-      if (item->isNotebook() && notebookIDs.contains(item->id())) {
+      if (item->isNotebook() && notebookSyncHashes.contains(item->syncHash())) {
           item->parentItem()->removeChild(item);
           update();
           break;
@@ -493,10 +493,12 @@ void TreeManager::contextNewNotebook()
   m_openNewNotebookForEditing = true;
 
   // Add notebook to notebook database
-  if ( m_currentContextIndex->isNotebook() && m_currentContextIndex->object().notebook->id() != NOTEBOOK_DEFAULT_NOTEBOOK_ID )
-    m_db->notebookDatabase()->addNotebook(NOTEBOOK_DEFAULT_TITLE, m_currentContextIndex->object().notebook);
-  else
-    m_db->notebookDatabase()->addNotebook(NOTEBOOK_DEFAULT_TITLE, nullptr);
+  Notebook *parent = nullptr;
+
+  if ( m_currentContextIndex->isNotebook() )
+    parent = m_currentContextIndex->object().notebook;
+
+  m_db->notebookDatabase()->addNotebook(Notebook::createBlankNotebook(), parent);
 }
 
 void TreeManager::contextDeleteNotebook()
@@ -560,7 +562,7 @@ void TreeManager::treeContextMenu(const QPoint &point)
     m_notebookDelete->setVisible(showEditingControls);
 
     // Don't allow editing of default notebook
-    if ( item->isNotebook() && item->object().notebook->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID ) {
+    if ( item->isNotebook() && item->object().notebook->syncHash() == nullptr ) {
       m_notebookRename->setDisabled(true);
       m_notebookDelete->setDisabled(true);
     } else {
@@ -587,15 +589,15 @@ void TreeManager::treeContextMenu(const QPoint &point)
   }
 }
 
-void TreeManager::openNotebookWithID(int notebookID)
+void TreeManager::openNotebookWithSyncHash(QUuid notebookSyncHash)
 {
   for (BasicTreeItem *item : recurseNotebooks() ) {
-    if ( item->object().notebook->id() == notebookID ) {
+    if ( item->object().notebook->syncHash() == notebookSyncHash ) {
       QModelIndex index = m_tree_model->getItem(item);
       if (index.isValid())
         m_tree_view->setCurrentIndex(index);
       else
-        qWarning() << "Unable to set current index of tree to notebook id" << notebookID;
+        qWarning() << "Unable to set current index of tree to notebook id" << notebookSyncHash;
       return;
     }
   }

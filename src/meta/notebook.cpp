@@ -13,6 +13,11 @@ Notebook::Notebook(QUuid sync_hash, QString title, QDateTime date_modified, Note
           this, &Notebook::handleChange);
 }
 
+Notebook *Notebook::createBlankNotebook()
+{
+  return new Notebook(QUuid::createUuid(), NOTEBOOK_DEFAULT_TITLE);
+}
+
 QUuid Notebook::syncHash() const
 {
   return m_sync_hash;
