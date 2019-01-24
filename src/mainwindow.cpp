@@ -145,7 +145,7 @@ void MainWindow::addNewNote()
 
 void MainWindow::addNewNotebook()
 {
-  m_notebooks->addNotebook(NOTEBOOK_DEFAULT_TITLE, m_note_list_manager->curViewType_Notebook());
+  m_notebooks->addNotebook(Notebook::createBlankNotebook(), m_note_list_manager->curViewType_Notebook());
 }
 
 void MainWindow::addNewTag()

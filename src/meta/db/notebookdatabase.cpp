@@ -9,7 +9,7 @@ NotebookDatabase::NotebookDatabase(SQLManager *sqlManager, NoteDatabase *noteDat
   m_sqlManager(sqlManager),
   m_noteDatabase(noteDatabase)
 {
-  addNotebook(new Notebook(-1, -1, "Default Notebook"));
+  addNotebook(new Notebook(nullptr, "Default Notebook"));
   loadSQL();
 }
 
@@ -42,35 +42,34 @@ QVector<Notebook*> NotebookDatabase::listRecursively(const QVector<Notebook*> no
   return the_list;
 }
 
-Notebook *NotebookDatabase::addNotebook(QString title, Notebook *parent)
-{
-  if (parent != nullptr && parent->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID)
-    return nullptr;
-  Notebook *notebook = new Notebook(0, 0, title, parent);
-  m_sqlManager->addNotebook(notebook);
-  if (parent != nullptr)
-    parent->addChild(notebook);
-  addNotebook(notebook);
-  return notebook;
-}
-
 void NotebookDatabase::addNotebook(Notebook *notebook)
 {
   if (notebook->parent() == nullptr)
     m_list.append(notebook);
   connectNotebook(notebook);
-  emit notebookAdded(notebook);
+  emit added(notebook);
 }
 
-void NotebookDatabase::removeNotebook(int notebookID)
+void NotebookDatabase::addNotebook(Notebook *notebook, Notebook *parent)
 {
-  removeNotebook( findNotebookWithID(notebookID) );
+  notebook->setParent(parent);
+  m_sqlManager->addNotebook(notebook);
+  if (parent != nullptr)
+    parent->addChild(notebook);
+  addNotebook(notebook);
+}
+
+
+
+void NotebookDatabase::removeNotebook(QUuid syncHash)
+{
+  removeNotebook( findNotebookWithSyncHash(syncHash) );
 }
 
 void NotebookDatabase::removeNotebook(Notebook *notebook)
 {
   // If the user is trying to delete the default notebook, open a warning message and return.
-  if (notebook->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID) {
+  if (notebook->defaultNotebook() ) {
     QMessageBox::warning
       (nullptr,
        "Cannot delete 'Default Notebook'",
@@ -79,7 +78,7 @@ void NotebookDatabase::removeNotebook(Notebook *notebook)
     return;
   }
 
-  QVector<int> the_ids = {notebook->id()};
+  QVector<QUuid> the_sync_hashes = {notebook->syncHash()};
   QVector<Note*> effected_notes;
   QString title= "Delete notes too?";
   QString msg  = "You have requested to delete your '"+notebook->title()+"' notebook. Would you like to delete all of its notes?";
@@ -90,10 +89,10 @@ void NotebookDatabase::removeNotebook(Notebook *notebook)
   // If notebook has children, attach a warning message that the children notebooks will also be deleted.
   if ( notebookChildCount > 0 ) {
     for (Notebook* child : notebook->recurseChildren() )
-      the_ids.append(child->id());
+      the_sync_hashes.append(child->syncHash());
   }
 
-  effected_notes = m_noteDatabase->findNotesWithNotebookIDs(the_ids);
+  effected_notes = m_noteDatabase->findNotesWithNotebookIDs(the_sync_hashes);
 
   // This block of code determines if we need to display a warning prompt to the user
   // and if so, what data to prompt the user for.
@@ -129,7 +128,7 @@ void NotebookDatabase::removeNotebook(Notebook *notebook)
   }
   else // Assign notes to 'Default Notebook' instead.
     for ( Note *note : effected_notes )
-      note->setNotebook(NOTEBOOK_DEFAULT_NOTEBOOK_ID, false);
+      note->setNotebook(nullptr, false);
 
   // If notebook does not have parent, delete from main m_list.
   if ( !notebook->parent() ) {
@@ -145,28 +144,28 @@ void NotebookDatabase::removeNotebook(Notebook *notebook)
 
   // Free memory and emit a notebooksRemoved event.
   delete notebook;
-  emit notebooksRemoved( the_ids );
+  emit removed( the_sync_hashes );
 }
 
 void NotebookDatabase::clearNotebooks()
 {
   for (int i = m_list.size()-1; i >= 0; i--) {
     Notebook *notebook = m_list[i];
-    if (notebook->id() == -1)
+    if (notebook->defaultNotebook())
       continue;
-    QVector<int> the_ids = {notebook->id()};
+    QVector<QUuid> the_ids = {notebook->syncHash()};
     for ( Notebook *child : notebook->recurseChildren() )
-      the_ids.append( child->id() );
-    emit notebooksRemoved( the_ids );
+      the_ids.append( child->syncHash() );
+    emit removed( the_ids );
     delete notebook;
     m_list.removeAt(i);
   }
 }
 
-Notebook *NotebookDatabase::findNotebookWithID(int id)
+Notebook *NotebookDatabase::findNotebookWithSyncHash(QUuid syncHash)
 {
   for (Notebook *notebook : listRecursively()) {
-    if (notebook->id() == id)
+    if (notebook->syncHash() == syncHash)
       return notebook;
   }
   return nullptr;
@@ -185,42 +184,23 @@ void NotebookDatabase::loadSQL()
     connectNotebook(notebook);
 }
 
-void NotebookDatabase::jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent)
-{
-  int     notebook_sync_id    = notebookObj.value("sync_id").toInt();
-  int     notebook_id    = notebookObj.value("id").toInt();
-  QString notebook_title = notebookObj.value("title").toString();
-  QJsonArray children = notebookObj["children"].toArray();
-  Notebook *newNotebook;
-  newNotebook = new Notebook(notebook_sync_id, notebook_id, notebook_title);
-
-  if (parent == nullptr) {           // No parent? Add to main database list
-    addNotebook(newNotebook);
-  } else {                           // else, Add to the children list of parent
-    parent->addChild(newNotebook); // Do note that addChild also modifies newNotebook's parent object automatically.
-  }
-  for (int i = 0; i < children.size(); i++) {
-    jsonObjectToNotebookList(children[i].toObject(), newNotebook);
-  }
-}
-
-void NotebookDatabase::notebookChanged_slot(Notebook *notebook)
+void NotebookDatabase::changed_slot(Notebook *notebook)
 {
   m_sqlManager->updateNotebookToDB(notebook);
-  emit notebookChanged(notebook);
+  emit changed(notebook);
 }
 
-void NotebookDatabase::notebookIDChanged_slot(Notebook *notebook)
+void NotebookDatabase::syncHashChanged_slot(Notebook *notebook)
 {
-  emit notebookIDChanged(notebook);
+  emit syncHashChanged(notebook);
 }
 
-void NotebookDatabase::notebookTitleChanged_slot(Notebook *notebook)
+void NotebookDatabase::titleChanged_slot(Notebook *notebook)
 {
-  emit notebookTitleChanged(notebook);
+  emit titleChanged(notebook);
 }
 
-void NotebookDatabase::notebookParentChanged_slot(Notebook *notebook)
+void NotebookDatabase::parentChanged_slot(Notebook *notebook)
 {
   // If the notebook does not have a parent and it is not in the root list
   // add it to the root list.
@@ -228,72 +208,59 @@ void NotebookDatabase::notebookParentChanged_slot(Notebook *notebook)
        !m_list.contains(notebook) ) {
     m_list.append(notebook);
   }
-  emit notebookParentChanged(notebook);
+  emit parentChanged(notebook);
 }
 
-void NotebookDatabase::notebookChildrenChanged_slot(Notebook *notebook)
+void NotebookDatabase::childrenChanged_slot(Notebook *notebook)
 {
-  emit notebookChildrenChanged(notebook);
+  emit childrenChanged(notebook);
 }
 
-void NotebookDatabase::handleNotebookParentRequest(Notebook* notebook, int requestedParentID) {
+void NotebookDatabase::handleNotebookParentRequest(Notebook *notebook, QUuid parentSyncHash)
+{
   for (Notebook *n : listRecursively()) {
-    if (n->id() == requestedParentID) {
-      QVector<int> id_blacklist = {notebook->id()};
+    if (n->syncHash() == parentSyncHash) {
+      QVector<QUuid> sync_hash_blacklist = {notebook->syncHash()};
       for (Notebook *child : notebook->recurseChildren())
-        id_blacklist.append(child->id());
+        sync_hash_blacklist.append(child->syncHash());
       // If not a child of notebook, change parent
-      if ( !id_blacklist.contains(n->id()) ) {
+      if ( !sync_hash_blacklist.contains(n->syncHash()) ) {
         n->addChild(notebook);
         return;
       }
     }
   }
-}
 
-void NotebookDatabase::loadJSON(QJsonDocument jsonDocument)
-{
-  QJsonArray notebookArray = jsonDocument.array();
-  for (int i = 0; i < notebookArray.size(); i++) {
-    jsonObjectToNotebookList( notebookArray[i].toObject() );
-  }
 }
 
 void NotebookDatabase::connectNotebook(Notebook *notebook)
 {
-  connect(notebook, &Notebook::notebookChanged,
-          this, &NotebookDatabase::notebookChanged_slot);
-  connect(notebook, &Notebook::notebookIDChanged,
-          this, &NotebookDatabase::notebookIDChanged_slot);
-  connect(notebook, &Notebook::notebookTitleChanged,
-          this, &NotebookDatabase::notebookTitleChanged_slot);
-  connect(notebook, &Notebook::notebookParentChanged,
-          this, &NotebookDatabase::notebookParentChanged_slot);
-  connect(notebook, &Notebook::notebookChildrenChanged,
-          this, &NotebookDatabase::notebookChildrenChanged_slot);
-  connect(notebook, &Notebook::requestedParentWithID,
+  connect(notebook, &Notebook::changed,
+          this, &NotebookDatabase::changed_slot);
+  connect(notebook, &Notebook::syncHashChanged,
+          this, &NotebookDatabase::syncHashChanged_slot);
+  connect(notebook, &Notebook::titleChanged,
+          this, &NotebookDatabase::titleChanged_slot);
+  connect(notebook, &Notebook::parentChanged,
+          this, &NotebookDatabase::parentChanged_slot);
+  connect(notebook, &Notebook::childrenChanged,
+          this, &NotebookDatabase::childrenChanged_slot);
+  connect(notebook, &Notebook::requestedParentWithSyncHash,
           this, &NotebookDatabase::handleNotebookParentRequest);
 }
 
 void NotebookDatabase::disconnectNotebook(Notebook *notebook)
 {
-  disconnect(notebook, &Notebook::notebookChanged,
-          this, &NotebookDatabase::notebookChanged_slot);
-  disconnect(notebook, &Notebook::notebookIDChanged,
-          this, &NotebookDatabase::notebookIDChanged_slot);
-  disconnect(notebook, &Notebook::notebookTitleChanged,
-          this, &NotebookDatabase::notebookTitleChanged_slot);
-  disconnect(notebook, &Notebook::notebookParentChanged,
-          this, &NotebookDatabase::notebookParentChanged_slot);
-  disconnect(notebook, &Notebook::notebookChildrenChanged,
-          this, &NotebookDatabase::notebookChildrenChanged_slot);
-  disconnect(notebook, &Notebook::requestedParentWithID,
-          this, &NotebookDatabase::handleNotebookParentRequest);
-}
-
-void NotebookDatabase::loadDummyNotebooks()
-{
-  clearNotebooks();
-  QJsonDocument notebooks = HelperIO::fileToQJsonDocument(":/dummy/notebooks.json");
-  loadJSON(notebooks);
+  disconnect(notebook, &Notebook::changed,
+             this, &NotebookDatabase::changed_slot);
+  disconnect(notebook, &Notebook::syncHashChanged,
+             this, &NotebookDatabase::syncHashChanged_slot);
+  disconnect(notebook, &Notebook::titleChanged,
+             this, &NotebookDatabase::titleChanged_slot);
+  disconnect(notebook, &Notebook::parentChanged,
+             this, &NotebookDatabase::parentChanged_slot);
+  disconnect(notebook, &Notebook::childrenChanged,
+             this, &NotebookDatabase::childrenChanged_slot);
+  disconnect(notebook, &Notebook::requestedParentWithSyncHash,
+             this, &NotebookDatabase::handleNotebookParentRequest);
 }

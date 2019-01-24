@@ -4,47 +4,33 @@
 #include <QDebug>
 #include <helper-io.hpp>
 
-Note::Note(int syncId, int id, QString title, QString text, QDateTime date_created, QDateTime date_modified, bool favorited,int notebook, QVector<int> tags, bool trashed)
+Note::Note(QUuid sync_hash, QString title, QString text, QDateTime date_created, QDateTime date_modified, QUuid notebook, QVector<QUuid> tags, bool favorited, bool encrypted, bool trashed) :
+  m_sync_hash(sync_hash),
+  m_title(title),
+  m_text(text),
+  m_date_created(date_created),
+  m_date_modified(date_modified),
+  m_notebook(notebook),
+  m_tags(tags),
+  m_favorited(favorited),
+  m_encrypted(encrypted),
+  m_trashed(trashed)
 {
-  m_syncId = syncId;
-  m_id = id;
-  m_title = title;
-  m_text  = text;
-  m_date_created = date_created;
-  m_date_modified = date_modified;
-  m_favorited = favorited;
-  m_notebook = notebook;
-  m_tags = tags;
-  m_trashed = trashed;
-  connect(this, &Note::noteChanged,
-          this, &Note::handleNoteChange);
+  connect(this, &Note::changed,
+          this, &Note::handleChange);
 }
 
-int Note::syncId() const
+QUuid Note::syncHash() const
 {
-  return m_syncId;
+  return m_sync_hash;
 }
 
-void Note::setSyncId(int syncId)
+void Note::setSyncHash(QUuid sync_hash)
 {
-  if (m_syncId == syncId)
+  if (m_sync_hash == sync_hash)
     return;
-  m_syncId = syncId;
-  emit noteChanged( this, false );
-}
-
-int Note::id() const
-{
-  return m_id;
-}
-
-void Note::setId(int id)
-{
-  if (m_id == id)
-    return;
-  m_id = id;
-  emit noteChanged( this, false );
-  emit noteIdChanged( this );
+  m_sync_hash = sync_hash;
+  emit changed( this, false );
 }
 
 QString Note::title() const
@@ -58,8 +44,8 @@ void Note::setTitle(const QString title)
   if (!QString::compare(m_title, titleCleaned)) // if m_table and title are same, exit
     return;
   m_title = titleCleaned;
-  emit noteChanged( this );
-  emit noteTitleChanged( this );
+  emit changed( this );
+  emit titleChanged( this );
 }
 
 QString Note::text() const
@@ -73,41 +59,41 @@ void Note::setText(const QString text)
   if (!QString::compare(m_text, textCleaned)) // If m_text and text are the same, exit
     return;
   m_text = textCleaned;
-  emit noteChanged( this );
-  emit noteTextChanged( this );
+  emit changed( this );
+  emit textChanged( this );
 }
 
-QDateTime Note::date_created() const
+QDateTime Note::dateCreated() const
 {
   return m_date_created;
 }
 
-QString Note::date_created_str() const
+QString Note::dateCreatedStr() const
 {
   return m_date_created.toString("MMMM d, yyyy");
 }
 
-QString Note::date_created_str_informative() const
+QString Note::dateCreatedStrInformative() const
 {
   return informativeDate( m_date_created );
 }
 
-void Note::setDate_created(const QDateTime &date_created)
+void Note::setDateCreated(const QDateTime &date_created)
 {
   if (!QString::compare(m_date_created.toString(), date_created.toString())) // If dates are same, exit
     return;
   m_date_created = date_created;
-  emit noteChanged( this, false );
-  emit noteDateCreatedChanged( this );
+  emit changed( this, false );
+  emit dateCreatedChanged( this );
 }
 
 
-QDateTime Note::date_modified() const
+QDateTime Note::dateModified() const
 {
   return m_date_modified;
 }
 
-QString Note::date_modified_str()
+QString Note::dateModifiedStr()
 {
 
 #ifdef UNIT_TEST
@@ -161,18 +147,44 @@ QString Note::date_modified_str()
   return QString("%1 %2 ago").arg(HelperIO::numberToString(amount, true), unit);
 }
 
-QString Note::date_modified_str_informative()
+QString Note::dateModifiedStrInformative()
 {
   return informativeDate( m_date_modified );
 }
 
-void Note::setDate_modified(const QDateTime &date_modified)
+void Note::setDateModified(const QDateTime &date_modified)
 {
   if (!QString::compare(m_date_modified.toString(), date_modified.toString())) // If dates are same, exit
     return;
   m_date_modified = date_modified;
-  emit noteChanged( this, false );
-  emit noteDateModifiedChanged( this );
+  emit changed( this, false );
+  emit dateModifiedChanged( this );
+}
+
+QUuid Note::notebook() const
+{
+  return m_notebook;
+}
+
+void Note::setNotebook(QUuid sync_hash, bool updateDateModified)
+{
+  if (m_notebook == sync_hash)
+    return;
+  m_notebook = sync_hash;
+  emit changed( this, updateDateModified );
+  emit notebookChanged( this );
+}
+
+QVector<QUuid> Note::tags() const
+{
+  return m_tags;
+}
+
+void Note::setTags(const QVector<QUuid> &tags)
+{
+  m_tags = tags;
+  emit changed( this );
+  emit tagsChanged( this );
 }
 
 bool Note::favorited() const
@@ -185,52 +197,36 @@ void Note::setFavorited(bool favorited)
   if (m_favorited == favorited)
     return;
   m_favorited = favorited;
-  emit noteChanged( this, false );
-  emit noteFavoritedChanged( this );
+  emit changed( this, false );
+  emit favoritedChanged( this );
 }
 
-int Note::notebook() const
+bool Note::encrypted() const
 {
-  return m_notebook;
+  return m_encrypted;
 }
 
-void Note::setNotebook(int id, bool updateDateModified)
+void Note::setEncrypted(bool encrypted)
 {
-  if (m_notebook == id)
+  if (encrypted == m_encrypted)
     return;
-  m_notebook = id;
-  emit noteChanged( this, updateDateModified );
-  emit noteNotebookChanged( this );
-}
-
-QVector<int> Note::tags() const
-{
-  return m_tags;
-}
-
-void Note::setTags(const QVector<int> &tags)
-{
-  m_tags = tags;
-  emit noteChanged( this );
-  emit noteTagsChanged( this );
+  m_encrypted = encrypted;
+  emit changed(this, true);
+  emit encryptedChanged(this);
 }
 
 bool Note::trashed() const {
   return m_trashed;
 }
 
-void Note::setTrashed(bool trashed) {
-  m_trashed = trashed;
-  emit noteChanged(this, false);
-  emit noteTrashedOrRestored(this, trashed);
-  if ( trashed ) emit noteTrashed(this);
-  else emit noteRestored(this);
-}
-
-void Note::handleNoteChange(Note *note, bool updateDateModified)
-{
-  if ( updateDateModified )
-    note->setDate_modified( QDateTime::currentDateTime() );
+void Note::setTrashed(bool _trashed) {
+  if (_trashed == m_trashed)
+    return;
+  m_trashed = _trashed;
+  emit changed(this, false);
+  emit trashedOrRestored(this, _trashed);
+  if ( _trashed ) emit trashed(this);
+  else           emit restored(this);
 }
 
 QString Note::informativeDate(QDateTime date) const
@@ -252,20 +248,26 @@ bool compareTwoDateTimes(QDateTime t1, QDateTime t2, char comparisonSymbol) {
 
 bool Note::byDateCreatedAsc(const Note *n1, const Note *n2)
 {
-  return compareTwoDateTimes( n1->date_created(), n2->date_created(), '<' );
+  return compareTwoDateTimes( n1->dateCreated(), n2->dateCreated(), '<' );
 }
 
 bool Note::byDateCreatedDesc(const Note *n1, const Note *n2)
 {
-  return compareTwoDateTimes( n1->date_created(), n2->date_created(), '>' );
+  return compareTwoDateTimes( n1->dateCreated(), n2->dateCreated(), '>' );
 }
 
 bool Note::byDateModifiedAsc(const Note *n1, const Note *n2)
 {
-  return compareTwoDateTimes( n1->date_modified(), n2->date_modified(), '<' );
+  return compareTwoDateTimes( n1->dateModified(), n2->dateModified(), '<' );
 }
 
 bool Note::byDateModifiedDesc(const Note *n1, const Note *n2)
 {
-  return compareTwoDateTimes( n1->date_modified(), n2->date_modified(), '>' );
+  return compareTwoDateTimes( n1->dateModified(), n2->dateModified(), '>' );
+}
+
+void Note::handleChange(Note *note, bool updateDateModified)
+{
+  if ( updateDateModified )
+    note->setDateModified( QDateTime::currentDateTime() );
 }

@@ -1,18 +1,18 @@
 #include "treeitemwithid.h"
 
-TreeItemWithID::TreeItemWithID(QString label, int id) :
+TreeItemWithID::TreeItemWithID(QString label, QUuid syncHash) :
     QTreeWidgetItem(),
-    m_id(id)
+    m_sync_hash(syncHash)
 {
     setText(0, label);
 }
 
-int TreeItemWithID::id() const
+QUuid TreeItemWithID::syncHash() const
 {
-    return m_id;
+    return m_sync_hash;
 }
 
-void TreeItemWithID::setID(int id)
+void TreeItemWithID::setSyncHash(QUuid syncHash)
 {
-    m_id = id;
+    m_sync_hash = syncHash;
 }

@@ -75,7 +75,9 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
   Qt::ItemFlags flags = QAbstractItemModel::flags(index);
   flags.setFlag(Qt::ItemIsSelectable, item->selectable());
   flags.setFlag(Qt::ItemIsEditable, item->isNotebook() || item->isTag());
-  flags.setFlag(Qt::ItemIsDropEnabled, item->isNotebook());
+  flags.setFlag(Qt::ItemIsDropEnabled,
+                (item->isNotebook() && item->syncHash() != nullptr) ||
+                (item->isNotebooksLabel() || item->isTagsLabel()));
   flags.setFlag(Qt::ItemIsDragEnabled, item->isNotebook() || item->isTag());
 
   return flags;
@@ -89,7 +91,7 @@ QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
 }
 
 QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
-  const
+const
 {
   if (!hasIndex(row, column, parent))
     return QModelIndex();
@@ -177,75 +179,150 @@ QModelIndex TreeModel::getItem(BasicTreeItem *item, QModelIndex parent) {
 
 Qt::DropActions TreeModel::supportedDropActions() const
 {
-    return Qt::MoveAction;
+  return Qt::MoveAction;
 }
 
 Qt::DropActions TreeModel::supportedDragActions() const
 {
-    return Qt::MoveAction;
+  return Qt::MoveAction;
 }
 
 QStringList TreeModel::mimeTypes() const
 {
-    return QStringList() << "application/vibrato-basictreeitem" << "image/*";
+  return QStringList() << "application/vibrato-basictreeitem" << "image/*";
 }
 
 QMimeData *TreeModel::mimeData(const QModelIndexList &indexes) const
 {
-    QMimeData *mimeData = new QMimeData();
-    QByteArray encodedData;
+  QMimeData *mimeData = new QMimeData();
+  QByteArray encodedData;
 
-    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+  QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
-    foreach (QModelIndex index, indexes) {
-        if (index.isValid()) {
-            QString data;
-            QModelIndex curIndex = index;
-            int invalidCount = 0;
-            while (curIndex.isValid() && invalidCount < 2) {
-                data = data.append(QString("%1").arg(curIndex.row()));
-                curIndex = curIndex.parent();
-                if (curIndex.isValid() && invalidCount == 0)
-                    data +=",";
-                if (!curIndex.isValid())
-                    invalidCount++;
-            }
-            stream << data;
-        }
+  foreach (QModelIndex index, indexes) {
+    if (index.isValid()) {
+      QString data;
+      QModelIndex curIndex = index;
+      int invalidCount = 0;
+      while (curIndex.isValid() && invalidCount < 2) {
+        data = data.append(QString("%1").arg(curIndex.row()));
+        curIndex = curIndex.parent();
+        if (curIndex.isValid() && invalidCount == 0)
+          data +=",";
+        if (!curIndex.isValid())
+          invalidCount++;
+      }
+      stream << data;
     }
+  }
 
 
-    mimeData->setData("application/vibrato-basictreeitem", encodedData);
-    return mimeData;
+  mimeData->setData("application/vibrato-basictreeitem", encodedData);
+  return mimeData;
 }
 
 bool TreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex & parent)
 {
-    if (action == Qt::IgnoreAction)
-        return true;
+  if (action == Qt::IgnoreAction)
+    return true;
 
-    if (!data->hasFormat("application/vibrato-basictreeitem"))
-        return false;
+  if (!data->hasFormat("application/vibrato-basictreeitem"))
+    return false;
 
-    if (column > 0)
-        return false;
+  if (column > 0)
+    return false;
 
-    QByteArray encodedData = data->data("application/vibrato-basictreeitem");
-    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+  QByteArray encodedData = data->data("application/vibrato-basictreeitem");
+  QDataStream stream(&encodedData, QIODevice::ReadOnly);
 
-    QString mimeString;
-    stream >> mimeString;
+  QString mimeString;
+  stream >> mimeString;
 
-    QStringList rowParents = mimeString.split(",");
-    QModelIndex theIndex = QModelIndex();
-    for ( int i = rowParents.length()-1; i >= 0; i-- ) {
-        int rowNum = rowParents.at(i).toInt();
-        theIndex = index(rowNum, 0, theIndex);
+  QStringList rowParents = mimeString.split(",");
+  QModelIndex theIndex = QModelIndex();
+  for ( int i = rowParents.length()-1; i >= 0; i-- ) {
+    int rowNum = rowParents.at(i).toInt();
+    theIndex = index(rowNum, 0, theIndex);
+  }
+
+  if (theIndex.isValid()) {
+    BasicTreeItem *sourceItem = static_cast<BasicTreeItem*>(theIndex.internalPointer());
+    BasicTreeItem *destParentItem = static_cast<BasicTreeItem*>(parent.internalPointer());
+
+    enum operationTypes {NotebookType, TagType};
+    int operationType;
+
+    if (sourceItem->isNotebook() && (destParentItem->isNotebook() ||
+                                     destParentItem->isNotebooksLabel())) {
+      operationType = NotebookType;
+    }
+    else if (sourceItem->isTag() && (destParentItem->isTag() ||
+                                     destParentItem->isTagsLabel())) {
+      operationType = TagType;
+    }
+    else {
+      return false;
     }
 
-    if (theIndex.isValid()) {
-        BasicTreeItem *source = static_cast<BasicTreeItem*>(theIndex.internalPointer());
+
+    // Do not allow users to make a child of the sourceItem the sourceItem's new parent.
+    QVector<BasicTreeItem*> destBlacklist;
+    destBlacklist += sourceItem->recurseChildren();
+    if ( destBlacklist.contains(destParentItem) ) {
+      return false;
     }
+
+    // First task is to make the items under the correct parent/hierarchy
+    if ( operationType == NotebookType &&
+         sourceItem->parentItem() != destParentItem ) {
+      sourceItem->parentItem()->removeChild(sourceItem); // Remove from old parent
+      destParentItem->appendChild(sourceItem);
+
+      // Alter the notebook object hierarchy
+      Notebook *notebookParent = nullptr;
+      if (destParentItem->isNotebook())
+        notebookParent = destParentItem->object().notebook;
+      sourceItem->object().notebook->setParent(notebookParent);
+    }
+
+    // The 'row' includes itself. This fixes it.
+    if (theIndex.row() < row)
+      row -= 1;
+
+    // Don't allow the user to put their notebook above the default
+    if (destParentItem->isNotebooksLabel())
+      row = row < 1 ? 1 : row;
+
+    // Next we adjust the row order
+    destParentItem->moveChild(sourceItem, row);
+
+    emit layoutChanged();
+
+    BasicTreeItem *notebooksOrTagsLabel = destParentItem;
+    while (!notebooksOrTagsLabel->isNotebooksLabel() &&
+           !notebooksOrTagsLabel->isTagsLabel()) {
+      notebooksOrTagsLabel = notebooksOrTagsLabel->parentItem();
+      if (notebooksOrTagsLabel == nullptr || notebooksOrTagsLabel == m_rootItem)
+        break;
+    }
+
+    if (notebooksOrTagsLabel != nullptr)
+      reOrderRowValues(notebooksOrTagsLabel);
 
     return true;
+  }
+
+  return false;
+}
+
+void TreeModel::reOrderRowValues(BasicTreeItem *parent)
+{
+  for (int i = 0; i < parent->children().length(); i++) {
+    BasicTreeItem *child = parent->children().at(i);
+    if (child->isNotebook())
+      child->object().notebook->setRow(i);
+    else if (child->isTag())
+      child->object().tag->setRow(i);
+    reOrderRowValues(child);
+  }
 }

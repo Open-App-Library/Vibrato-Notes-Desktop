@@ -34,7 +34,7 @@ public:
   ~MainWindow();
   void closeEvent (QCloseEvent *event);
 
-  void loadDummyData();
+  void loadDummyData();  
 
   void selectedNoteChanged(Note *n);
 

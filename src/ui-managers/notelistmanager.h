@@ -7,7 +7,6 @@
 #include "../models/items/notelistitem.h"
 #include "../meta/note.h"
 #include "../meta/db/database.h"
-#include "../meta/filter/notefilter.h"
 #include "manager.h"
 #include "notelist-views/trashview.h"
 #include <ui_notelist_addons.h>
@@ -47,7 +46,7 @@ public:
   void addTagToFilter(Tag *tag);
 
   int curViewType() const;
-  int curViewType_ItemID() const;
+  QUuid curViewType_ItemSyncHash() const;
   Notebook *curViewType_Notebook() const;
   Tag *curViewType_Tag() const;
 
@@ -73,8 +72,8 @@ public slots:
 
 private slots:
   void managerIsReady();
-  void notebooksDeleted(QVector<int> notebookIDs);
-  void tagDeleted(int tagID);
+  void notebooksDeleted(QVector<QUuid> notebookSyncHashes);
+  void tagDeleted(QUuid tagSyncHash);
   void favoritedChanged(void);
   void trashedOrRestored(void);
   void escribaDeselected();
@@ -100,12 +99,11 @@ private:
   NoteListProxyModel *m_proxyModel;
 
   int m_curViewType=View_AllNotes;
-  int m_curViewType_ItemID;
+  QUuid m_curViewType_ItemSyncHash;
   Notebook *m_curViewType_Notebook=nullptr;
   Tag *m_curViewType_Tag=nullptr;
   TrashView *m_trashView=nullptr;
 
-  NoteFilter *m_filter;
   Database *m_db;
 };
 

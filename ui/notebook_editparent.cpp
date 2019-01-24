@@ -44,8 +44,8 @@ void Notebook_EditParent::addNotebooks(Notebook* parentNotebook,
     notebooks = parentNotebook->children();
 
   for ( Notebook *notebook : notebooks ) {
-    QString title = notebook->id() == -1 ? "(No parent)" : notebook->title();
-    TreeItemWithID *newItem = new TreeItemWithID(title, notebook->id());
+    QString title = notebook->syncHash() == nullptr ? "(No parent)" : notebook->title();
+    TreeItemWithID *newItem = new TreeItemWithID(title, notebook->syncHash());
 
     // Disable the tree item iff disable_children or the notebook is
     // the current notebook (You can't be a parent of yourself!)
@@ -88,16 +88,16 @@ void Notebook_EditParent::okButtonClicked()
   TreeItemWithID *selectedItem =
     static_cast<TreeItemWithID*>(treeWidget->selectedItems()[0]);
 
-  int newID = selectedItem->id();
+  QUuid newSyncHash = selectedItem->syncHash();
 
   // If the parent ID hasn't changed, exit.
-  int curParentID = -1;
+  QUuid curParentSyncHash = nullptr;
   if ( m_curNotebook->parent() != nullptr )
-    curParentID = m_curNotebook->parent()->id();
-  if ( curParentID == newID )
+    curParentSyncHash = m_curNotebook->parent()->syncHash();
+  if ( curParentSyncHash == newSyncHash )
     return;
   Notebook *newParent = nullptr;
-  if (newID != -1) newParent = m_notebookDatabase->findNotebookWithID(newID);
+  if (newSyncHash != nullptr) newParent = m_notebookDatabase->findNotebookWithSyncHash(newSyncHash);
   m_curNotebook->setParent(newParent);
 
   emit changedParent();

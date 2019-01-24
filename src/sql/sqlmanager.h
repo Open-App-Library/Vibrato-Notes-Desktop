@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QVector>
 #include <QFile>
+#include <QUuid>
 #include "../meta/note.h"
 
 // A 2d array.
@@ -59,26 +60,26 @@ public:
   QVector<Notebook*> notebooks();
   QVector<Tag*> tags();
 
-  bool addNote(Note *note, bool getNewID=true);
+  bool addNote(Note *note);
   bool updateNoteToDB(Note *note);
   bool updateNoteFromDB(Note *note);
   bool deleteNote(Note *note);
 
-  bool addNotebook(Notebook *notebook, bool getNewID=true);
+  bool addNotebook(Notebook *notebook);
   bool updateNotebookToDB(Notebook *notebook);
   bool updateNotebookFromDB(Notebook *notebook);
   bool deleteNotebook(Notebook *notebook, bool delete_children=true);
 
-  bool addTag(Tag *tag, bool getNewID=true);
+  bool addTag(Tag *tag);
   bool updateTagToDB(Tag *tag);
   bool updateTagFromDB(Tag *tag);
   bool deleteTag(Tag *tag);
 
-  bool tagExists(int noteID, int tagID);
+  bool tagExists(QUuid noteSyncHash, QUuid tagSyncHash);
   // If skip_duplicate_check is set to true, it will not check for a duplicate entry
   // before adding the tag to note. This will save you from an extra database call.
-  bool addTagToNote(int noteID, int tagID, bool skip_duplicate_check=false);
-  bool removeTagFromNote(int noteID, int tagID);
+  bool addTagToNote(QUuid noteSyncHash, QUuid tagSyncHash, bool skip_duplicate_check=false);
+  bool removeTagFromNote(QUuid noteSyncHash, QUuid tagSyncHash);
 
   void importTutorialNotes();
 
@@ -95,26 +96,30 @@ private:
   QVector<Notebook*> m_getNotebooks(Notebook *parent=nullptr);
 
   QStringList m_noteColumns =
-    {"sync_id",
-     "id",
+    {"sync_hash",
      "title",
      "text",
      "date_created",
      "date_modified",
-     "favorited",
      "notebook",
+     "favorited",
+     "encrypted",
      "trashed"
     };
   QStringList m_notebookColumns =
-    {"sync_id",
-     "id",
+    {"sync_hash",
      "title",
-     "parent"
+     "date_modified",
+     "parent",
+     "row",
+     "encrypted"
     };
   QStringList m_tagColumns =
-    {"sync_id",
-     "id",
-     "title"
+    {"sync_hash",
+     "title",
+     "date_modified",
+     "row",
+     "encrypted"
     };
 };
 

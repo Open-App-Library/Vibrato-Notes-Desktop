@@ -1,33 +1,28 @@
 #include "tag.h"
 
-Tag::Tag(int syncId, int id, QString title) :
-  m_syncId(syncId),
-  m_id(id),
-  m_title(title)
+Tag::Tag(QUuid sync_hash, QString title, QDateTime date_modified, int row, bool encrypted) :
+  m_sync_hash(sync_hash),
+  m_title(title),
+  m_date_modified(date_modified),
+  m_row(row),
+  m_encrypted(encrypted)
 {
+  connect(this, &Tag::changed,
+          this, &Tag::handleChange);
 }
 
-int Tag::syncId() const
+QUuid Tag::syncHash() const
 {
-  return m_id;
+  return m_sync_hash;
 }
 
-void Tag::setSyncId(int syncId)
+void Tag::setSyncHash(QUuid syncHash)
 {
-  m_syncId = syncId;
-  emit tagSyncIDChanged(this);
-}
+  if ( syncHash == m_sync_hash ) return;
 
-int Tag::id() const
-{
-  return m_id;
-}
-
-void Tag::setId(int id)
-{
-  m_id = id;
-  emit tagIDChanged(this);
-  emit tagChanged(this);
+  m_sync_hash = syncHash;
+  emit syncHashChanged(this);
+  emit changed(this);
 }
 
 QString Tag::title() const
@@ -35,11 +30,59 @@ QString Tag::title() const
   return m_title;
 }
 
-void Tag::setTitle(const QString &title)
+void Tag::setTitle(const QString title)
 {
   if ( title.trimmed().isEmpty() )
     return;
   m_title = title;
-  emit tagTitleChanged(this);
-  emit tagChanged(this);
+  emit titleChanged(this);
+  emit changed(this);
+}
+
+QDateTime Tag::dateModified() const
+{
+  return m_date_modified;
+}
+
+void Tag::setDateModified(QDateTime dateModified, bool emitChangeSignal)
+{
+  if ( dateModified == m_date_modified ) return;
+
+  m_date_modified = dateModified;
+  emit dateModifiedChanged(this);
+  if (emitChangeSignal)
+    emit changed(this);
+}
+
+int Tag::row() const
+{
+  return m_row;
+}
+
+void Tag::setRow(int row)
+{
+  if ( row == m_row ) return;
+
+  m_row = row;
+  emit rowChanged(this);
+  emit changed(this);
+}
+
+bool Tag::encrypted() const
+{
+  return m_encrypted;
+}
+
+void Tag::setEncrypred(bool encrypted)
+{
+  if ( encrypted == m_encrypted ) return;
+
+  m_encrypted = encrypted;
+  emit encryptedChanged(this);
+  emit changed(this);
+}
+
+void Tag::handleChange(Tag *tag)
+{
+  tag->setDateModified( QDateTime::currentDateTime(), false );
 }

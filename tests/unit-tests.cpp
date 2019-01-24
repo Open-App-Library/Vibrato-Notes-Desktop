@@ -10,8 +10,6 @@
 #include <helper-io.hpp>
 #define private private
 
-
-
 #include <QtTest/qtest.h>
 #include <QCoreApplication>
 #include <QDebug>
@@ -49,36 +47,35 @@ void GenericTest::numberToStringWord()
 
 void GenericTest::dateFormatting()
 {
-  Note *note = new Note(-1, 1, "Test Note", "",
-                        isoDate( "2000-01-01T09:38:59Z"), // Date Created
-                        QDateTime::currentDateTime(),  // Date Modified
-                        false, -1, {}, false);
+  Note *note = new Note();
+  note->setDateCreated(isoDate("2000-01-01T09:38:59Z"));
+  note->setDateModified(QDateTime::currentDateTime());
+
   // For unit tests, the current date will always be:
   //                              2000-12-25T09:38:59Z
-  QCOMPARE(note->date_created_str(), "January 1, 2000");
-  QCOMPARE(note->date_created_str_informative(), "January 1, 2000 at 9:38AM UTC");
+  QCOMPARE(note->dateCreatedStr(), "January 1, 2000");
+  QCOMPARE(note->dateCreatedStrInformative(), "January 1, 2000 at 9:38AM UTC");
 
-  QCOMPARE(note->date_modified_str(), "Just now");
+  QCOMPARE(note->dateModifiedStr(), "Just now");
 
-  note->setDate_modified( isoDate("2000-12-25T09:36:59Z") ); // two minutes ago
-  QCOMPARE(note->date_modified_str(), "Two minutes ago");
+  note->setDateModified( isoDate("2000-12-25T09:36:59Z") ); // two minutes ago
+  QCOMPARE(note->dateModifiedStr(), "Two minutes ago");
 
-  note->setDate_modified( isoDate("2000-12-25T09:26:59Z") ); // twelve minutes ago
-  QCOMPARE(note->date_modified_str(), "12 minutes ago");
+  note->setDateModified( isoDate("2000-12-25T09:26:59Z") ); // twelve minutes ago
+  QCOMPARE(note->dateModifiedStr(), "12 minutes ago");
 
-  note->setDate_modified( isoDate("2000-11-01T09:38:59Z") ); // one month ago
-  QCOMPARE(note->date_modified_str(), "One month ago");
+  note->setDateModified( isoDate("2000-11-01T09:38:59Z") ); // one month ago
+  QCOMPARE(note->dateModifiedStr(), "One month ago");
 
-  note->setDate_modified( isoDate("1999-12-25T09:38:59Z") ); // one year ago
-  QCOMPARE(note->date_modified_str(), "One year ago");
+  note->setDateModified( isoDate("1999-12-25T09:38:59Z") ); // one year ago
+  QCOMPARE(note->dateModifiedStr(), "One year ago");
 
-  note->setDate_modified( isoDate("1989-12-25T09:38:59Z") ); // eleven years ago
-  QCOMPARE(note->date_modified_str(), "11 years ago");
+  note->setDateModified( isoDate("1989-12-25T09:38:59Z") ); // eleven years ago
+  QCOMPARE(note->dateModifiedStr(), "11 years ago");
 
   // Invalid date scenerio where modified date is later than current
-  note->setDate_modified( isoDate("2001-01-01T09:38:59Z") );
-  QCOMPARE(note->date_modified_str(), "Just now"); // "Just now" is possibly the safest response we could expect.
-
+  note->setDateModified( isoDate("2001-01-01T09:38:59Z") );
+  QCOMPARE(note->dateModifiedStr(), "Just now"); // "Just now" is possibly the safest response we could expect.
 }
 
 void addNoteToSQLite()
@@ -89,6 +86,7 @@ void addNoteToSQLite()
 void GenericTest::sqlmanager()
 {
   SQLManager manager;
+  qDebug() << "SQLite3 database location:" << manager.location();
 
   //
   // Test: SQL Errors
@@ -133,10 +131,11 @@ void GenericTest::sqlmanager()
   //
   // Test: Adding a note
   //
-  Note note(-1, 1, "Test Note", "Hello world.",
-            isoDate( "2000-01-01T09:38:59Z"), // Date Created
-            QDateTime::currentDateTime(),  // Date Modified
-            false, -1, {}, false);
+  Note note;
+  note.setTitle("Test Note");
+  note.setText("Hello world");
+  note.setDateCreated(isoDate( "2000-01-01T09:38:59Z"));
+  note.setDateModified(QDateTime::currentDateTime());
 
   QVERIFY( manager.addNote(&note) );
 
@@ -151,7 +150,7 @@ void GenericTest::sqlmanager()
   //
   // Test: Updating note from database
   //
-  manager.realBasicQuery( QString("update notes set title = 'from database' where id = %1").arg(note.id()) );
+  manager.realBasicQuery( QString("update notes set title = 'from database' where sync_hash = %1").arg(note.syncHash().toString(QUuid::WithoutBraces)) );
   manager.updateNoteFromDB(&note);
   mynote = manager.row("select title from notes", {"title"});
   QCOMPARE(note.title(), mynote["title"].toString());
@@ -159,12 +158,11 @@ void GenericTest::sqlmanager()
   //
   // Test: Loading a notebook
   //
-  QVERIFY (manager.realBasicQuery("insert into notebooks (sync_id, id, title, parent) values "
-                                  "(1, 2, 'Recipes', -1)"));
+  Notebook notebook("11111111-1111-1111-1111-111111111111");
+  notebook.setTitle("Recipes");
+  manager.addNotebook(&notebook);
   QVector<Notebook*> notebooks = manager.notebooks();
   for (Notebook *n : notebooks) {
-    QCOMPARE( n->syncId(), 1 );
-    QCOMPARE( n->id(), 2 );
     QCOMPARE( n->title(), "Recipes" );
     QCOMPARE( n->parent(), nullptr );
   }
@@ -175,17 +173,13 @@ void GenericTest::sqlmanager()
   //
   // Test: Loading nested notebooks (hierarchial)
   //
-  QVERIFY (manager.realBasicQuery("insert into notebooks (sync_id, id, title, parent) values "
-                                  "(2, 3, 'Cool', 1)"));
+  QVERIFY (manager.realBasicQuery("insert into notebooks (sync_hash, title, parent) values "
+                                  "('33333333-3333-3333-3333-333333333333', 'Cool', '11111111-1111-1111-1111-111111111111')"));
   notebooks = manager.notebooks();
   for (Notebook *n : notebooks) {
-    QCOMPARE( n->syncId(), 1 );
-    QCOMPARE( n->id(), 2 );
     QCOMPARE( n->title(), "Recipes" );
     QCOMPARE( n->parent(), nullptr );
     for (Notebook *n2 : n->children()) {
-      QCOMPARE( n2->syncId(), 2 );
-      QCOMPARE( n2->id(), 3 );
       QCOMPARE( n2->title(), "Cool" );
       QCOMPARE( n2->parent(), n );
     }
@@ -199,16 +193,19 @@ void GenericTest::sqlmanager()
   //
   QStringList tags = {"fun", "2018", "2019", "pictures"};
   QVERIFY( manager.realBasicQuery("insert into tags (title) values ('fun'), ('2018'), ('2019'), ('pictures')"));
-  VariantList tagNames = manager.column("select * from tags", 2);
-  for (int i=0; i<tags.length(); i++)
+  VariantList tagNames = manager.column("select title from tags", 0);
+  qDebug() << "The Tags" << tagNames;
+  for (int i=0; i<tags.length(); i++) {
     QCOMPARE( tagNames[i].toString(), tags[i] );
+  }
 
   //
   // Test: Add new Tag
   //
-  Tag *newTag = new Tag(1, 5, "cats&dogs");
+  Tag *newTag = new Tag();
+  newTag->setTitle("cats&dogs");
   manager.addTag(newTag);
-  tagNames = manager.column("select * from tags", 2);
+  tagNames = manager.column("select title from tags", 0);
   QStringList tlist;
   tags.append("cats&dogs");
   for (QVariant t : tagNames)

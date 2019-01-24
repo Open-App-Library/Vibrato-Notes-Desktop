@@ -1,22 +1,22 @@
 #ifndef LISTITEMWITHID_H
 #define LISTITEMWITHID_H
 #include <QListWidgetItem>
-
-#define LIST_ITEM_UNKNOWN -1
+#include <QUuid>
 
 class ListItemWithID : public QObject, public QListWidgetItem
 {
 	Q_OBJECT
 public:
-	ListItemWithID(QString label, int id);
+  ListItemWithID(QString label, QUuid syncHash);
 	int id() const;
+  QUuid syncHash() const;
 
 public slots:
 	void setLabel(QString label);
-	void setID(int id);
+  void setSyncHash(QUuid syncHash);
 
 private:
-	int m_id = LIST_ITEM_UNKNOWN;
+  QUuid m_sync_hash = nullptr;
 };
 
 #endif // LISTITEMWITHID_H

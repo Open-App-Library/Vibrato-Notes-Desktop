@@ -17,35 +17,15 @@ class NoteListItem : public QObject
 public:
   NoteListItem(Note *note);
   ~NoteListItem();
-  Note *note();
+
+  Note *note() const;
   void setNote(Note *note);
 
-  QWidget *widget();
-  void setWidget(QWidget *widget);
-
-  void setSelectedStyle(bool selected);
-
-  int id();
+  QUuid syncHash() const;
 
 private:
-  Ui::NoteListItem *m_ui_class;
-  QWidget *m_widget=nullptr;
-
   Note *m_note;
-  int m_id;
-
-  QLabel *m_title_label;
-  QLabel *m_excerpt_label;
-  QLabel *m_date_created_label;
-
-signals:
-  void noteDateChanged(NoteListItem *item);
-
-private slots:
-  void noteIDChanged(Note *note);
-public slots:
-  void noteDateChanged_slot(Note *note);
-
+  QUuid m_sync_hash;
 };
 
 #endif // NOTELISTITEM_H

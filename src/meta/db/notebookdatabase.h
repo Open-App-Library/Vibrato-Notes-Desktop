@@ -10,51 +10,46 @@ class NotebookDatabase : public QObject
   Q_OBJECT
 public:
   NotebookDatabase(SQLManager *sqlManager, NoteDatabase *noteDatabase);
+
   QVector<Notebook *> list() const;
-  int               size() const;
+  int                 size() const;
   QVector<Notebook *> listRecursively() const;
   QVector<Notebook *> listRecursively(const QVector<Notebook*> notebookList) const;
 
-  Notebook *addNotebook(QString title="Untitled Notebook", Notebook *parent=nullptr);
   void addNotebook(Notebook *notebook);
   void addNotebook(Notebook *notebook, Notebook *parent);
 
-  void removeNotebook(int notebookID);
+  void removeNotebook(QUuid syncHash);
   void removeNotebook(Notebook *notebook);
   void clearNotebooks();
 
-  Notebook *findNotebookWithID(int id);
+  Notebook *findNotebookWithSyncHash(QUuid syncHash);
 
   void loadSQL();
-
-  void loadJSON(QJsonDocument jsonDocument);
-  void loadDummyNotebooks();
-
-  void jsonObjectToNotebookList(QJsonObject notebookObj, Notebook *parent=nullptr);
 
   void connectNotebook(Notebook *notebook);
   void disconnectNotebook(Notebook *notebook);
 
 private slots:
-  void notebookChanged_slot(Notebook *notebook);
-  void notebookIDChanged_slot(Notebook *notebook);
-  void notebookTitleChanged_slot(Notebook *notebook);
-  void notebookParentChanged_slot(Notebook *notebook);
-  void notebookChildrenChanged_slot(Notebook *notebook);
-  void handleNotebookParentRequest(Notebook *notebook, int requestedParentID);
+  void changed_slot(Notebook *notebook);
+
+  void syncHashChanged_slot(Notebook *notebook);
+  void titleChanged_slot(Notebook *notebook);
+  void parentChanged_slot(Notebook *notebook);
+  void childrenChanged_slot(Notebook *notebook);
+
+  void handleNotebookParentRequest(Notebook *notebook, QUuid parentSyncHash);
 
 signals:
-  void notebookAdded(Notebook *notebook);
-  void notebooksRemoved(QVector<int> notebookIDs);
-  void notebookChanged(Notebook *notebook);
-  void notebookIDChanged(Notebook *notebook);
-  void notebookTitleChanged(Notebook *notebook);
-  void notebookParentChanged(Notebook *notebook);
-  void notebookChildrenChanged(Notebook *notebook);
+  void changed(Notebook *notebook);
 
-  // NotebookDatabase listens to these signals and acts accordingly
-  void shouldDeleteNotesInNotebooks(QVector<int> notebookIDs);
-  void shouldSetNotesInNotebookToDefaultNotebooks(QVector<int> notebookIDs);
+  void syncHashChanged(Notebook *notebook);
+  void titleChanged(Notebook *notebook);
+  void parentChanged(Notebook *notebook);
+  void childrenChanged(Notebook *notebook);
+
+  void added(Notebook *notebook);
+  void removed(QVector<QUuid> notebookSyncHashes);
 
 private:
   SQLManager *m_sqlManager;

@@ -21,7 +21,7 @@ public:
   QCheckBox *checkbox() const;
   bool checked() const;
   Note *note() const;
-  int noteID() const;
+  QUuid noteSyncHash() const;
 
   void emitDeleteNoteSignal();
   void emitRestoreNoteSignal();
@@ -30,7 +30,7 @@ signals:
   void deleteNote(Note *note);
   void restoreNote(Note *note);
   void itemCheckedOrUnchecked(TrashItem *item);
-  void noteDeleted(TrashItem *item, int noteID);
+  void noteDeleted(TrashItem *item, QUuid noteSyncHash);
   void pleaseDeleteTrashItem(TrashItem *item);
 
 private slots:
@@ -41,7 +41,7 @@ private:
   Ui::TrashItem *ui;
   QWidget *widget=nullptr;
   Note *m_note=nullptr;
-  int m_noteID=-1;
+  QUuid m_noteSyncHash=nullptr;
 };
 
 #endif // TRASHITEM_H

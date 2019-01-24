@@ -25,6 +25,8 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   // Make notebooks and tags labels not selectable.
   m_notebooks->setSelectable(false);
   m_tags->setSelectable(false);
+  m_notebooks->setIsNotebooksLabel();
+  m_tags->setIsTagsLabel();
 
   m_all_notes->setIcon( IconUtils::requestDarkIcon("document-new") );
   m_favorites->setIcon( IconUtils::requestDarkIcon("draw-star") );
@@ -102,25 +104,20 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   // Signal Connections
   connect(m_tree_view->selectionModel(), &QItemSelectionModel::currentChanged,
           this, &TreeManager::treeItemChanged);
-  connect(m_db->tagDatabase(), &TagDatabase::tagAdded,
+  connect(m_db->tagDatabase(), &TagDatabase::added,
           this, &TreeManager::tagAdded);
-  connect(m_db->tagDatabase(), &TagDatabase::tagRemoved,
+  connect(m_db->tagDatabase(), &TagDatabase::removed,
           this, &TreeManager::tagRemoved);
-  connect(m_db->tagDatabase(), &TagDatabase::tagChanged,
+  connect(m_db->tagDatabase(), &TagDatabase::changed,
           this, &TreeManager::tagChanged);
-  connect(m_db->notebookDatabase(), &NotebookDatabase::notebookAdded,
+  connect(m_db->notebookDatabase(), &NotebookDatabase::added,
           this, &TreeManager::notebookAdded);
-  connect(m_db->notebookDatabase(), &NotebookDatabase::notebooksRemoved,
+  connect(m_db->notebookDatabase(), &NotebookDatabase::removed,
           this, &TreeManager::notebooksRemoved);
 
   // Load databases
   loadNotebooksFromNotebookDatabase( m_db->notebookDatabase() );
   loadTagsFromTagDatabase( m_db->tagDatabase() );
-
-  m_editNotebookParentDialog = new Notebook_EditParent( m_db->notebookDatabase() );
-
-  connect(m_editNotebookParentDialog, &Notebook_EditParent::changedParent,
-          this, &TreeManager::changedNotebookHierarchy);
 }
 
 TreeManager::~TreeManager()
@@ -384,10 +381,10 @@ void TreeManager::tagAdded(Tag *tag)
   }
 }
 
-void TreeManager::tagRemoved(int tagID) {
+void TreeManager::tagRemoved(QUuid tagSyncHash) {
   bool wasViewingDeletedTag = false;
   if ( m_curItem->isTag() &&
-       m_curItem->id() == tagID )
+       m_curItem->syncHash() == tagSyncHash )
     {
       wasViewingDeletedTag = true;
     }
@@ -407,8 +404,40 @@ void TreeManager::tagChanged(Tag *tag)
 
 void TreeManager::notebookAdded(Notebook *notebook)
 {
-  // Inefficient! But it works for now
-  loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
+  /*
+   * First we must figure out the path of parents.
+   * For example, a "Burrito" notebook might return this parentPath
+   * [Recipes, Mexican Recipes, Mexican Lunch Recipes]
+   */
+  QVector<Notebook*> parentPath;
+  Notebook *curParent = notebook->parent();
+  while (curParent != nullptr) {
+      parentPath.prepend(curParent);
+      curParent = curParent->parent();
+  }
+
+  /*
+   * Using our knowledge of the parentPath, we must figure out what
+   * BasicTreeItem out notebook should be added to.
+   */
+  BasicTreeItem *curItem = m_notebooks;
+  for (Notebook *parent : parentPath) {
+      BasicTreeItem *startingItem = curItem;
+      for (BasicTreeItem *item : curItem->children()) {
+          if (item->isNotebook() && item->object().notebook == parent) {
+              curItem = item;
+          }
+      }
+      if (curItem == startingItem) {
+          // To prevent infinite loops, if the notebook is not found in the
+          // parent path. Set the item to m_notebooks and break.
+          curItem = m_notebooks;
+          break;
+      }
+  }
+
+  addNotebook(notebook, curItem);
+  update();
 
   // If user wants to open a notebook for editing
   if ( m_openNewNotebookForEditing ) {
@@ -430,18 +459,22 @@ void TreeManager::notebookAdded(Notebook *notebook)
   }
 }
 
-void TreeManager::notebooksRemoved(QVector<int> notebookIDs)
+void TreeManager::notebooksRemoved(QVector<QUuid> notebookSyncHashes)
 {
-  // Lazy way. Re-draws notebook tree. The proper way would be to simply remove a single BasicTreeItem.
-  // TODO: Implement TreeManager::notebooksRemoved the proper way!
   bool wasViewingDeletedNotebook = false;
   if ( m_curItem->isNotebook() &&
-       notebookIDs.contains( m_curItem->id() ) )
+       notebookSyncHashes.contains( m_curItem->syncHash() ) )
     {
       wasViewingDeletedNotebook = true;
     }
 
-  loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
+  for (BasicTreeItem *item : m_notebooks->recurseChildren()) {
+      if (item->isNotebook() && notebookSyncHashes.contains(item->syncHash())) {
+          item->parentItem()->removeChild(item);
+          update();
+          break;
+      }
+  }
 
   if ( wasViewingDeletedNotebook ) {
     QModelIndex all_notes_index = m_tree_model->index(0, 0);
@@ -460,10 +493,12 @@ void TreeManager::contextNewNotebook()
   m_openNewNotebookForEditing = true;
 
   // Add notebook to notebook database
-  if ( m_currentContextIndex->isNotebook() && m_currentContextIndex->object().notebook->id() != NOTEBOOK_DEFAULT_NOTEBOOK_ID )
-    m_db->notebookDatabase()->addNotebook(NOTEBOOK_DEFAULT_TITLE, m_currentContextIndex->object().notebook);
-  else
-    m_db->notebookDatabase()->addNotebook(NOTEBOOK_DEFAULT_TITLE, nullptr);
+  Notebook *parent = nullptr;
+
+  if ( m_currentContextIndex->isNotebook() )
+    parent = m_currentContextIndex->object().notebook;
+
+  m_db->notebookDatabase()->addNotebook(Notebook::createBlankNotebook(), parent);
 }
 
 void TreeManager::contextDeleteNotebook()
@@ -476,12 +511,6 @@ void TreeManager::contextRenameNotebook()
 {
   if ( m_currentContextModelIndex.isValid() )
     m_tree_view->edit(m_currentContextModelIndex);
-}
-
-void TreeManager::contextEditNotebookHierarchy()
-{
-  if ( m_currentContextIndex->isNotebook() )
-    m_editNotebookParentDialog->exec( m_currentContextIndex->object().notebook );
 }
 
 void TreeManager::contextNewTag()
@@ -511,11 +540,6 @@ void TreeManager::contextRemoveSearchQuery()
     removeSearchQuery(m_currentContextIndex);
 }
 
-void TreeManager::changedNotebookHierarchy() {
-  // Inefficient! But it works for now
-  loadNotebooksFromNotebookDatabase(m_db->notebookDatabase());
-}
-
 void TreeManager::treeContextMenu(const QPoint &point)
 {
   QModelIndex index = m_tree_view->indexAt(point);
@@ -538,7 +562,7 @@ void TreeManager::treeContextMenu(const QPoint &point)
     m_notebookDelete->setVisible(showEditingControls);
 
     // Don't allow editing of default notebook
-    if ( item->isNotebook() && item->object().notebook->id() == NOTEBOOK_DEFAULT_NOTEBOOK_ID ) {
+    if ( item->isNotebook() && item->object().notebook->syncHash() == nullptr ) {
       m_notebookRename->setDisabled(true);
       m_notebookDelete->setDisabled(true);
     } else {
@@ -565,15 +589,15 @@ void TreeManager::treeContextMenu(const QPoint &point)
   }
 }
 
-void TreeManager::openNotebookWithID(int notebookID)
+void TreeManager::openNotebookWithSyncHash(QUuid notebookSyncHash)
 {
   for (BasicTreeItem *item : recurseNotebooks() ) {
-    if ( item->object().notebook->id() == notebookID ) {
+    if ( item->object().notebook->syncHash() == notebookSyncHash ) {
       QModelIndex index = m_tree_model->getItem(item);
       if (index.isValid())
         m_tree_view->setCurrentIndex(index);
       else
-        qWarning() << "Unable to set current index of tree to notebook id" << notebookID;
+        qWarning() << "Unable to set current index of tree to notebook id" << notebookSyncHash;
       return;
     }
   }

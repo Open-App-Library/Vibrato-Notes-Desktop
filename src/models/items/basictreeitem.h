@@ -21,17 +21,19 @@ public:
 
   ~BasicTreeItem();
 
-  enum TypeOfItem {Type_Notebook, Type_Tag, Type_SearchQuery, Type_Other};
+  enum TypeOfItem {Type_Notebook, Type_Tag, Type_SearchQuery, Type_NotebooksLabel, Type_TagsLabel, Type_Other};
 
   bool isNotebook() const;
   bool isTag() const;
   bool isSearchQuery() const;
+  bool isNotebooksLabel() const;
+  bool isTagsLabel() const;
   bool isOther() const;
 
   bool selectable() const;
   void setSelectable(bool selectable=true);
 
-  int id() const;
+  QUuid syncHash() const;
 
   QString   label() const;
   void      setLabel(QString label);
@@ -48,10 +50,15 @@ public:
   QString searchQuery() const;
   void setSearchQuery(QString searchQuery);
 
+  void setIsNotebooksLabel();
+  void setIsTagsLabel();
+
   BasicTreeItem *getChild(int index) const;
   BasicTreeItem *appendChild(BasicTreeItem *child);
   void removeChild(int index);
   void removeChild(BasicTreeItem *item);
+  void moveChild(int row, int newRow);
+  void moveChild(BasicTreeItem *item, int newRow);
   QVector<BasicTreeItem*> children() const;
   QVector<BasicTreeItem*> recurseChildren() const;
   int childCount() const;
@@ -63,12 +70,12 @@ public:
 
 private slots:
   void notebookTitleChanged(Notebook *notebook);
-  void notebookIDChanged(Notebook *notebook);
+  void notebookSyncHashChanged(Notebook *notebook);
   void tagTitleChanged(Tag *tag);
-  void tagIDChanged(Tag *tag);
+  void tagSyncHashChanged(Tag *tag);
 
 private:
-  int m_id; // Grab ID of notebook or tag without accessing object. This is a safety feature.
+  QUuid m_sync_hash; // Grab ID of notebook or tag without accessing object. This is a safety feature.
   QString m_label;
   QIcon m_icon;
   int m_type; // Type_Notebook, Type_Tag, etc.

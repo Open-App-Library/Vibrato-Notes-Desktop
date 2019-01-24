@@ -31,15 +31,15 @@ Note_EditNotebook::Note_EditNotebook(Database *db, Manager *manager, Note *note,
 
   setModal(true); // Make dialog a modal
 
-  connect(note, &Note::noteChanged,
+  connect(note, &Note::changed,
           this, &Note_EditNotebook::noteChanged);
   connect(m_selectNotebook, &QPushButton::clicked,
           this, &Note_EditNotebook::selectNotebook);
   connect(m_notebookTree, &QTreeWidget::currentItemChanged,
           this, &Note_EditNotebook::currentItemChanged);
-  connect(m_db->notebookDatabase(), &NotebookDatabase::notebookAdded,
+  connect(m_db->notebookDatabase(), &NotebookDatabase::added,
           this, &Note_EditNotebook::notebookAddedOrRemoved);
-  connect(m_db->notebookDatabase(), &NotebookDatabase::notebooksRemoved,
+  connect(m_db->notebookDatabase(), &NotebookDatabase::removed,
           this, &Note_EditNotebook::notebookAddedOrRemoved);
 }
 
@@ -73,12 +73,12 @@ void Note_EditNotebook::selectNotebook()
   checkItem(sel, true);
 
   // Save into note object
-  int curId = m_note->notebook();
-  int id = sel->id();
-  if ( curId != id ) {
+  QUuid curSyncHash = m_note->notebook();
+  QUuid syncHash = sel->syncHash();
+  if ( curSyncHash != syncHash ) {
     m_manager->noteListManager()->deselect();
-    m_note->setNotebook(id);
-    m_manager->treeManager()->openNotebookWithID(id);
+    m_note->setNotebook(syncHash);
+    m_manager->treeManager()->openNotebookWithSyncHash(syncHash);
     emit notebookChanged();
   }
 }
@@ -99,10 +99,10 @@ void Note_EditNotebook::clearTree()
 
 void Note_EditNotebook::addNotebookToTree(Notebook *notebook, TreeItemWithID *parent)
 {
-  TreeItemWithID *item = new TreeItemWithID(notebook->title(), notebook->id());
+  TreeItemWithID *item = new TreeItemWithID(notebook->title(), notebook->syncHash());
   m_treeItems.append(item);
 
-  checkItem( item, m_note->notebook() == notebook->id() );
+  checkItem( item, m_note->notebook() == notebook->syncHash() );
 
   if ( parent == nullptr )
     m_notebookTree->addTopLevelItem(item);
@@ -139,7 +139,7 @@ void Note_EditNotebook::updateCheckMarks()
 {
   for ( int i = 0; i < m_treeItems.length(); i++ ) {
     TreeItemWithID *item = m_treeItems.at(i);
-    bool condition = item->id() == m_note->notebook();
+    bool condition = item->syncHash() == m_note->notebook();
     checkItem( item, condition);
     if ( condition )
       break;
@@ -162,7 +162,7 @@ void Note_EditNotebook::currentItemChanged(QTreeWidgetItem *current, QTreeWidget
     return;
   (void) previous; // Ignore unused parameter compiler warning
   TreeItemWithID *cur = static_cast<TreeItemWithID*>(current);
-  if ( cur->id() == m_note->notebook()) {
+  if ( cur->syncHash() == m_note->notebook()) {
     m_selectNotebook->setEnabled(false);
   } else {
     m_selectNotebook->setEnabled(true);
