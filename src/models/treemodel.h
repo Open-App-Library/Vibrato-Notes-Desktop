@@ -42,6 +42,9 @@ public:
 
   void reOrderRowValues(BasicTreeItem *parent);
 
+signals:
+  void setExpanded(QModelIndex index, bool expanded);
+
 private:
   BasicTreeItem *m_rootItem;
   QVector<QModelIndex> m_recurseChildren(QModelIndex parent=QModelIndex());

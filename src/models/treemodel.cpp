@@ -294,9 +294,24 @@ bool TreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int r
       row = row < 1 ? 1 : row;
 
     // Next we adjust the row order
+
+    int destRow = row;
+
+    // Keep Qt happy when moving a row of the same parent.
+    // If moving an item around in the same parent, we must make sure the destRow
+    // takes into account the current indexes that are there.
+    // More info: http://doc.qt.io/qt-5/qabstractitemmodel.html#beginMoveRows
+    // Forum post: https://forum.qt.io/topic/95879/endmoverows-in-model-crashes-my-app
+    if (theIndex.parent() == parent)
+      if (destRow >= theIndex.row())
+        destRow += theIndex.row()+1;
+
+    beginMoveRows(theIndex.parent(), theIndex.row(), theIndex.row(), parent, destRow);
     destParentItem->moveChild(sourceItem, row);
-    removeRow(theIndex.row(), theIndex.parent());
-    insertRow(row, parent);
+    endMoveRows();
+
+    // removeRow(theIndex.row(), theIndex.parent());
+    // insertRow(row, parent);
 
     emit layoutChanged();
 
@@ -310,6 +325,8 @@ bool TreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int r
 
     if (notebooksOrTagsLabel != nullptr)
       reOrderRowValues(notebooksOrTagsLabel);
+
+    //emit setExpanded(parent, true);
 
     return true;
   }

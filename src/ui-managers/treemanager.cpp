@@ -104,6 +104,8 @@ TreeManager::TreeManager(CustomTreeView *treeView, Database *db, Manager *manage
   // Signal Connections
   connect(m_tree_view->selectionModel(), &QItemSelectionModel::currentChanged,
           this, &TreeManager::treeItemChanged);
+  connect(m_tree_model, &TreeModel::setExpanded,
+          m_tree_view, &CustomTreeView::setExpanded);
   connect(m_db->tagDatabase(), &TagDatabase::added,
           this, &TreeManager::tagAdded);
   connect(m_db->tagDatabase(), &TagDatabase::removed,
