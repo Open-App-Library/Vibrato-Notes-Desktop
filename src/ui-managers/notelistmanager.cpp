@@ -32,25 +32,22 @@ NoteListManager::NoteListManager(CustomListView *view, QWidget *noteListAddons, 
 
   connect(m_manager, &Manager::ready,
           this, &NoteListManager::managerIsReady);
-
   connect(m_view, &CustomListView::selectedItemChanged,
           this, &NoteListManager::noteListItemChanged);
-
   connect(m_proxyModel, &NoteListProxyModel::invalidatedFilter,
           this, &NoteListManager::ensureCurrentNoteIsSelected);
-
   connect(m_db->notebookDatabase(), &NotebookDatabase::removed,
           this, &NoteListManager::notebooksDeleted);
-
   connect(m_db->tagDatabase(), &TagDatabase::removed,
           this, &NoteListManager::tagDeleted);
-
+  connect(m_db->noteDatabase(), &NoteDatabase::noteChanged,
+          this, &NoteListManager::aNoteChanged);
+  connect(m_db->noteDatabase(), &NoteDatabase::noteAdded,
+          this, &NoteListManager::add_note);
   connect(m_db->noteDatabase(), &NoteDatabase::noteFavoritedChanged,
           this, &NoteListManager::favoritedChanged);
-
   connect(m_db->noteDatabase(), &NoteDatabase::noteTrashedOrRestored,
           this, &NoteListManager::trashedOrRestored);
-
   connect(m_db->notebookDatabase(), &NotebookDatabase::changed,
           this, &NoteListManager::aNotebookChanged);
   connect(m_db->tagDatabase(), &TagDatabase::changed,
@@ -413,6 +410,17 @@ void NoteListManager::escribaDeselected() {
 void NoteListManager::aNotebookChanged(Notebook* notebook) {
   if ( m_curViewType == View_Notebook && m_curViewType_Notebook == notebook )
     showNotebookView(notebook);
+}
+
+void NoteListManager::aNoteChanged(Note* note) {
+  for (int i = 0; i < m_model->rowCount(); i++) {
+    QModelIndex index = m_model->index(i, 0);
+    Note *curNote = m_model->noteFromIndex(index);
+    if (curNote == note) {
+      m_model->refresh(i);
+      break;
+    }
+  }
 }
 
 void NoteListManager::aTagChanged(Tag* tag) {

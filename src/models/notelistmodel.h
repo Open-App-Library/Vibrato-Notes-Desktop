@@ -36,6 +36,8 @@ public:
   int rowCount(const QModelIndex &parent = QModelIndex()) const override;
   int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
+  Note *noteFromIndex(QModelIndex index);
+
   void removeNoteItemWithSyncHash(QUuid syncHash);
 
 private:

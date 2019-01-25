@@ -36,6 +36,8 @@ Note *NoteDatabase::addNote(Note *note, bool addToSQL)
           this, &NoteDatabase::handleNoteFavoritedChanged);
   connect(note, &Note::trashedOrRestored,
           this, &NoteDatabase::noteTrashedOrRestored);
+
+  emit noteAdded(note);
   return note;
 }
 

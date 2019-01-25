@@ -79,6 +79,7 @@ private slots:
   void escribaDeselected();
 
   // When a notebook or tag changes in the notebook/tag database
+  void aNoteChanged(Note *note);
   void aNotebookChanged(Notebook *notebook);
   void aTagChanged(Tag *tag);
 

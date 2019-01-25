@@ -97,6 +97,13 @@ int NoteListModel::columnCount(const QModelIndex &parent) const
   return 1;
 }
 
+Note* NoteListModel::noteFromIndex(QModelIndex index) {
+  if (!index.isValid())
+    return nullptr;
+  NoteListItem *item = static_cast<NoteListItem*>(index.internalPointer());
+  return item->note();
+}
+
 QVariant NoteListModel::data(const QModelIndex &index, int role) const
 {
   if (!index.isValid())

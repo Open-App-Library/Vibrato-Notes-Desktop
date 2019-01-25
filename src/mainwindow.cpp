@@ -138,8 +138,15 @@ void MainWindow::userButtonClicked()
 
 void MainWindow::addNewNote()
 {
-  m_note_list_manager->add_note( m_notes->addDefaultNote() ); // Create a new note
-  m_tree_manager->gotoAllNotesTab(); // Go to the All Notes tab.
+  Note *newNote = m_notes->addDefaultNote();
+  if (m_note_list_manager->curViewType() == NoteListManager::View_Notebook) {
+    Notebook *notebook = m_note_list_manager->curViewType_Notebook();
+    newNote->setNotebook(notebook->syncHash(), false);
+  }
+  else if (m_note_list_manager->curViewType() == NoteListManager::View_Tag) {
+    Tag *tag = m_note_list_manager->curViewType_Tag();
+    newNote->setTags({tag->syncHash()});
+  }
   m_note_list_manager->openIndexInEditor(0); // Select the first note (Newest note)
 }
 

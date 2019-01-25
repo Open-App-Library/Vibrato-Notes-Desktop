@@ -45,6 +45,7 @@ public:
 signals:
   // Important: 'Trashed' means the *Note is set as trashed=true.
   //            'Deleted' means the *Note was deleted and removed from database. (Permanent)
+  void noteAdded(Note *note);
   void noteChanged(Note *note);
   void noteTrashedOrRestored(Note *note, bool trashed);
   void noteDeleted(QUuid noteSyncHash);
