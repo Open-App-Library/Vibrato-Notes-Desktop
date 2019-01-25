@@ -8,6 +8,12 @@
 #include <QSqlRecord>
 #include <QVariant>
 
+/*
+ * Future Note:
+ * It will likely make more sense to implement a lot of the SQL functionality in the
+ * classes of the individual object classes.
+ */
+
 SQLManager::SQLManager(QObject *parent) : QObject(parent)
 {
   // Determine an appropraite pathname for the sqlite3 database
@@ -449,9 +455,9 @@ bool SQLManager::updateNotebookToDB(Notebook* notebook) {
 
   QSqlRecord notebookInDB = model.record(0);
 
-  QUuid parentSyncHash = nullptr;
+  QString parentSyncHash;
   if ( notebook->parent() != nullptr)
-    parentSyncHash = notebook->parent()->syncHash();
+    parentSyncHash = notebook->parent()->syncHash().toString(QUuid::WithoutBraces);
 
   notebookInDB.setValue("title", notebook->title());
   notebookInDB.setValue("date_modified", notebook->dateModified());
@@ -616,6 +622,8 @@ bool SQLManager::removeTagFromNote(QUuid noteSyncHash, QUuid tagSyncHash) {
 void SQLManager::importTutorialNotes() {
   QString welcomeText = HelperIO::fileToQString(":/tutorial/1-welcome.md");
   QDateTime now = QDateTime::currentDateTime();
-  Note welcome(nullptr, "Welcome to Vibrato Notes!", welcomeText);
+  Note welcome;
+  welcome.setTitle("Welcome to Vibrato Notes!");
+  welcome.setText(welcomeText);
   addNote(&welcome);
 }

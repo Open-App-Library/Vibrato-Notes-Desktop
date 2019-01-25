@@ -41,7 +41,9 @@ QString Note::title() const
 void Note::setTitle(const QString title)
 {
   QString titleCleaned = title.trimmed();
-  if (!QString::compare(m_title, titleCleaned)) // if m_table and title are same, exit
+  // If no changed to title or it is empty, return.
+  if (m_title == titleCleaned ||
+      title.isEmpty())
     return;
   m_title = titleCleaned;
   emit changed( this );

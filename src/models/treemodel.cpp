@@ -295,6 +295,8 @@ bool TreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int r
 
     // Next we adjust the row order
     destParentItem->moveChild(sourceItem, row);
+    removeRow(theIndex.row(), theIndex.parent());
+    insertRow(row, parent);
 
     emit layoutChanged();
 

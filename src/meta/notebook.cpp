@@ -38,11 +38,13 @@ QString Notebook::title() const
 
 void Notebook::setTitle(const QString &title)
 {
-  // If Default Notebook or title is empty, return.
-  if ( defaultNotebook() ||
-       title.trimmed().isEmpty() )
+  QString cleanedTitle = title.trimmed();
+  // If Default Notebook or no change or title is empty, return.
+  if (defaultNotebook() ||
+      cleanedTitle == m_title ||
+      cleanedTitle.isEmpty())
     return;
-  m_title = title;
+  m_title = cleanedTitle;
   emit titleChanged(this);
   emit changed(this);
 }

@@ -32,9 +32,11 @@ QString Tag::title() const
 
 void Tag::setTitle(const QString title)
 {
-  if ( title.trimmed().isEmpty() )
+  QString cleanedTitle = title.trimmed();
+  if ( cleanedTitle == m_title ||
+       cleanedTitle.isEmpty() )
     return;
-  m_title = title;
+  m_title = cleanedTitle;
   emit titleChanged(this);
   emit changed(this);
 }

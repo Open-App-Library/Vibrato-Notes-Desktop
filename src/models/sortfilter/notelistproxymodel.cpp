@@ -30,9 +30,6 @@ QVariant NoteListProxyModel::data(const QModelIndex &index, int role) const
   if (role != Qt::DisplayRole)
     return QVariant();
 
-  //QModelIndex realIndex = mapToSource(index);
-  // NoteListItem *item = static_cast<NoteListItem*>( realIndex.internalPointer() );
-
   return QVariant();
 }
 
@@ -201,7 +198,7 @@ void NoteListProxyModel::setTrashedFilter(int trashedFilter) {
 void NoteListProxyModel::setSearchQuery(QString searchQuery, int searchFilterMode) {
   m_searchQuery = searchQuery;
   m_search_filter = searchFilterMode;
-  //  invalidateFilter();
+  //invalidateFilter();
   invalidate();
 }
 
