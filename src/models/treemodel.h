@@ -43,7 +43,7 @@ public:
   void reOrderRowValues(BasicTreeItem *parent);
 
 signals:
-  void setExpanded(QModelIndex index, bool expanded);
+  void gaveNotebookNewParent(BasicTreeItem *parent, BasicTreeItem *child);
 
 private:
   BasicTreeItem *m_rootItem;

@@ -306,13 +306,10 @@ bool TreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int r
       if (destRow >= theIndex.row())
         destRow += theIndex.row()+1;
 
+    emit layoutAboutToBeChanged();
     beginMoveRows(theIndex.parent(), theIndex.row(), theIndex.row(), parent, destRow);
     destParentItem->moveChild(sourceItem, row);
     endMoveRows();
-
-    // removeRow(theIndex.row(), theIndex.parent());
-    // insertRow(row, parent);
-
     emit layoutChanged();
 
     BasicTreeItem *notebooksOrTagsLabel = destParentItem;
@@ -325,8 +322,6 @@ bool TreeModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int r
 
     if (notebooksOrTagsLabel != nullptr)
       reOrderRowValues(notebooksOrTagsLabel);
-
-    //emit setExpanded(parent, true);
 
     return true;
   }
