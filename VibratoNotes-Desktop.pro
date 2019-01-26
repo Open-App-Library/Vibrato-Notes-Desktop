@@ -59,7 +59,8 @@ SOURCES += \
     $$PWD/ui/notebook_editparent.cpp \
     $$PWD/src/sql/sqlmanager.cpp \
     $$PWD/src/models/delegates/noteitemdelegate.cpp \
-    $$PWD/src/custom-components/customlineedit.cpp
+    $$PWD/src/custom-components/customlineedit.cpp \
+    src/cloud/cloudmanager.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -98,7 +99,8 @@ HEADERS += \
     $$PWD/ui/notebook_editparent.h \
     $$PWD/src/sql/sqlmanager.h \
     $$PWD/src/models/delegates/noteitemdelegate.h \
-    $$PWD/src/custom-components/customlineedit.h
+    $$PWD/src/custom-components/customlineedit.h \
+    src/cloud/cloudmanager.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
@@ -117,6 +119,8 @@ FORMS += \
     $$PWD/ui/notebook_editparent.ui
 
 include($$PWD/src/text-editor/Escriba.pro)
+include($$PWD/src/cloud/api/Qt-Vibrato-Cloud-API-Library.pro)
+
 
 RESOURCES += \
     $$PWD/resources/dummy-data.qrc \
