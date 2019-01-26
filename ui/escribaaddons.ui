@@ -125,7 +125,7 @@ QToolButton:disabled {
     </layout>
    </item>
    <item>
-    <widget class="QLineEdit" name="f_noteTitle">
+    <widget class="CustomLineEdit" name="f_noteTitle">
      <property name="font">
       <font>
        <pointsize>20</pointsize>
@@ -194,6 +194,13 @@ background: palette(Window);</string>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CustomLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>../src/custom-components/customlineedit.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

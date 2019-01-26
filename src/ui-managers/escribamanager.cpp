@@ -10,21 +10,23 @@ EscribaManager::EscribaManager(Escriba *editor, Database *db, Manager *manager) 
   m_addons_ui(new Ui::EscribaAddonsWidget)
 {
   m_addons_ui->setupUi( editor->addonsArea() );
-  m_titleWidget    = m_addons_ui->f_noteTitle;
-  m_tagsInputWidget     = m_addons_ui->f_noteTagsInput;
-  m_tagsViewerWidget     = m_addons_ui->f_noteTagsViewer;
-  m_notebookWidget = m_addons_ui->f_noteNotebook;
-  m_favoriteButton = m_addons_ui->f_favoriteButton;
-  m_trashButton    = m_addons_ui->f_noteTrash;
-  m_moreWidget     = m_addons_ui->f_noteMore;
-  m_dateCreatedWidget = m_addons_ui->f_noteDateCreated;
+  m_titleWidget        = m_addons_ui->f_noteTitle;
+  m_tagsInputWidget    = m_addons_ui->f_noteTagsInput;
+  m_tagsViewerWidget   = m_addons_ui->f_noteTagsViewer;
+  m_notebookWidget     = m_addons_ui->f_noteNotebook;
+  m_favoriteButton     = m_addons_ui->f_favoriteButton;
+  m_trashButton        = m_addons_ui->f_noteTrash;
+  m_moreWidget         = m_addons_ui->f_noteMore;
+  m_dateCreatedWidget  = m_addons_ui->f_noteDateCreated;
   m_dateModifiedWidget = m_addons_ui->f_noteDateModified;
 
   connect(editor, &Escriba::documentChanged,
           this, &EscribaManager::contentChangedFromEditor);
   connect(m_titleWidget, &QLineEdit::textChanged,
           this, &EscribaManager::titleChangedFromEditor);
-  connect(m_titleWidget, &QLineEdit::returnPressed,
+  connect(m_titleWidget, &CustomLineEdit::returnPressed,
+          this, &EscribaManager::focusEditor);
+  connect(m_titleWidget, &CustomLineEdit::tabPressed,
           this, &EscribaManager::focusEditor);
   connect(m_tagsInputWidget, &QLineEdit::returnPressed,
           this, &EscribaManager::addTag);
@@ -90,6 +92,7 @@ void EscribaManager::setNote( Note *note )
   if (m_curNote != nullptr && curNoteExists ) {
     m_curNote->setTitle( m_titleWidget->text() );
     m_curNote->setText( m_editor->toMarkdown() );
+    m_tagsInputWidget->clear();
     disconnect(m_curNote, &Note::changed,
                this, &EscribaManager::noteChanged);
     disconnect(m_curNote, &Note::syncHashChanged,

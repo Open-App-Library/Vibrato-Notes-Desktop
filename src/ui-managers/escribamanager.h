@@ -7,8 +7,9 @@
 #include "../meta/db/database.h"
 #include "../../ui/note_editnotebook.h"
 #include "../../ui/note_edittags.h"
-#include <ui_escribaaddons.h>
 #include "../ui-managers/manager.h"
+#include "../custom-components/customlineedit.h"
+#include <ui_escribaaddons.h>
 
 namespace Ui {
   class EscribaAddonsWidget;
@@ -71,7 +72,7 @@ private:
   QUuid m_sync_hash=nullptr;
   QUuid m_notebook_sync_hash=nullptr;
 
-  QLineEdit *m_titleWidget;
+  CustomLineEdit *m_titleWidget;
   QLineEdit *m_tagsInputWidget;
   QToolButton *m_tagsViewerWidget;
   QToolButton *m_notebookWidget;
