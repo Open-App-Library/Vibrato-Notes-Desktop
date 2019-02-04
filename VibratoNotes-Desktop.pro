@@ -63,7 +63,9 @@ SOURCES += \
     $$PWD/src/models/delegates/noteitemdelegate.cpp \
     $$PWD/src/custom-components/customlineedit.cpp \
     $$PWD/src/cloud/cloudmanager.cpp \
-    $$PWD/src/crypto/vcrypto.cpp
+    $$PWD/src/crypto/vcrypto.cpp \
+    $$PWD/src/crypto/vibrato-crypto-utils/vibrato-crypto.c
+
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -104,7 +106,8 @@ HEADERS += \
     $$PWD/src/models/delegates/noteitemdelegate.h \
     $$PWD/src/custom-components/customlineedit.h \
     $$PWD/src/cloud/cloudmanager.h \
-    $$PWD/src/crypto/vcrypto.h
+    $$PWD/src/crypto/vcrypto.h \
+    $$PWD/src/crypto/vibrato-crypto-utils/vibrato-crypto.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
