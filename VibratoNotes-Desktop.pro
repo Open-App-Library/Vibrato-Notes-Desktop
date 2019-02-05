@@ -60,7 +60,7 @@ SOURCES += \
     $$PWD/src/sql/sqlmanager.cpp \
     $$PWD/src/models/delegates/noteitemdelegate.cpp \
     $$PWD/src/custom-components/customlineedit.cpp \
-    src/cloud/cloudmanager.cpp
+    $$PWD/src/cloud/cloudmanager.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -100,7 +100,7 @@ HEADERS += \
     $$PWD/src/sql/sqlmanager.h \
     $$PWD/src/models/delegates/noteitemdelegate.h \
     $$PWD/src/custom-components/customlineedit.h \
-    src/cloud/cloudmanager.h
+    $$PWD/src/cloud/cloudmanager.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview

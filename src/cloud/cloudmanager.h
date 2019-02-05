@@ -31,6 +31,6 @@ private:
   QVector<QUuid> m_noteList;
   QVector<QUuid> m_notebookList;
   QVector<QUuid> m_tagList;
-}
+};
 
 #endif // CLOUDMANAGER_H
