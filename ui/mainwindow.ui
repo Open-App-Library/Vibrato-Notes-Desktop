@@ -288,7 +288,7 @@ border-bottom: 0;
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>20</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -346,7 +346,14 @@ border-bottom: 0;
      <addaction name="action_ViewMinimal"/>
      <addaction name="action_viewFocus"/>
     </widget>
+    <widget class="QMenu" name="menuDeveloper">
+     <property name="title">
+      <string>Developer</string>
+     </property>
+     <addaction name="actionChicken_Shell"/>
+    </widget>
     <addaction name="menuLayout"/>
+    <addaction name="menuDeveloper"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -479,6 +486,11 @@ border-bottom: 0;
    </property>
    <property name="text">
     <string>Dark</string>
+   </property>
+  </action>
+  <action name="actionChicken_Shell">
+   <property name="text">
+    <string>Chicken Shell</string>
    </property>
   </action>
  </widget>

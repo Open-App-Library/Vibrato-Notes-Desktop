@@ -10,6 +10,7 @@ TARGET = vibrato
 TEMPLATE = app
 
 LIBS += -lsodium
+LIBS += -lchicken
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -64,7 +65,8 @@ SOURCES += \
     $$PWD/src/custom-components/customlineedit.cpp \
     $$PWD/src/cloud/cloudmanager.cpp \
     $$PWD/src/crypto/vcrypto.cpp \
-    $$PWD/src/crypto/vibrato-crypto-utils/vibrato-crypto.c
+    $$PWD/src/crypto/vibrato-crypto-utils/vibrato-crypto.c \
+    $$PWD/src/scripting-api/scriptingengine.cpp
 
 HEADERS += \
     $$PWD/src/meta/info/appconfig.h \
@@ -106,7 +108,8 @@ HEADERS += \
     $$PWD/src/custom-components/customlineedit.h \
     $$PWD/src/cloud/cloudmanager.h \
     $$PWD/src/crypto/vcrypto.h \
-    $$PWD/src/crypto/vibrato-crypto-utils/vibrato-crypto.h
+    $$PWD/src/crypto/vibrato-crypto-utils/vibrato-crypto.h \
+    $$PWD/src/scripting-api/scriptingengine.h
 
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview

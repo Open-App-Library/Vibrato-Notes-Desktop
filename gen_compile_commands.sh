@@ -33,4 +33,4 @@ fi
 echo "QT += testlib" > VibratoNotes.pro
 echo "include(../VibratoNotes-Desktop.pro)" >> VibratoNotes.pro
 qmake VibratoNotes.pro
-bear -a -o ../compile_commands.json make
+bear -a -o ../compile_commands.json make -j(nproc)

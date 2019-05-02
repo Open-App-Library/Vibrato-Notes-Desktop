@@ -6,6 +6,8 @@
 #include "ui-managers/notelistmanager.h"
 #include "ui-managers/escribamanager.h"
 
+#include "scripting-api/scriptingengine.h"
+
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow)
@@ -17,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
   m_notebooks = new NotebookDatabase(m_sqlManager, m_notes);
   m_tags      = new TagDatabase(m_sqlManager);
   m_db        = new Database(m_notes, m_notebooks, m_tags);
+
+  ScriptingEngine *engine = new ScriptingEngine();
 
   m_manager           = new Manager;
   m_tree_manager      = new TreeManager(ui->TheTree, m_db, m_manager);
