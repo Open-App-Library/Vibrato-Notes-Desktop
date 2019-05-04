@@ -3,7 +3,7 @@
 	url = git@gitlab.com:Open-App-Library/escriba.git
 [submodule "src/cloud/api"]
 	path = src/cloud/api
-	url = git@gitlab.com:Open-App-Library/qt-vibrato-cloud-api-library.git
+  url = git@github.com:Open-App-Library/Qt-Vibrato-Cloud-API.git
 [submodule "src/crypto/vibrato-crypto-utils"]
 	path = src/crypto/vibrato-crypto-utils
-	url = git@gitlab.com:Open-App-Library/vibrato-crypto-utils.git
+  url = git@github.com:Open-App-Library/Vibrato-Crypto-Utils.git
