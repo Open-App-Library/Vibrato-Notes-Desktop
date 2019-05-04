@@ -3,6 +3,11 @@ Vibrato Notes Desktop Client
 
 ## To compile & run
 
+Requirements:
+
+- Qt5
+- [Chicken](https://www.call-cc.org/)
+
 1.) Clone this repository.
 
 `git clone https://gitlab.com/Open-App-Library/vibratonotes-desktop.git`
