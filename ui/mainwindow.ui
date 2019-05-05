@@ -350,7 +350,7 @@ border-bottom: 0;
      <property name="title">
       <string>Developer</string>
      </property>
-     <addaction name="actionChicken_Shell"/>
+     <addaction name="actionChicken_Coop"/>
     </widget>
     <addaction name="menuLayout"/>
     <addaction name="menuDeveloper"/>
@@ -488,9 +488,9 @@ border-bottom: 0;
     <string>Dark</string>
    </property>
   </action>
-  <action name="actionChicken_Shell">
+  <action name="actionChicken_Coop">
    <property name="text">
-    <string>Chicken Shell</string>
+    <string>Chicken Coop</string>
    </property>
   </action>
  </widget>
