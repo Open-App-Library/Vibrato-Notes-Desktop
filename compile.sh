@@ -16,7 +16,7 @@ red=\\e[31m
 yellow=\\e[33m
 cyan=\\e[36m
 green=\\e[32m
-
+blue=\\e[34m
 
 ################################
 # Process command-line options #
@@ -61,7 +61,8 @@ elif [[ $1 == "clean" ]]; then
     rm -f ../compile_commands.json
     exit
 elif [[ $1 == "only_hope" ]]; then
-    printf "                    .==.\n                   ()''()-.\n        .---.       ;--; /\n      .'_:___\". _..'.  __'.\n      |__ --==|'-''' \'...;\n      [  ]  :[|       |---\\n      |__| I=[|     .'    '.\n      / / ____|     :       '._\n     |-/.____.'      | :       :\n    /___\ /___\      '-'._----'\n        art by Shanaka Dias\n\n"
+    printf $blue
+    printf "                    .==.\n                   ()''()-.\n        .---.       ;--; /\n      .'_:___\". _..'.  __'.\n      |__ --==|'-''' \'...;\n      [  ]  :[|       |---\\n      |__| I=[|     .'    '.\n      / / ____|     :       '._\n     |-/.____.'      | :       :\n    /___\ /___\      '-'._----'\n     $normal  art by Shanaka Dias\n\n"
     exit
 else
     echo "Unknown option \"$1\" :-("
