@@ -9,6 +9,10 @@ class VCrypto : public QObject
 public:
   explicit VCrypto(QObject *parent = nullptr);
 
+  typedef struct {
+    QString
+  } keypair;
+
   bool login(QString email, QString password);
   QString encrypt(QString message);
   QString decrypt(QString enc_message);
