@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     QIcon::setThemeName("vibrato-default");
 
   // Set Cross Platform Icon settings
-    QIcon::setFallbackSearchPaths( QIcon::fallbackSearchPaths() << ":/icons/vibrato-default/icons" );
+  QIcon::setFallbackSearchPaths( QIcon::fallbackSearchPaths() << ":/icons/vibrato-default/icons" );
 
 #if defined(TARGET_OS_MAC)
 #else

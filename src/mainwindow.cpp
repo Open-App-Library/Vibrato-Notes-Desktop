@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
   if ( meta_config_key_exists(MAIN_SCREEN_LAYOUT) ) {
     ui->mainSplitter->restoreState( meta_config_value(MAIN_SCREEN_LAYOUT).toByteArray() );
   } else {
-    view_default();
+    activateDefaultView();
   }
 
   // Remove margin on toolbar on Mac OS X
@@ -66,22 +66,22 @@ MainWindow::MainWindow(QWidget *parent) :
           this, &MainWindow::addNewNote);
 
   connect(ui->userButton, &QPushButton::clicked,
-          this, &MainWindow::userButtonClicked);
+          this, &MainWindow::openUserInfoDialog);
 
   connect(m_note_list_manager, &NoteListManager::selectedNote,
-          this, &MainWindow::selectedNoteChanged);
+          this, &MainWindow::openNoteInEditor);
 
   // Menu items
   connect(ui->action_ViewDefault, &QAction::triggered,
-          this, &MainWindow::view_default);
+          this, &MainWindow::activateDefaultView);
   connect(ui->action_ViewMinimal, &QAction::triggered,
-          this, &MainWindow::view_minimal);
+          this, &MainWindow::activateMinimalView);
   connect(ui->action_viewFocus, &QAction::triggered,
-          this, &MainWindow::view_focus);
+          this, &MainWindow::activateFocusView);
 
   // Search bar
   connect(ui->searchBar, &QLineEdit::returnPressed,
-          this, &MainWindow::search);
+          this, &MainWindow::searchGo);
 
   // File Menu
   connect(ui->actionNote, &QAction::triggered,     // New Note
@@ -116,28 +116,17 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent (QCloseEvent *event)
 {
-  m_user_window.close();
   event->accept();
 }
 
-void MainWindow::loadDummyData()
-{
-  //   QJsonDocument tags = fileToQJsonDocument(":/dummy/tags.json");
-  //   QJsonArray tagArray = tags.array();
-  //   for (int i = 0; i < tagArray.size(); i++) {
-  //       QJsonObject val = tagArray[i].toObject();
-  //       m_tree_manager->addTag(val["title"].toString());
-  //   }
-}
-
-void MainWindow::selectedNoteChanged(Note *n)
+void MainWindow::openNoteInEditor(Note *n)
 {
   m_escriba_manager->setNote(n);
 }
 
-void MainWindow::userButtonClicked()
+void MainWindow::openUserInfoDialog()
 {
-  m_user_window.show();
+
 }
 
 void MainWindow::addNewNote()
@@ -164,7 +153,7 @@ void MainWindow::addNewTag()
   m_tags->addTag(TAG_DEFAULT_TITLE);
 }
 
-void MainWindow::view_default()
+void MainWindow::activateDefaultView()
 {
   QList<int> splitterSizes = {0,0,0};
   int window_width = this->width();
@@ -174,7 +163,7 @@ void MainWindow::view_default()
   ui->mainSplitter->setSizes(splitterSizes);
 }
 
-void MainWindow::view_minimal()
+void MainWindow::activateMinimalView()
 {
   QList<int> splitterSizes = {0,0,0};
   int window_width = this->width();
@@ -184,7 +173,7 @@ void MainWindow::view_minimal()
   ui->mainSplitter->setSizes(splitterSizes);
 }
 
-void MainWindow::view_focus()
+void MainWindow::activateFocusView()
 {
   QList<int> splitterSizes = {0,0,0};
   int window_width = this->width();
@@ -194,7 +183,7 @@ void MainWindow::view_focus()
   ui->mainSplitter->setSizes(splitterSizes);
 }
 
-void MainWindow::search() {
+void MainWindow::searchGo() {
   QString searchQuery = ui->searchBar->text().trimmed();
   ui->searchBar->clear();
   if ( searchQuery.isEmpty() )

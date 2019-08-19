@@ -1,3 +1,9 @@
+/*
+ * This is a custom QLineEdit that disables the typical
+ * tab behavior and adds a signal - tabPressed - that
+ * the develop could take advantage of. Enjoy! :)
+ */
+
 #ifndef CUSTOMLINEEDIT_H
 #define CUSTOMLINEEDIT_H
 #include <QLineEdit>

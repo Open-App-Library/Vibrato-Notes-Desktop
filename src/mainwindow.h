@@ -19,7 +19,6 @@
 #include "meta/db/tagdatabase.h"
 #include "ui-managers/manager.h"
 #include "sql/sqlmanager.h"
-#include "userwindow.h"
 
 namespace Ui {
   class MainWindow;
@@ -34,24 +33,23 @@ public:
   ~MainWindow();
   void closeEvent (QCloseEvent *event);
 
-  void loadDummyData();  
-
-  void selectedNoteChanged(Note *n);
-
 public slots:
   void addNewNote();
   void addNewNotebook();
   void addNewTag();
-  void userButtonClicked();
-  void view_default();
-  void view_minimal();
-  void view_focus();
-  void search();
+
+  void activateDefaultView();
+  void activateMinimalView();
+  void activateFocusView();
+
+  void searchGo(); // Perform search based on what user entered in search bar
   void focusSearchbar();
+
+  void openUserInfoDialog();
+  void openNoteInEditor(Note *n);
 
 private:
   Ui::MainWindow *ui;
-  UserWindow m_user_window;
 
   SQLManager      *m_sqlManager;
   Manager         *m_manager;
