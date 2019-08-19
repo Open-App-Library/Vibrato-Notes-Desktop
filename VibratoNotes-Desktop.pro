@@ -20,7 +20,7 @@ HEADERS += $$PWD/mainwindow.cpp
 INCLUDEPATH += $$PWD/include
 INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
 
-FORMS +=
+FORMS += $$PWD/mainwindow.ui
 
 include($$PWD/src/text-editor/Escriba.pro)
 include($$PWD/src/cloud/api/Qt-Vibrato-Cloud-API-Library.pro)
