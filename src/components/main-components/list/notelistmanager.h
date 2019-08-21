@@ -21,7 +21,7 @@ class NoteListManager : public QObject
 {
   Q_OBJECT
 public:
-  NoteListManager(CustomListView *view, QWidget *noteListAddons, Database *db, Manager *manager);
+  NoteListManager(CustomListView *view, QWidget *noteListAddons, Database *db, ComponentManager *manager);
   ~NoteListManager();
 
   enum viewingModes {View_AllNotes, View_Favorites, View_Notebook, View_Tag, View_Trash, View_Search};

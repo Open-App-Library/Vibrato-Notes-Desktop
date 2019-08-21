@@ -20,7 +20,15 @@ The two mainwindow files create the main application window - MainWindow.
 - components - Various components and widgets that make up Vibrato Notes
 - helpers - Tiny little files that provide helper functions that make our life easier
 - crypto - All the encryption stuffs!
-- meta - Definitions of notes, notebooks, and tags. As well as 
+- meta - Definitions of notes, notebooks, and tags. As well as
 - sql - Local database storage
 - plugin-engine - The scripting/plugin engine!
 - cloud-api - Connecting to the Vibrato sync server
+
+## Dictionary
+
+## "Manager"
+
+Examples: SQLManager, TreeManager, EscribaManager
+
+A manager is a class that is able to manipulate a UI component. This manager class provides a high-level API that makes it easy for developers to do cool ass things with the components.

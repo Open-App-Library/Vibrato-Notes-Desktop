@@ -4,32 +4,26 @@
 #include <QDebug>
 #include <helper-io.hpp>
 
-Note::Note(QUuid sync_hash, QString title, QString text, QDateTime date_created, QDateTime date_modified, QUuid notebook, QVector<QUuid> tags, bool favorited, bool encrypted, bool trashed) :
-  m_sync_hash(sync_hash),
-  m_title(title),
-  m_text(text),
-  m_date_created(date_created),
-  m_date_modified(date_modified),
-  m_notebook(notebook),
-  m_tags(tags),
-  m_favorited(favorited),
-  m_encrypted(encrypted),
-  m_trashed(trashed)
+Note::Note(QUuid id, QString mimetype, QString encoding) :
+    m_id(id),
+    m_mime_type(mimetype),
+    m_encoding(encoding)
 {
-  connect(this, &Note::changed,
-          this, &Note::handleChange);
+    connect(this, &Note::changed,
+            this, &Note::handleChange);
 }
 
-QUuid Note::syncHash() const
+
+QUuid Note::id() const
 {
-  return m_sync_hash;
+  return m_id;
 }
 
-void Note::setSyncHash(QUuid sync_hash)
+void Note::setID(QUuid id)
 {
-  if (m_sync_hash == sync_hash)
+  if (m_id == id)
     return;
-  m_sync_hash = sync_hash;
+  m_id = id;
   emit changed( this, false );
 }
 
@@ -50,19 +44,18 @@ void Note::setTitle(const QString title)
   emit titleChanged( this );
 }
 
-QString Note::text() const
+QByteArray Note::data() const
 {
-  return m_text;
+  return m_data;
 }
 
-void Note::setText(const QString text)
+void Note::setData(const QByteArray data)
 {
-  QString textCleaned = text.trimmed();
-  if (!QString::compare(m_text, textCleaned)) // If m_text and text are the same, exit
+  if (!QString::compare(m_data, data))
     return;
-  m_text = textCleaned;
+  m_data = data;
   emit changed( this );
-  emit textChanged( this );
+  emit dataChanged( this );
 }
 
 QDateTime Note::dateCreated() const
@@ -226,9 +219,7 @@ void Note::setTrashed(bool _trashed) {
     return;
   m_trashed = _trashed;
   emit changed(this, false);
-  emit trashedOrRestored(this, _trashed);
-  if ( _trashed ) emit trashed(this);
-  else           emit restored(this);
+  emit trashedChanged(this);
 }
 
 QString Note::informativeDate(QDateTime date) const

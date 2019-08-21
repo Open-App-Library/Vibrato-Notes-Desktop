@@ -1,8 +1,8 @@
 [submodule "src/components/main-components/text-editor/escriba"]
 	path = src/components/main-components/text-editor/escriba
 	url = git@github.com:Open-App-Library/escriba.git
-[submodule "src/cloud-api/api"]
-	path = src/cloud-api/api
+[submodule "src/cloud/api"]
+	path = src/cloud/api
 	url = git@github.com:Open-App-Library/Qt-Vibrato-Cloud-API.git
 [submodule "src/crypto/utils"]
 	path = src/crypto/utils

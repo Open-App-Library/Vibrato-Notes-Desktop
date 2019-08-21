@@ -12,17 +12,23 @@ CONFIG += c++11
 
 VIBRATO_ENTRY_POINT=$$PWD/src/main.cpp
 
-SOURCES += $$PWD/main.cpp \
-           $$PWD/mainwindow.cpp
+SOURCES += $$PWD/src/main.cpp \
+           $$PWD/src/mainwindow.cpp \
+           $$PWD/src/components/componentmanager.cpp \
+           $$PWD/src/meta/note.cpp \
+           $$PWD/src/sql/sqlmanager.cpp
 
-HEADERS += $$PWD/mainwindow.cpp
 
-INCLUDEPATH += $$PWD/include
-INCLUDEPATH += $$PWD/src/models/views # Location of customlistview
+HEADERS += $$PWD/src/mainwindow.h \
+           $$PWD/src/components/componentmanager.h \
+           $$PWD/src/meta/note.h \
+           $$PWD/src/sql/sqlmanager.h
+
+INCLUDEPATH += $$PWD/src/helpers
 
 FORMS += $$PWD/mainwindow.ui
 
-include($$PWD/src/text-editor/Escriba.pro)
+include($$PWD/src/components/main-components/text-editor/escriba/Escriba.pro)
 include($$PWD/src/cloud/api/Qt-Vibrato-Cloud-API-Library.pro)
 
 

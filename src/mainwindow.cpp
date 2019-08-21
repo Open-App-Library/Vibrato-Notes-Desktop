@@ -14,11 +14,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
   ui->setupUi(this);
 
-  m_sqlManager        = new SQLManager();
-  m_notes     = new NoteDatabase(m_sqlManager);
-  m_notebooks = new NotebookDatabase(m_sqlManager, m_notes);
-  m_tags      = new TagDatabase(m_sqlManager);
-  m_db        = new Database(m_notes, m_notebooks, m_tags);
+  m_sqlManager = new SQLManager();
+  m_notes      = new NoteDatabase(m_sqlManager);
+  m_notebooks  = new NotebookDatabase(m_sqlManager, m_notes);
+  m_tags       = new TagDatabase(m_sqlManager);
+  m_db         = new Database(m_notes, m_notebooks, m_tags);
 
   ScriptingEngine *engine = new ScriptingEngine();
 

@@ -3,24 +3,26 @@
 #include <QObject>
 
 class TreeManager;
-class NoteListManager;
+class ListManager;
 class EscribaManager;
 
-class Manager: public QObject {
+class ComponentManager: public QObject {
   Q_OBJECT
 public:
   TreeManager *treeManager() const;
-  NoteListManager *noteListManager() const;
+  ListManager *listManager() const;
   EscribaManager *escribaManager() const;
 
-  void setManagers(TreeManager *treeManager, NoteListManager *noteListManager, EscribaManager *escribaManager);
+  void setComponent(TreeManager *component);
+  void setComponent(ListManager *component);
+  void setComponent(EscribaManager *component);
 
 signals:
   void ready();
 
 private:
   TreeManager *m_treeManager;
-  NoteListManager *m_noteListManager;
+  ListManager *m_listManager;
   EscribaManager *m_escribaManager;
 };
 

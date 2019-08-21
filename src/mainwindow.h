@@ -17,7 +17,7 @@
 #include "meta/db/notedatabase.h"
 #include "meta/db/notebookdatabase.h"
 #include "meta/db/tagdatabase.h"
-#include "ui-managers/manager.h"
+#include "components/componentmanager.h"
 #include "sql/sqlmanager.h"
 
 namespace Ui {

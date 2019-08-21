@@ -7,44 +7,43 @@
 #include "tag.h"
 
 #define NOTE_DEFAULT_TITLE "Untitled Note"
+#define NOTE_DEFAULT_MIMETYPE "text/markdown"
+#define NOTE_DEFAULT_ENCODING "UTF-8"
 
 class Note : public QObject
 {
   Q_OBJECT
 
 public:
-  Note(QUuid sync_hash = QUuid::createUuid(),
-       QString title = NOTE_DEFAULT_TITLE,
-       QString text = "",
-       QDateTime dateCreated = QDateTime::currentDateTime(),
-       QDateTime dateModified = QDateTime::currentDateTime(),
-       // TODO: user field
-       QUuid notebook = QUuid(),
-       QVector<QUuid> tags = {},
-       bool favorited = false,
-       // TODO: public field
-       bool encrypted = false,
-       bool trashed = false);
+  Note(QUuid id = QUuid::createUuid(),
+       QString mimetype = NOTE_DEFAULT_MIMETYPE,
+       QString encoding = NOTE_DEFAULT_ENCODING);
 
-  // Sync Hash
-  QUuid syncHash() const;
-  void setSyncHash(QUuid sync_hash);
+  QUuid id() const;
+  void setID(QUuid id);
 
-  // Title
+  QString mimeType() const;
+  void setMIMEType(QString mimetype);
+
+  QString encoding() const;
+  void setEncoding(QString encoding);
+
+  /*
+   * Cached Meta Information
+   */
   QString title() const;
   void    setTitle(const QString title);
 
-  // Text
-  QString text() const;
-  void    setText(const QString text);
+  QString excerpt() const;
+  void setExcerpt(QString excerpt);
 
-  // Date created
+  // Date Created
   QDateTime dateCreated() const;
   QString dateCreatedStr() const; // ex. January 26, 1965
   QString dateCreatedStrInformative() const; // ex. January 26, 1965 at 12:30pm EST
   void setDateCreated(const QDateTime &dateCreated);
 
-  // Date modified
+  // Date Modified
   QDateTime dateModified() const;
   QString dateModifiedStr(); // ex. 5 minutes ago
   QString dateModifiedStrInformative(); // ex. January 26, 1965 at 12:30pm EST
@@ -70,45 +69,55 @@ public:
   bool trashed() const;
   void setTrashed(bool trashed);
 
-  // Sorting comparison functions for your convenience.
+  /*
+   * Dynamic Information, Fetched from SQLite3
+   */
+  QByteArray data() const;
+  void    setData(const QByteArray data);
+
+  /*
+   * Methods
+   */
+  void updateCachedMetaInfo();
+
+  /*
+   * Sorting comparison functions for your convenience.
+   */
   static bool byDateCreatedAsc(const Note *n1, const Note *n2);
   static bool byDateCreatedDesc(const Note *n1, const Note *n2);
   static bool byDateModifiedAsc(const Note *n1, const Note *n2);
   static bool byDateModifiedDesc(const Note *n1, const Note *n2);
 
 signals:
-  // The general signal for whenever something changes
   void changed(Note *note, bool updateDateModified=true);
 
-  void syncHashChanged(Note *note);
+  void idChanged(Note *note);
   void titleChanged(Note *note);
-  void textChanged(Note *note);
+  void dataChanged(Note *note);
   void dateCreatedChanged(Note *note);
   void dateModifiedChanged(Note *note);
   void notebookChanged(Note *note);
   void tagsChanged(Note *note);
   void favoritedChanged(Note *note);
   void encryptedChanged(Note *note);
-  void trashed(Note *note);
-  void restored(Note *note);
-  void trashedOrRestored(Note *note, bool _trashed);
+  void trashedChanged(Note *note);
 
 private slots:
   void handleChange(Note *note, bool updateDateModified=true);
 
 private:
-  QUuid        m_sync_hash;
-  QString      m_title;
-  QString      m_text;
-  QDateTime    m_date_created;
-  QDateTime    m_date_modified;
+  QUuid          m_id;
+  QString        m_mime_type;
+  QString        m_encoding;
+  QString        m_title;
+  QByteArray     m_data;
+  QDateTime      m_date_created;
+  QDateTime      m_date_modified;
   QUuid          m_notebook;
   QVector<QUuid> m_tags;
-  // TODO: Private user variable
-  bool         m_favorited;
-  // TODO: Private public variable
-  bool         m_encrypted;
-  bool         m_trashed=false;
+  bool           m_favorited;
+  bool           m_encrypted;
+  bool           m_trashed=false;
 
   QString informativeDate(QDateTime date) const;
 };
