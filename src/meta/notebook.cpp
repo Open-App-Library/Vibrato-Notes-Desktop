@@ -1,9 +1,19 @@
 #include "notebook.h"
 #include <QDebug>
+#include "../sql/sqlmanager.h"
 
-Notebook::Notebook(QUuid sync_hash, QString title, QDateTime date_modified, Notebook *parent, int row, bool encrypted) :
-  m_sync_hash(sync_hash),
+Notebook::Notebook(SQLManager *sql_manager,
+                   QUuid uuid,
+                   QString title,
+                   QDateTime date_created,
+                   QDateTime date_modified,
+                   Notebook *parent,
+                   int row,
+                   bool encrypted) :
+  m_sql_manager(sql_manager),
+  m_uuid(uuid),
   m_title(title),
+  m_date_created(date_created),
   m_date_modified(date_modified),
   m_parent(parent),
   m_row(row),
@@ -15,20 +25,32 @@ Notebook::Notebook(QUuid sync_hash, QString title, QDateTime date_modified, Note
 
 Notebook *Notebook::createBlankNotebook()
 {
-  return new Notebook(QUuid::createUuid(), NOTEBOOK_DEFAULT_TITLE);
+  return new Notebook(nullptr,
+                      QUuid::createUuid(),
+                      NOTEBOOK_DEFAULT_TITLE);
 }
 
-QUuid Notebook::syncHash() const
+SQLManager *Notebook::sqlManager()
 {
-  return m_sync_hash;
+    return m_sql_manager;
 }
 
-void Notebook::setSyncHash(QUuid syncHash)
+void Notebook::setSQLManager(SQLManager *sql_manager)
+{
+    m_sql_manager = sql_manager;
+}
+
+QUuid Notebook::uuid() const
+{
+  return m_uuid;
+}
+
+void Notebook::setUUID(QUuid syncHash)
 {
   if ( defaultNotebook() )
     return;
-  m_sync_hash = syncHash;
-  emit syncHashChanged(this);
+  m_uuid = syncHash;
+  emit UUIDChanged(this);
 }
 
 QString Notebook::title() const
@@ -47,6 +69,16 @@ void Notebook::setTitle(const QString &title)
   m_title = cleanedTitle;
   emit titleChanged(this);
   emit changed(this);
+}
+
+QDateTime Notebook::dateCreated() const
+{
+    return m_date_created;
+}
+
+void Notebook::setDateCreated(QDateTime dateCreated)
+{
+    m_date_created = dateCreated;
 }
 
 QDateTime Notebook::dateModified() const
@@ -178,11 +210,11 @@ void Notebook::setEncrypted(bool encrypted)
 bool Notebook::defaultNotebook() const
 {
   // Check if a blank UUID
-  return m_sync_hash == nullptr;
+  return m_uuid == nullptr;
 }
 
-void Notebook::requestParentWithSyncHash(QUuid parentSyncHash) {
-  emit requestedParentWithSyncHash(this, parentSyncHash);
+void Notebook::requestParentWithUUID(QUuid parentSyncHash) {
+  emit requestedParentWithUUID(this, parentSyncHash);
 }
 
 void Notebook::handleChange(Notebook *notebook)

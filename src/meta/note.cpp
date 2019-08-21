@@ -3,9 +3,16 @@
 #include <QTimeZone>
 #include <QDebug>
 #include <helper-io.hpp>
+#include <QSqlQuery>
+#include <QSqlError>
+#include "../sql/sqlmanager.h"
 
-Note::Note(QUuid id, QString mimetype, QString encoding) :
-    m_id(id),
+Note::Note(SQLManager *sql_manager,
+           QUuid uuid,
+           QString mimetype,
+           QString encoding) :
+    m_sql_manager(sql_manager),
+    m_uuid(uuid),
     m_mime_type(mimetype),
     m_encoding(encoding)
 {
@@ -13,17 +20,26 @@ Note::Note(QUuid id, QString mimetype, QString encoding) :
             this, &Note::handleChange);
 }
 
-
-QUuid Note::id() const
+SQLManager *Note::sqlManager()
 {
-  return m_id;
+    return m_sql_manager;
 }
 
-void Note::setID(QUuid id)
+void Note::setSQLManager(SQLManager *sql_manager)
 {
-  if (m_id == id)
+    m_sql_manager = sql_manager;
+}
+
+QUuid Note::uuid() const
+{
+  return m_uuid;
+}
+
+void Note::setUUID(QUuid uuid)
+{
+  if (m_uuid == uuid)
     return;
-  m_id = id;
+  m_uuid = uuid;
   emit changed( this, false );
 }
 
@@ -46,7 +62,7 @@ void Note::setTitle(const QString title)
 
 QByteArray Note::data() const
 {
-  return m_data;
+    Note foundNote(m_sql_manager);
 }
 
 void Note::setData(const QByteArray data)
@@ -56,6 +72,65 @@ void Note::setData(const QByteArray data)
   m_data = data;
   emit changed( this );
   emit dataChanged( this );
+}
+
+bool Note::sql_addToDB()
+{
+    QStringList noteCols = m_sql_manager->noteColumns();
+    QStringList columnPlaceholders;
+
+    for (QString col : noteCols)
+      columnPlaceholders.append( QString(":%1").arg(col) );
+
+    QString queryString = QString("INSERT INTO notes (%1) "
+                                  "VALUES (%2)").arg(noteCols.join(", "),
+                                                     columnPlaceholders.join(", "));
+
+    QSqlQuery q;
+    q.prepare(queryString);
+
+    q.bindValue(":uuid"          , this->uuid().toString(QUuid::WithoutBraces));
+    q.bindValue(":mimetype"      , this->mimeType());
+    q.bindValue(":encoding"      , this->encoding());
+    q.bindValue(":title"         , this->title());
+    q.bindValue(":date_created"  , this->dateCreated());
+    q.bindValue(":date_modified" , this->dateModified());
+    q.bindValue(":notebook"      , this->notebook());
+    q.bindValue(":favorited"     , this->favorited());
+    q.bindValue(":encrypted"     , this->encrypted());
+    q.bindValue(":trashed"       , this->trashed());
+
+    q.exec();
+
+    // Set the tags
+    QSqlQuery tagQ;
+    for ( QUuid tagUUID : this->tags() ) {
+      tagQ.prepare("insert into notes_tags (note, tag) values "
+                "(:noteUuid, :tagUuid)");
+      tagQ.bindValue(":noteUuid", this->uuid().toString(QUuid::WithoutBraces));
+      tagQ.bindValue(":tagUuid", tagUUID);
+      tagQ.exec();
+      m_sql_manager->logSqlError(tagQ.lastError());
+    }
+
+    // Print error if there is one. Return true if no error.
+    return m_sql_manager->logSqlError(q.lastError());
+
+}
+
+bool Note::sql_updateToDB()
+{
+
+}
+
+bool Note::sql_updateFromDB()
+{
+
+}
+
+bool Note::sql_delete()
+{
+
 }
 
 QDateTime Note::dateCreated() const
@@ -161,11 +236,11 @@ QUuid Note::notebook() const
   return m_notebook;
 }
 
-void Note::setNotebook(QUuid sync_hash, bool updateDateModified)
+void Note::setNotebook(QUuid uuid, bool updateDateModified)
 {
-  if (m_notebook == sync_hash)
+  if (m_notebook == uuid)
     return;
-  m_notebook = sync_hash;
+  m_notebook = uuid;
   emit changed( this, updateDateModified );
   emit notebookChanged( this );
 }

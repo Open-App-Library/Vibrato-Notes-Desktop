@@ -16,12 +16,16 @@ SOURCES += $$PWD/src/main.cpp \
            $$PWD/src/mainwindow.cpp \
            $$PWD/src/components/componentmanager.cpp \
            $$PWD/src/meta/note.cpp \
+           $$PWD/src/meta/notebook.cpp \
+           $$PWD/src/meta/tag.cpp \
            $$PWD/src/sql/sqlmanager.cpp
 
 
 HEADERS += $$PWD/src/mainwindow.h \
            $$PWD/src/components/componentmanager.h \
            $$PWD/src/meta/note.h \
+           $$PWD/src/meta/notebook.h \
+           $$PWD/src/meta/tag.h \
            $$PWD/src/sql/sqlmanager.h
 
 INCLUDEPATH += $$PWD/src/helpers

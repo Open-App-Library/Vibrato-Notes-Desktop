@@ -7,12 +7,7 @@
 #include <QSqlTableModel>
 #include <QSqlRecord>
 #include <QVariant>
-
-/*
- * Future Note:
- * It will likely make more sense to implement a lot of the SQL functionality in the
- * classes of the individual object classes.
- */
+#include "../meta/note.h"
 
 SQLManager::SQLManager(QObject *parent) : QObject(parent)
 {
@@ -191,7 +186,9 @@ QVector<Note*> SQLManager::notes() {
   for ( int i=0; i<rawNotes.length(); i++ ) {
     QMap<QString, QVariant> noteObject = rawNotes[i];
 
-    QString sync_hash       = noteObject["sync_hash"].toString();
+    QString uuid            = noteObject["uuid"].toString();
+    QString mimetype        = noteObject["mimetype"].toString();
+    QString encoding        = noteObject["encoding"].toString();
     QString title           = noteObject["title"].toString();
     QString text            = noteObject["text"].toString();
     QDateTime date_created  = noteObject["date_created"].toDateTime();
@@ -203,22 +200,21 @@ QVector<Note*> SQLManager::notes() {
 
     // Parse a tags array
     QVector<QUuid> tags;
-    QString tagVariantsQuery = QString("select tag from notes_tags where note = \"%1\"").arg(sync_hash);
+    QString tagVariantsQuery = QString("select tag from notes_tags where note = \"%1\"").arg(uuid);
     for ( QVariant tagVariant : column(tagVariantsQuery) )
       tags.append( tagVariant.toString() );
 
-    Note *note = new Note(sync_hash,
-                          title,
-                          text,
-                          date_created,
-                          date_modified,
-                          notebook,
-                          tags,
-                          favorited,
-                          encrypted,
-                          trashed);
-    notes.append(note);
+    Note *note = new Note(this, uuid, mimetype, encoding);
+    note->setTitle(title);
+    note->setDateCreated(date_created);
+    note->setDateModified(date_modified);
+    note->setNotebook(notebook);
+    note->setTags(tags);
+    note->setFavorited(favorited);
+    note->setEncrypted(encrypted);
+    note->setTrashed(trashed);
 
+    notes.append(note);
   }
   return notes;
 }
@@ -235,19 +231,21 @@ QVector<Notebook*> SQLManager::m_getNotebooks(Notebook *parent) {
   if (parent == nullptr)
     queryString = "SELECT %1 FROM notebooks WHERE parent IS NULL ORDER BY row ASC";
   else
-    queryString = "SELECT %1 FROM notebooks WHERE parent = :sync_hash ORDER BY row ASC";
+    queryString = "SELECT %1 FROM notebooks WHERE parent = :uuid ORDER BY row ASC";
 
   queryString = queryString.arg( notebookColumns().join(", ") );
 
   q.prepare(queryString);
   if (parent != nullptr)
-    q.bindValue(":sync_hash", parent->syncHash().toString(QUuid::WithoutBraces));
+    q.bindValue(":uuid", parent->uuid().toString(QUuid::WithoutBraces));
   q.exec();
   MapVector notebookResults = rows(q, notebookColumns());
 
-  for (Map n : notebookResults) {
-    Notebook *notebook = new Notebook(n["sync_hash"].toString(),
+  for (Map n : notebookResults) {      
+    Notebook *notebook = new Notebook(this,
+                                      n["uuid"].toString(),
                                       n["title"].toString(),
+                                      n["date_created"].toDateTime(),
                                       n["date_modified"].toDateTime(),
                                       parent,
                                       n["row"].toInt(),
@@ -266,8 +264,9 @@ QVector<Tag*> SQLManager::tags() {
   MapVector tagResults = rows(queryString, tagColumns());
 
   for ( Map tagMap : tagResults) {
-    Tag *t = new Tag(tagMap["sync_hash"].toString(),
+    Tag *t = new Tag(tagMap["uuid"].toString(),
                      tagMap["title"].toString(),
+                     tagMap["date_created"].toDateTime(),
                      tagMap["date_modified"].toDateTime(),
                      tagMap["row"].toInt(),
                      tagMap["encrypted"].toBool());
@@ -275,6 +274,52 @@ QVector<Tag*> SQLManager::tags() {
   }
 
   return tags;
+}
+
+Note *SQLManager::fetchNote(QUuid uuid)
+{
+    Note *note = new Note(this);
+
+    QSqlQuery query;
+    QString queryString
+      = QString("select %1 from notes where uuid = :uuid").arg(noteColumns().join(", "));
+    query.prepare( queryString );
+    query.bindValue(":uuid", uuid.toString(QUuid::WithoutBraces));
+    query.exec();
+
+    if (!logSqlError(query.lastError()) )
+      return nullptr;
+
+    Map noteRow = row(query, noteColumns());
+
+    note->setUUID          ( noteRow["uuid"].toString() );
+    note->setMIMEType      ( noteRow["mimetype"].toString() );
+    note->setEncoding      ( noteRow["encoding"].toString() );
+    note->setTitle         ( noteRow["title"].toString() );
+    note->setExcerpt       ( noteRow["text"].toString().left(NOTE_EXCERPT_LENGTH) );
+    note->setDateCreated   ( noteRow["date_created"].toDateTime() );
+    note->setDateModified  ( noteRow["date_modified"].toDateTime() );
+    note->setNotebook      ( noteRow["notebook"].toString() );
+    note->setFavorited     ( noteRow["favorited"].toBool() );
+    note->setEncrypted     ( noteRow["encrypted"].toBool() );
+    note->setTrashed       ( noteRow["trashed"].toBool() );
+
+    QSqlTableModel tags;
+    tags.setTable("notes_tags");
+    tags.setFilter( QString("note = \"%1\"").arg(uuid.toString(QUuid::WithoutBraces)) );
+    tags.select();
+
+    if (!logSqlError(tags.lastError()) )
+      return nullptr;
+
+    QVector<QUuid> tagList;
+
+    for (int i=0; i<tags.rowCount(); i++)
+      tagList.append( tags.record(i).value("tag").toString() );
+
+    note->setTags(tagList);
+
+    return note;
 }
 
 bool SQLManager::addNote(Note *note)
@@ -292,9 +337,10 @@ bool SQLManager::addNote(Note *note)
   QSqlQuery q;
   q.prepare(queryString);
 
-  q.bindValue(":sync_hash"     , note->syncHash().toString(QUuid::WithoutBraces));
+  q.bindValue(":uuid"          , note->uuid().toString(QUuid::WithoutBraces));
+  q.bindValue(":mimetype"      , note->mimeType());
+  q.bindValue(":encoding"      , note->encoding());
   q.bindValue(":title"         , note->title());
-  q.bindValue(":text"          , note->text());
   q.bindValue(":date_created"  , note->dateCreated());
   q.bindValue(":date_modified" , note->dateModified());
   q.bindValue(":notebook"      , note->notebook());
@@ -306,11 +352,11 @@ bool SQLManager::addNote(Note *note)
 
   // Set the tags
   QSqlQuery tagQ;
-  for ( QUuid tagSyncHash : note->tags() ) {
+  for ( QUuid tagUUID : note->tags() ) {
     tagQ.prepare("insert into notes_tags (note, tag) values "
-              "(:noteSyncHash, :tagSyncHash)");
-    tagQ.bindValue(":noteSyncHash", note->syncHash().toString(QUuid::WithoutBraces));
-    tagQ.bindValue(":tagSyncHash", tagSyncHash);
+              "(:noteUuid, :tagUuid)");
+    tagQ.bindValue(":noteUuid", note->uuid().toString(QUuid::WithoutBraces));
+    tagQ.bindValue(":tagUuid", tagUUID);
     tagQ.exec();
     logSqlError(tagQ.lastError());
   }
@@ -326,7 +372,7 @@ bool SQLManager::updateNoteToDB(Note* note) {
 
   QSqlTableModel model;
   model.setTable("notes");
-  model.setFilter( QString("sync_hash = \"%1\"").arg(note->syncHash().toString(QUuid::WithoutBraces)) );
+  model.setFilter( QString("uuid = \"%1\"").arg(note->uuid().toString(QUuid::WithoutBraces)) );
   model.select();
 
   if ( model.rowCount() > 1 )
@@ -335,7 +381,7 @@ bool SQLManager::updateNoteToDB(Note* note) {
   QSqlRecord noteInDB = model.record(0);
 
   noteInDB.setValue("title", note->title());
-  noteInDB.setValue("text", note->text());
+  noteInDB.setValue("text", note->data());
   noteInDB.setValue("date_created", note->dateCreated());
   noteInDB.setValue("date_modified", note->dateModified());
   noteInDB.setValue("favorited", note->favorited());
@@ -348,69 +394,73 @@ bool SQLManager::updateNoteToDB(Note* note) {
   // Update the note's tags
   ///
   QString noteTagsQuery
-    = QString("select note, tag from notes_tags where note = \"%1\"").arg(note->syncHash().toString(QUuid::WithoutBraces));
+    = QString("select note, tag from notes_tags where note = \"%1\"").arg(note->uuid().toString(QUuid::WithoutBraces));
   VariantList curTagObjects = column(noteTagsQuery, 1);
   QVector<QUuid> curTagSyncIDs;
   for (QVariant obj : curTagObjects)
     curTagSyncIDs.append(obj.toString());
 
   // First, loop through note's tags and add to db if needded
-  for (QUuid sync_hash : note->tags()) {
-    if (!curTagSyncIDs.contains(sync_hash))
-      addTagToNote(note->syncHash(), sync_hash);
+  for (QUuid uuid : note->tags()) {
+    if (!curTagSyncIDs.contains(uuid))
+      addTagToNote(note->uuid(), uuid);
   }
 
   // Then, loop through db tags and remove ones that are not needed
-  for (QUuid syncHash : curTagSyncIDs) {
-    if (!note->tags().contains(syncHash))
-      removeTagFromNote(note->syncHash(), syncHash);
+  for (QUuid uuid : curTagSyncIDs) {
+    if (!note->tags().contains(uuid))
+      removeTagFromNote(note->uuid(), uuid);
   }
   return logSqlError(model.lastError());
 }
 
 bool SQLManager::updateNoteFromDB(Note* note) {
-  QSqlQuery query;
-  QString queryString
-    = QString("select %1 from notes where sync_hash = :sync_hash").arg(noteColumns().join(", "));
-  query.prepare( queryString );
-  query.bindValue(":sync_hash", note->syncHash().toString(QUuid::WithoutBraces));
-  query.exec();
 
-  if (!logSqlError(query.lastError()) )
+  Note *fetchedNote = fetchNote(note->uuid());
+
+  if (fetchedNote == nullptr)
     return false;
 
-  Map noteRow = row(query, noteColumns());
+  note->setUUID          ( fetchedNote->uuid() );
+  note->setMIMEType      ( fetchedNote->mimeType() );
+  note->setEncoding      ( fetchedNote->encoding() );
+  note->setTitle         ( fetchedNote->title() );
+  note->setExcerpt       ( fetchedNote->excerpt() );
+  note->setDateCreated   ( fetchedNote->dateCreated() );
+  note->setDateModified  ( fetchedNote->dateModified() );
+  note->setNotebook      ( fetchedNote->notebook() );
+  note->setFavorited     ( fetchedNote->favorited() );
+  note->setEncrypted     ( fetchedNote->encrypted() );
+  note->setTrashed       ( fetchedNote->trashed() );
+  note->setTags          ( fetchedNote->tags() );
 
-  note->setSyncHash      ( noteRow["sync_hash"].toString() );
-  note->setTitle         ( noteRow["title"].toString() );
-  note->setText          ( noteRow["text"].toString() );
-  note->setDateCreated   ( noteRow["date_created"].toDateTime() );
-  note->setDateModified  ( noteRow["date_modified"].toDateTime() );
-  note->setNotebook      ( noteRow["notebook"].toString() );
-  note->setFavorited     ( noteRow["favorited"].toBool() );
-  note->setEncrypted     ( noteRow["encrypted"].toBool() );
-  note->setTrashed       ( noteRow["trashed"].toBool() );
+  delete fetchedNote;
 
-  QSqlTableModel tags;
-  tags.setTable("notes_tags");
-  tags.setFilter( QString("note = \"%1\"").arg(note->syncHash().toString(QUuid::WithoutBraces)) );
-  tags.select();
-
-  QVector<QUuid> tagList;
-
-  for (int i=0; i<tags.rowCount(); i++)
-    tagList.append( tags.record(i).value("tag").toString() );
-  note->setTags(tagList);
-
-  return logSqlError(tags.lastError());
+  return true;
 }
 
 bool SQLManager::deleteNote(Note* note) {
   QSqlQuery q;
-  q.prepare("DELETE FROM notes WHERE sync_hash = :sync_hash");
-  q.bindValue(":sync_hash", note->syncHash().toString(QUuid::WithoutBraces));
+  q.prepare("DELETE FROM notes WHERE uuid = :uuid");
+  q.bindValue(":uuid", note->uuid().toString(QUuid::WithoutBraces));
   q.exec();
   return logSqlError(q.lastError());
+}
+
+Notebook *SQLManager::fetchNotebook(QUuid uuid)
+{
+    Notebook *notebook(this);
+    QSqlQuery query;
+    QString queryString
+      = QString("select %1 from notebooks where uuid = :uuid").arg(notebookColumns().join(", "));
+    query.prepare( queryString );
+    query.bindValue(":uuid", uuid.toString(QUuid::WithoutBraces));
+    query.exec();
+    Map notebookRow = row(query, notebookColumns());
+
+    if ( !logSqlError(query.lastError()) )
+      return nullptr;
+
 }
 
 bool SQLManager::addNotebook(Notebook* notebook) {
@@ -427,14 +477,14 @@ bool SQLManager::addNotebook(Notebook* notebook) {
   QSqlQuery q;
   q.prepare(queryString);
 
-  QString parentSyncHash;
+  QString parentuuid;
   if ( notebook->parent() != nullptr )
-    parentSyncHash = notebook->parent()->syncHash().toString(QUuid::WithoutBraces);
+    parentuuid = notebook->parent()->uuid().toString(QUuid::WithoutBraces);
 
-  q.bindValue(":sync_hash"        , notebook->syncHash().toString(QUuid::WithoutBraces));
+  q.bindValue(":uuid"        , notebook->uuid().toString(QUuid::WithoutBraces));
   q.bindValue(":title"            , notebook->title());
   q.bindValue(":date_modified"    , notebook->dateModified());
-  q.bindValue(":parent"           , parentSyncHash);
+  q.bindValue(":parent"           , parentuuid);
   q.bindValue(":row"              , notebook->row());
   q.bindValue(":encrypted"        , notebook->encrypted());
 
@@ -447,7 +497,7 @@ bool SQLManager::addNotebook(Notebook* notebook) {
 bool SQLManager::updateNotebookToDB(Notebook* notebook) {
   QSqlTableModel model;
   model.setTable("notebooks");
-  model.setFilter( QString("sync_hash = \"%1\"").arg(notebook->syncHash().toString(QUuid::WithoutBraces)) );
+  model.setFilter( QString("uuid = \"%1\"").arg(notebook->uuid().toString(QUuid::WithoutBraces)) );
   model.select();
 
   if ( model.rowCount() > 1 )
@@ -455,13 +505,13 @@ bool SQLManager::updateNotebookToDB(Notebook* notebook) {
 
   QSqlRecord notebookInDB = model.record(0);
 
-  QString parentSyncHash;
+  QString parentuuid;
   if ( notebook->parent() != nullptr)
-    parentSyncHash = notebook->parent()->syncHash().toString(QUuid::WithoutBraces);
+    parentuuid = notebook->parent()->uuid().toString(QUuid::WithoutBraces);
 
   notebookInDB.setValue("title", notebook->title());
   notebookInDB.setValue("date_modified", notebook->dateModified());
-  notebookInDB.setValue("parent", parentSyncHash);
+  notebookInDB.setValue("parent", parentuuid);
   notebookInDB.setValue("row", notebook->row());
   notebookInDB.setValue("encrypted", notebook->encrypted());
 
@@ -471,20 +521,10 @@ bool SQLManager::updateNotebookToDB(Notebook* notebook) {
 }
 
 bool SQLManager::updateNotebookFromDB(Notebook* notebook) {
-  QSqlQuery query;
-  QString queryString
-    = QString("select %1 from notebooks where sync_hash = :sync_hash").arg(notebookColumns().join(", "));
-  query.prepare( queryString );
-  query.bindValue(":sync_hash", notebook->syncHash().toString(QUuid::WithoutBraces));
-  query.exec();
-  Map notebookRow = row(query, notebookColumns());
-
-  if ( !logSqlError(query.lastError()) )
-    return false;
 
   notebook->setTitle( notebookRow["title"].toString() );
   notebook->setDateModified( notebookRow["date_modified"].toDateTime() );
-  notebook->requestParentWithSyncHash( notebookRow["parent"].toString());
+  notebook->requestParentWithUUID( notebookRow["parent"].toString());
   notebook->setRow( notebookRow["row"].toInt() );
   notebook->setEncrypted( notebookRow["encrypted"].toBool() );
 
@@ -494,14 +534,14 @@ bool SQLManager::updateNotebookFromDB(Notebook* notebook) {
 bool SQLManager::deleteNotebook(Notebook* notebook, bool delete_children) {
   // Delete notebook
   QSqlQuery q;
-  q.prepare("DELETE FROM notebooks WHERE sync_hash = :sync_hash");
-  q.bindValue(":sync_hash", notebook->syncHash().toString(QUuid::WithoutBraces));
+  q.prepare("DELETE FROM notebooks WHERE uuid = :uuid");
+  q.bindValue(":uuid", notebook->uuid().toString(QUuid::WithoutBraces));
   q.exec();
 
   // Change notes under this notebook to use default notebook
   logSqlError(q.lastError());
-  q.prepare("UPDATE notes SET notebook = NULL WHERE notebook = :sync_hash");
-  q.bindValue(":sync_hash", notebook->syncHash().toString(QUuid::WithoutBraces));
+  q.prepare("UPDATE notes SET notebook = NULL WHERE notebook = :uuid");
+  q.bindValue(":uuid", notebook->uuid().toString(QUuid::WithoutBraces));
   q.exec();
 
   // Delete children
@@ -510,6 +550,11 @@ bool SQLManager::deleteNotebook(Notebook* notebook, bool delete_children) {
       deleteNotebook(child, false);
 
   return logSqlError(q.lastError());
+}
+
+Tag *SQLManager::fetchTag(QUuid uuid)
+{
+
 }
 
 bool SQLManager::addTag(Tag *tag) {
@@ -526,7 +571,7 @@ bool SQLManager::addTag(Tag *tag) {
   QSqlQuery q;
   q.prepare(queryString);
 
-  q.bindValue(":sync_hash", tag->syncHash().toString(QUuid::WithoutBraces));
+  q.bindValue(":uuid", tag->uuid().toString(QUuid::WithoutBraces));
   q.bindValue(":title", tag->title());
   q.bindValue(":date_modified", tag->title());
   q.bindValue(":row", tag->row());
@@ -541,7 +586,7 @@ bool SQLManager::addTag(Tag *tag) {
 bool SQLManager::updateTagToDB(Tag* tag) {
   QSqlTableModel model;
   model.setTable("tags");
-  model.setFilter( QString("sync_hash = \"%1\"").arg(tag->syncHash().toString(QUuid::WithoutBraces)) );
+  model.setFilter( QString("uuid = \"%1\"").arg(tag->uuid().toString(QUuid::WithoutBraces)) );
   model.select();
 
   if ( model.rowCount() > 1 )
@@ -560,9 +605,9 @@ bool SQLManager::updateTagToDB(Tag* tag) {
 bool SQLManager::updateTagFromDB(Tag* tag) {
   QSqlQuery query;
   QString queryString
-    = QString("select %1 from tags where sync_hash = :sync_hash").arg(tagColumns().join(", "));
+    = QString("select %1 from tags where uuid = :uuid").arg(tagColumns().join(", "));
   query.prepare( queryString );
-  query.bindValue(":sync_hash", tag->syncHash().toString(QUuid::WithoutBraces));
+  query.bindValue(":uuid", tag->uuid().toString(QUuid::WithoutBraces));
   query.exec();
   Map tagRow = row(query, tagColumns());
 
@@ -579,51 +624,50 @@ bool SQLManager::updateTagFromDB(Tag* tag) {
 
 bool SQLManager::deleteTag(Tag* tag) {
   QSqlQuery q;
-  q.prepare("DELETE FROM tags WHERE sync_hash = :sync_hash");
-  q.bindValue(":sync_hash", tag->syncHash().toString(QUuid::WithoutBraces));
+  q.prepare("DELETE FROM tags WHERE uuid = :uuid");
+  q.bindValue(":uuid", tag->uuid().toString(QUuid::WithoutBraces));
   q.exec();
   logSqlError(q.lastError());
-  q.prepare("DELETE FROM notes_tags WHERE tag = :sync_hash");
-  q.bindValue(":sync_hash", tag->syncHash().toString(QUuid::WithoutBraces));
+  q.prepare("DELETE FROM notes_tags WHERE tag = :uuid");
+  q.bindValue(":uuid", tag->uuid().toString(QUuid::WithoutBraces));
   q.exec();
   return logSqlError(q.lastError());
 }
 
-bool SQLManager::tagExists(QUuid noteSyncHash, QUuid tagSyncHash) {
+bool SQLManager::tagExists(QUuid noteuuid, QUuid taguuid) {
   QSqlTableModel model;
   model.setTable("notes_tags");
-  model.setFilter( QString("note = \"%1\" and tag = \"%2\"").arg(noteSyncHash.toString(QUuid::WithoutBraces), tagSyncHash.toString(QUuid::WithoutBraces)) );
+  model.setFilter( QString("note = \"%1\" and tag = \"%2\"").arg(noteuuid.toString(QUuid::WithoutBraces), taguuid.toString(QUuid::WithoutBraces)) );
   model.select();
   return model.rowCount() > 0;
 }
 
-bool SQLManager::addTagToNote(QUuid noteSyncHash, QUuid tagSyncHash, bool skip_duplicate_check) {
-  if ( !skip_duplicate_check && tagExists(noteSyncHash, tagSyncHash) )
+bool SQLManager::addTagToNote(QUuid noteuuid, QUuid taguuid, bool skip_duplicate_check) {
+  if ( !skip_duplicate_check && tagExists(noteuuid, taguuid) )
     return true;
   QSqlQuery q;
   q.prepare("INSERT INTO notes_tags (note, tag) VALUES "
-            "(:noteSyncHash, :tagSyncHash)");
-  q.bindValue(":noteSyncHash", noteSyncHash.toString(QUuid::WithoutBraces));
-  q.bindValue(":tagSyncHash", tagSyncHash.toString(QUuid::WithoutBraces));
+            "(:noteuuid, :taguuid)");
+  q.bindValue(":noteuuid", noteuuid.toString(QUuid::WithoutBraces));
+  q.bindValue(":taguuid", taguuid.toString(QUuid::WithoutBraces));
   q.exec();
   return logSqlError(q.lastError());
 }
 
-bool SQLManager::removeTagFromNote(QUuid noteSyncHash, QUuid tagSyncHash) {
+bool SQLManager::removeTagFromNote(QUuid noteuuid, QUuid taguuid) {
   QSqlQuery q;
   q.prepare("DELETE FROM notes_tags WHERE "
-            "note = :noteSyncHash and tag = :tagSyncHash");
-  q.bindValue(":noteSyncHash", noteSyncHash);
-  q.bindValue(":tagSyncHash", tagSyncHash);
+            "note = :noteuuid and tag = :taguuid");
+  q.bindValue(":noteuuid", noteuuid);
+  q.bindValue(":taguuid", taguuid);
   q.exec();
   return logSqlError(q.lastError());
 }
 
 void SQLManager::importTutorialNotes() {
-  QString welcomeText = HelperIO::fileToQString(":/tutorial/1-welcome.md");
-  QDateTime now = QDateTime::currentDateTime();
+  QByteArray welcomeText = HelperIO::fileToQString(":/tutorial/1-welcome.md").toUtf8();
   Note welcome;
-  welcome.setTitle("Welcome to Vibrato Notes!");
-  welcome.setText(welcomeText);
   addNote(&welcome);
+  welcome.setTitle("Welcome to Vibrato Notes!");
+  welcome.setData(welcomeText);
 }

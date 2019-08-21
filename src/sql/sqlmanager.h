@@ -6,9 +6,11 @@
 #include <QVector>
 #include <QFile>
 #include <QUuid>
-#include "../meta/note.h"
 
-// A 2d array.
+class Note;
+class Notebook;
+class Tag;
+
 typedef QMap<QString, QVariant> Map;
 typedef QVector<Map>            MapVector;
 typedef QVector<QVariant>       VariantList;
@@ -60,16 +62,15 @@ public:
   QVector<Notebook*> notebooks();
   QVector<Tag*> tags();
 
-  bool addNote(Note *note);
-  bool updateNoteToDB(Note *note);
-  bool updateNoteFromDB(Note *note);
-  bool deleteNote(Note *note);
+  Note *fetchNote(QUuid uuid);
 
+  Notebook *fetchNotebook(QUuid uuid);
   bool addNotebook(Notebook *notebook);
   bool updateNotebookToDB(Notebook *notebook);
   bool updateNotebookFromDB(Notebook *notebook);
   bool deleteNotebook(Notebook *notebook, bool delete_children=true);
 
+  Tag *fetchTag(QUuid uuid);
   bool addTag(Tag *tag);
   bool updateTagToDB(Tag *tag);
   bool updateTagFromDB(Tag *tag);
@@ -96,7 +97,9 @@ private:
   QVector<Notebook*> m_getNotebooks(Notebook *parent=nullptr);
 
   QStringList m_noteColumns =
-    {"sync_hash",
+    {"uuid",
+     "mimetype",
+     "encoding",
      "title",
      "text",
      "date_created",
@@ -107,7 +110,7 @@ private:
      "trashed"
     };
   QStringList m_notebookColumns =
-    {"sync_hash",
+    {"uuid",
      "title",
      "date_modified",
      "parent",
@@ -115,7 +118,7 @@ private:
      "encrypted"
     };
   QStringList m_tagColumns =
-    {"sync_hash",
+    {"uuid",
      "title",
      "date_modified",
      "row",

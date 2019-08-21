@@ -6,21 +6,28 @@
 #include "notebook.h"
 #include "tag.h"
 
+class SQLManager;
+
 #define NOTE_DEFAULT_TITLE "Untitled Note"
 #define NOTE_DEFAULT_MIMETYPE "text/markdown"
 #define NOTE_DEFAULT_ENCODING "UTF-8"
+#define NOTE_EXCERPT_LENGTH 26
 
 class Note : public QObject
 {
   Q_OBJECT
 
 public:
-  Note(QUuid id = QUuid::createUuid(),
+  Note(SQLManager *sql_manager,
+       QUuid uuid = QUuid::createUuid(),
        QString mimetype = NOTE_DEFAULT_MIMETYPE,
        QString encoding = NOTE_DEFAULT_ENCODING);
 
-  QUuid id() const;
-  void setID(QUuid id);
+  SQLManager *sqlManager();
+  void setSQLManager(SQLManager *sql_manager);
+
+  QUuid uuid() const;
+  void setUUID(QUuid uuid);
 
   QString mimeType() const;
   void setMIMEType(QString mimetype);
@@ -51,7 +58,7 @@ public:
 
   // Notebook
   QUuid notebook() const;
-  void setNotebook(QUuid sync_hash, bool updateDateModified=true);
+  void setNotebook(QUuid uuid, bool updateDateModified=true);
 
   // Tags
   QVector<QUuid> tags() const;
@@ -80,6 +87,13 @@ public:
    */
   void updateCachedMetaInfo();
 
+  // SQL Methods
+  bool sql_addToDB();
+  bool sql_updateToDB();
+  bool sql_updateFromDB();
+  bool sql_delete();
+
+
   /*
    * Sorting comparison functions for your convenience.
    */
@@ -91,7 +105,7 @@ public:
 signals:
   void changed(Note *note, bool updateDateModified=true);
 
-  void idChanged(Note *note);
+  void uuidChanged(Note *note);
   void titleChanged(Note *note);
   void dataChanged(Note *note);
   void dateCreatedChanged(Note *note);
@@ -106,11 +120,11 @@ private slots:
   void handleChange(Note *note, bool updateDateModified=true);
 
 private:
-  QUuid          m_id;
+  SQLManager    *m_sql_manager;
+  QUuid          m_uuid;
   QString        m_mime_type;
   QString        m_encoding;
   QString        m_title;
-  QByteArray     m_data;
   QDateTime      m_date_created;
   QDateTime      m_date_modified;
   QUuid          m_notebook;

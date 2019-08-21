@@ -1,8 +1,17 @@
 #include "tag.h"
+#include "../sql/sqlmanager.h"
 
-Tag::Tag(QUuid sync_hash, QString title, QDateTime date_modified, int row, bool encrypted) :
-  m_sync_hash(sync_hash),
+Tag::Tag(SQLManager *sql_manager,
+         QUuid uuid,
+         QString title,
+         QDateTime date_created,
+         QDateTime date_modified,
+         int row,
+         bool encrypted):
+  m_sql_manager(sql_manager),
+  m_uuid(uuid),
   m_title(title),
+  m_date_created(date_created),
   m_date_modified(date_modified),
   m_row(row),
   m_encrypted(encrypted)
@@ -11,17 +20,17 @@ Tag::Tag(QUuid sync_hash, QString title, QDateTime date_modified, int row, bool 
           this, &Tag::handleChange);
 }
 
-QUuid Tag::syncHash() const
+QUuid Tag::uuid() const
 {
-  return m_sync_hash;
+  return m_uuid;
 }
 
-void Tag::setSyncHash(QUuid syncHash)
+void Tag::setUuid(QUuid uuid)
 {
-  if ( syncHash == m_sync_hash ) return;
+  if ( uuid == m_uuid ) return;
 
-  m_sync_hash = syncHash;
-  emit syncHashChanged(this);
+  m_uuid = uuid;
+  emit uuidChanged(this);
   emit changed(this);
 }
 
