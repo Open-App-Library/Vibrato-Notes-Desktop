@@ -1,7 +1,6 @@
 #include "vibratoobject.h"
 
-VibratoObject::VibratoObject(SQLManager *sql_managerm,
-                             VibratoObjectMap fields)
+VibratoObject::VibratoObject(VibratoObjectMap fields)
 {
     assignFields(fields);
 
@@ -93,25 +92,69 @@ QMap<QString, QVariant> VibratoObject::fields()
     return map;
 }
 
+QVector<QString> VibratoObject::field_keys()
+{
+    return defaultFields();
+}
+
 void VibratoObject::assignFields(QMap<QString, QVariant> fields)
 {
-    VibratoObjectMapIterator it(fields);
-    while (it.hasNext()) {
-        it.next();
-        QString key = it.key();
-        QVariant val = it.value();
-        if (key == "uuid") {
-            this->setUuidExplicitly(val.toUuid());
-        } else if (key == "title") {
-            this->setTitleExplicitly(val.toString());
-        } else if (key == "date_created") {
-            this->setDateCreatedExplicitly(val.toDateTime());
-        } else if (key == "date_modified") {
-            this->setDateModifiedExplicitly(val.toDateTime());
-        } else if (key == "encrypted") {
-            this->setEncrypted(val.toBool());
-        }
-    }
+    assignFieldsExplicitly(fields);
+    emit changed();
+}
+
+void VibratoObject::assignFieldsExplicitly(QMap<QString, QVariant> fields)
+{
+    this->setUuidExplicitly(
+                fields.contains("uuid") ?
+                    fields.value("uuid").toUuid() : defaultUuid());
+
+    this->setTitleExplicitly(
+                fields.contains("title") ?
+                    fields.value("title").toString() : defaultTitle());
+
+    this->setDateCreatedExplicitly(
+                fields.contains("date_created") ?
+                    fields.value("date_created").toDateTime() : defaultDateCreated());
+
+    this->setDateModifiedExplicitly(
+                fields.contains("date_modified") ?
+                    fields.value("date_modified").toDateTime() : defaultDateModified());
+
+    this->setEncrypted(
+                fields.contains("encrypted") ?
+                    fields.value("encrypted").toBool() : defaultEncrypted());
+
+}
+
+const QVector<QString> VibratoObject::defaultFields()
+{
+    return VIBRATOOBJECT_DEFAULT_FIELDS;
+}
+
+const QUuid VibratoObject::defaultUuid()
+{
+    return QUuid::createUuid();
+}
+
+const QString VibratoObject::defaultTitle()
+{
+    return VIBRATOOBJECT_DEFAULT_TITLE;
+}
+
+const QDateTime VibratoObject::defaultDateCreated()
+{
+    return VIBRATOOBJECT_DEFAULT_DATE_CREATED;
+}
+
+const QDateTime VibratoObject::defaultDateModified()
+{
+    return VIBRATOOBJECT_DEFAULT_DATE_MODIFIED;
+}
+
+bool VibratoObject::defaultEncrypted()
+{
+    return VIBRATOOBJECT_DEFAULT_ENCRYPTED;
 }
 
 void VibratoObject::handleChange()

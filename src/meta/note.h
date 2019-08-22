@@ -11,15 +11,14 @@ class SQLManager;
 #define NOTE_DEFAULT_TITLE "Untitled Note"
 #define NOTE_DEFAULT_MIMETYPE "text/markdown"
 #define NOTE_DEFAULT_ENCODING "UTF-8"
-#define NOTE_EXCERPT_LENGTH 26
+#define NOTE_DEFAULT_EXCERPT_LENGTH 26
 
 class Note : public QObject
 {
   Q_OBJECT
 
 public:
-  Note(SQLManager *sql_manager,
-       QUuid uuid = QUuid::createUuid(),
+  Note(QUuid uuid = QUuid::createUuid(),
        QString mimetype = NOTE_DEFAULT_MIMETYPE,
        QString encoding = NOTE_DEFAULT_ENCODING);
 

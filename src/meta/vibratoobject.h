@@ -7,20 +7,21 @@
 #include <QDateTime>
 #include <QUuid>
 
-#define VIBRATOOBJECT_DEFAULT_TITLE "Untitled"
-#define VIBRATOOBJECT_DEFAULT_FIELDS {"uuid", "title", "date_created", "date_modified", "encrypted"}
-
 #define VibratoObjectMap QMap<QString, QVariant>
 #define VibratoObjectMapIterator QMapIterator<QString, QVariant>
 
-class SQLManager;
+#define VIBRATOOBJECT_DEFAULT_TITLE "Untitled"
+#define VIBRATOOBJECT_DEFAULT_FIELDS {"uuid", "title", "date_created", "date_modified", "encrypted"}
+#define VIBRATOOBJECT_DEFAULT_DATE_CREATED QDateTime::currentDateTime();
+#define VIBRATOOBJECT_DEFAULT_DATE_MODIFIED QDateTime::currentDateTime();
+#define VIBRATOOBJECT_DEFAULT_ENCRYPTED false
+
 
 class VibratoObject : public QObject
 {
     Q_OBJECT
 public:
-    VibratoObject(SQLManager *sql_managerm,
-                  VibratoObjectMap fields = VibratoObjectMap());
+    VibratoObject(VibratoObjectMap fields = VibratoObjectMap());
     virtual ~VibratoObject();
 
     /*
@@ -52,12 +53,17 @@ public:
     void setEncryptedExplicitly(bool is_encrypted);
 
     VibratoObjectMap fields();
+    QVector<QString> field_keys();
+
     void assignFields(VibratoObjectMap fields);
+    void assignFieldsExplicitly(VibratoObjectMap fields);
 
-    // SQL Functions
-    void save();
-    void restore();
-
+    const QVector<QString> defaultFields();
+    const QUuid defaultUuid();
+    const QString defaultTitle();
+    const QDateTime defaultDateCreated();
+    const QDateTime defaultDateModified();
+    bool defaultEncrypted();
 
 signals:
     void changed();
@@ -66,7 +72,6 @@ private slots:
     void handleChange();
 
 private:
-    SQLManager *m_sql_manager;
     QUuid       m_uuid;
     QString     m_title;
     QDateTime   m_date_created;
