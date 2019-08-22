@@ -322,6 +322,22 @@ Note *SQLManager::fetchNote(QUuid uuid)
     return note;
 }
 
+Notebook *SQLManager::fetchNotebook(QUuid uuid)
+{
+    Notebook *notebook = new Notebook(this);
+    QSqlQuery query;
+    QString queryString
+      = QString("select %1 from notebooks where uuid = :uuid").arg(notebookColumns().join(", "));
+    query.prepare( queryString );
+    query.bindValue(":uuid", uuid.toString(QUuid::WithoutBraces));
+    query.exec();
+    Map notebookRow = row(query, notebookColumns());
+
+    if ( !logSqlError(query.lastError()) )
+      return nullptr;
+
+}
+
 bool SQLManager::addNote(Note *note)
 {
   QStringList noteCols = noteColumns();
@@ -447,21 +463,7 @@ bool SQLManager::deleteNote(Note* note) {
   return logSqlError(q.lastError());
 }
 
-Notebook *SQLManager::fetchNotebook(QUuid uuid)
-{
-    Notebook *notebook(this);
-    QSqlQuery query;
-    QString queryString
-      = QString("select %1 from notebooks where uuid = :uuid").arg(notebookColumns().join(", "));
-    query.prepare( queryString );
-    query.bindValue(":uuid", uuid.toString(QUuid::WithoutBraces));
-    query.exec();
-    Map notebookRow = row(query, notebookColumns());
 
-    if ( !logSqlError(query.lastError()) )
-      return nullptr;
-
-}
 
 bool SQLManager::addNotebook(Notebook* notebook) {
   QStringList notebookCols = notebookColumns();

@@ -93,6 +93,26 @@ void Tag::setEncrypred(bool encrypted)
   emit changed(this);
 }
 
+QMap<QString, QVariant> Tag::fields()
+{
+    QMap<QString, QVariant> the_fields;
+
+    the_fields.insert("uuid",
+                      uuid());
+    the_fields.insert("title",
+                      title());
+    the_fields.insert("date_created",
+                      dateCreated());
+    the_fields.insert("date_modified",
+                      dateModified());
+    the_fields.insert("row",
+                      row());
+    the_fields.insert("encrypted",
+                      encrypted());
+
+    return the_fields;
+}
+
 void Tag::handleChange(Tag *tag)
 {
   tag->setDateModified( QDateTime::currentDateTime(), false );

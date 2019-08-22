@@ -18,7 +18,9 @@ SOURCES += $$PWD/src/main.cpp \
            $$PWD/src/meta/note.cpp \
            $$PWD/src/meta/notebook.cpp \
            $$PWD/src/meta/tag.cpp \
-           $$PWD/src/sql/sqlmanager.cpp
+           $$PWD/src/sql/sqlmanager.cpp \
+           src/meta/vibratoobject.cpp \
+           src/sql/sqlobject.cpp
 
 
 HEADERS += $$PWD/src/mainwindow.h \
@@ -26,7 +28,9 @@ HEADERS += $$PWD/src/mainwindow.h \
            $$PWD/src/meta/note.h \
            $$PWD/src/meta/notebook.h \
            $$PWD/src/meta/tag.h \
-           $$PWD/src/sql/sqlmanager.h
+           $$PWD/src/sql/sqlmanager.h \
+           src/meta/vibratoobject.h \
+           src/sql/sqlobject.h
 
 INCLUDEPATH += $$PWD/src/helpers
 
@@ -48,3 +52,5 @@ RESOURCES += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES +=

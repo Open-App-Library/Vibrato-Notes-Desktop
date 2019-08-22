@@ -4,22 +4,20 @@
 #include <QString>
 #include <QUuid>
 #include <QDateTime>
+#include <QVariant>
 
 class SQLManager;
 
 #define TAG_DEFAULT_TITLE "Untitled Tag"
+
+#define TAG_FIELD_NAMES { "uuid", "title", "date_created", "date_modified" }
 
 class Tag : public QObject
 {
   Q_OBJECT
 public:
   Tag(SQLManager *sql_manager,
-      QUuid       uuid          = QUuid::createUuid(),
-      QString     title         = TAG_DEFAULT_TITLE,
-      QDateTime   date_created  = QDateTime::currentDateTime(),
-      QDateTime   date_modified = QDateTime::currentDateTime(),
-      int         row           = -255,
-      bool        encrypted     = false);
+      QMap<QString, QVariant> fields);
 
   QUuid uuid() const;
   void setUuid(QUuid uuid);
@@ -38,6 +36,8 @@ public:
 
   bool encrypted() const;
   void setEncrypred(bool encrypted);
+
+  QMap<QString, QVariant> fields();
 
 signals:
   // General change function - whenever any property is changed

@@ -62,18 +62,26 @@ public:
   QVector<Notebook*> notebooks();
   QVector<Tag*> tags();
 
+  // Gives you an object, fetched from the database,
+  // to play with. Make sure to delete when you are done.
   Note *fetchNote(QUuid uuid);
-
   Notebook *fetchNotebook(QUuid uuid);
-  bool addNotebook(Notebook *notebook);
-  bool updateNotebookToDB(Notebook *notebook);
-  bool updateNotebookFromDB(Notebook *notebook);
-  bool deleteNotebook(Notebook *notebook, bool delete_children=true);
-
   Tag *fetchTag(QUuid uuid);
+
+  bool addNote(Note *note);
+  bool addNotebook(Notebook *notebook);
   bool addTag(Tag *tag);
+
+  bool updateNoteToDB(Note *note);
+  bool updateNotebookToDB(Notebook *notebook);
   bool updateTagToDB(Tag *tag);
+
+  bool updateNoteFromDB(Note *note);
+  bool updateNotebookFromDB(Notebook *notebook);
   bool updateTagFromDB(Tag *tag);
+
+  bool deleteNote(Note *note);
+  bool deleteNotebook(Notebook *notebook, bool delete_children=true);
   bool deleteTag(Tag *tag);
 
   bool tagExists(QUuid noteSyncHash, QUuid tagSyncHash);

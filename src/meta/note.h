@@ -88,11 +88,8 @@ public:
   void updateCachedMetaInfo();
 
   // SQL Methods
-  bool sql_addToDB();
-  bool sql_updateToDB();
-  bool sql_updateFromDB();
-  bool sql_delete();
-
+  bool save();    // Save note data to DB
+  bool restore(); // Restore note from DB
 
   /*
    * Sorting comparison functions for your convenience.

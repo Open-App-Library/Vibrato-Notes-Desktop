@@ -5,6 +5,8 @@
 #include <helper-io.hpp>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QSqlTableModel>
+#include <QSqlRecord>
 #include "../sql/sqlmanager.h"
 
 Note::Note(SQLManager *sql_manager,
@@ -74,51 +76,12 @@ void Note::setData(const QByteArray data)
   emit dataChanged( this );
 }
 
-bool Note::sql_addToDB()
+bool Note::save()
 {
-    QStringList noteCols = m_sql_manager->noteColumns();
-    QStringList columnPlaceholders;
-
-    for (QString col : noteCols)
-      columnPlaceholders.append( QString(":%1").arg(col) );
-
-    QString queryString = QString("INSERT INTO notes (%1) "
-                                  "VALUES (%2)").arg(noteCols.join(", "),
-                                                     columnPlaceholders.join(", "));
-
-    QSqlQuery q;
-    q.prepare(queryString);
-
-    q.bindValue(":uuid"          , this->uuid().toString(QUuid::WithoutBraces));
-    q.bindValue(":mimetype"      , this->mimeType());
-    q.bindValue(":encoding"      , this->encoding());
-    q.bindValue(":title"         , this->title());
-    q.bindValue(":date_created"  , this->dateCreated());
-    q.bindValue(":date_modified" , this->dateModified());
-    q.bindValue(":notebook"      , this->notebook());
-    q.bindValue(":favorited"     , this->favorited());
-    q.bindValue(":encrypted"     , this->encrypted());
-    q.bindValue(":trashed"       , this->trashed());
-
-    q.exec();
-
-    // Set the tags
-    QSqlQuery tagQ;
-    for ( QUuid tagUUID : this->tags() ) {
-      tagQ.prepare("insert into notes_tags (note, tag) values "
-                "(:noteUuid, :tagUuid)");
-      tagQ.bindValue(":noteUuid", this->uuid().toString(QUuid::WithoutBraces));
-      tagQ.bindValue(":tagUuid", tagUUID);
-      tagQ.exec();
-      m_sql_manager->logSqlError(tagQ.lastError());
-    }
-
-    // Print error if there is one. Return true if no error.
-    return m_sql_manager->logSqlError(q.lastError());
-
+    m_sql_manager->upda
 }
 
-bool Note::sql_updateToDB()
+bool Note::restore()
 {
 
 }
