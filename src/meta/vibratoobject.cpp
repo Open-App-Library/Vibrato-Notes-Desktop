@@ -3,7 +3,7 @@
 
 VibratoObject::VibratoObject(VibratoObjectMap fields)
 {
-    assignFields(fields);
+    assignFieldsExplicitly(fields);
 
     connect(this, &VibratoObject::changed,
             this, &VibratoObject::handleChange);
@@ -11,7 +11,6 @@ VibratoObject::VibratoObject(VibratoObjectMap fields)
 
 VibratoObject::~VibratoObject()
 {
-
 }
 
 QString VibratoObject::title() const
@@ -142,7 +141,7 @@ void VibratoObject::setDateModifiedExplicitly(QDateTime new_date)
     m_date_modified = new_date;
 }
 
-bool VibratoObject::encrypted()
+bool VibratoObject::encrypted() const
 {
     return m_encrypted;
 }
@@ -161,7 +160,7 @@ void VibratoObject::setEncryptedExplicitly(bool is_encrypted)
     m_encrypted = is_encrypted;
 }
 
-QMap<QString, QVariant> VibratoObject::fields()
+QMap<QString, QVariant> VibratoObject::fields() const
 {
     VibratoObjectMap map;
     map["uuid"] = uuid();
@@ -172,9 +171,9 @@ QMap<QString, QVariant> VibratoObject::fields()
     return map;
 }
 
-QVector<QString> VibratoObject::field_keys()
+QVector<QString> VibratoObject::fieldKeys()
 {
-    return defaultFields();
+    return defaultFieldKeys();
 }
 
 void VibratoObject::assignFields(QMap<QString, QVariant> fields)
@@ -207,7 +206,7 @@ void VibratoObject::assignFieldsExplicitly(QMap<QString, QVariant> fields)
 
 }
 
-QVector<QString> VibratoObject::defaultFields() const
+QVector<QString> VibratoObject::defaultFieldKeys() const
 {
     return VIBRATOOBJECT_DEFAULT_FIELDS;
 }
@@ -252,7 +251,7 @@ bool VibratoObject::byDateModifiedDesc(const VibratoObject *v1, const VibratoObj
     return compareTwoDateTimes( v1->dateModified(), v2->dateModified(), '>' );
 }
 
-bool VibratoObject::defaultEncrypted()
+bool VibratoObject::defaultEncrypted() const
 {
     return VIBRATOOBJECT_DEFAULT_ENCRYPTED;
 }

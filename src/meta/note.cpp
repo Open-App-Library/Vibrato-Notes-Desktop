@@ -124,7 +124,7 @@ void Note::setTrashedExplicitly(bool trashed)
     m_trashed = trashed;
 }
 
-QVector<QString> Note::defaultFields() const
+QVector<QString> Note::defaultFieldKeys() const
 {
     return NOTE_DEFAULT_FIELDS;
 }

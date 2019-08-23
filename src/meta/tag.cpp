@@ -1,68 +1,9 @@
 #include "tag.h"
-#include "../sql/sqlmanager.h"
 
-Tag::Tag(SQLManager *sql_manager,
-         QUuid uuid,
-         QString title,
-         QDateTime date_created,
-         QDateTime date_modified,
-         int row,
-         bool encrypted):
-  m_sql_manager(sql_manager),
-  m_uuid(uuid),
-  m_title(title),
-  m_date_created(date_created),
-  m_date_modified(date_modified),
-  m_row(row),
-  m_encrypted(encrypted)
+Tag::Tag(VibratoObjectMap fields) :
+    VibratoObject (fields)
 {
-  connect(this, &Tag::changed,
-          this, &Tag::handleChange);
-}
-
-QUuid Tag::uuid() const
-{
-  return m_uuid;
-}
-
-void Tag::setUuid(QUuid uuid)
-{
-  if ( uuid == m_uuid ) return;
-
-  m_uuid = uuid;
-  emit uuidChanged(this);
-  emit changed(this);
-}
-
-QString Tag::title() const
-{
-  return m_title;
-}
-
-void Tag::setTitle(const QString title)
-{
-  QString cleanedTitle = title.trimmed();
-  if ( cleanedTitle == m_title ||
-       cleanedTitle.isEmpty() )
-    return;
-  m_title = cleanedTitle;
-  emit titleChanged(this);
-  emit changed(this);
-}
-
-QDateTime Tag::dateModified() const
-{
-  return m_date_modified;
-}
-
-void Tag::setDateModified(QDateTime dateModified, bool emitChangeSignal)
-{
-  if ( dateModified == m_date_modified ) return;
-
-  m_date_modified = dateModified;
-  emit dateModifiedChanged(this);
-  if (emitChangeSignal)
-    emit changed(this);
+    assignFieldsExplicitly(fields);
 }
 
 int Tag::row() const
@@ -73,47 +14,43 @@ int Tag::row() const
 void Tag::setRow(int row)
 {
   if ( row == m_row ) return;
-
-  m_row = row;
+  setRowExplicitly(row);
   emit rowChanged(this);
   emit changed(this);
 }
 
-bool Tag::encrypted() const
+void Tag::setRowExplicitly(int row)
 {
-  return m_encrypted;
+    m_row = row;
 }
 
-void Tag::setEncrypred(bool encrypted)
+QVector<QString> Tag::defaultFieldKeys() const
 {
-  if ( encrypted == m_encrypted ) return;
-
-  m_encrypted = encrypted;
-  emit encryptedChanged(this);
-  emit changed(this);
+    return TAG_DEFAULT_FIELDS;
 }
 
-QMap<QString, QVariant> Tag::fields()
+VibratoObjectMap Tag::fields() const
 {
-    QMap<QString, QVariant> the_fields;
-
-    the_fields.insert("uuid",
-                      uuid());
-    the_fields.insert("title",
-                      title());
-    the_fields.insert("date_created",
-                      dateCreated());
-    the_fields.insert("date_modified",
-                      dateModified());
-    the_fields.insert("row",
-                      row());
-    the_fields.insert("encrypted",
-                      encrypted());
-
-    return the_fields;
+    VibratoObjectMap fields = VibratoObject::fields();
+    fields["row"] = row();
+    return fields;
 }
 
-void Tag::handleChange(Tag *tag)
+int Tag::defaultRow() const
 {
-  tag->setDateModified( QDateTime::currentDateTime(), false );
+    return TAG_DEFAULT_ROW;
+}
+
+QString Tag::defaultTitle() const
+{
+    return TAG_DEFAULT_TITLE;
+}
+
+void Tag::assignFieldsExplicitly(QMap<QString, QVariant> fields)
+{
+    VibratoObject::assignFieldsExplicitly(fields);
+
+    this->setRowExplicitly(
+                fields.contains("row") ?
+                    fields.value("row").toInt() : defaultRow());
 }

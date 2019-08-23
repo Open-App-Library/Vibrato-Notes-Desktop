@@ -9,9 +9,12 @@
 
 class SQLManager;
 
+
 #define NOTE_DEFAULT_TITLE "Untitled Note"
-#define NOTE_DEFAULT_FIELDS {"uuid", "title", "date_created", "date_modified", "encrypted", \
-                             "mimetype", "encoding", "data", "notebook", "tags"}
+
+#define NOTE_DEFAULT_FIELDS VIBRATOOBJECT_DEFAULT_FIELDS + \
+    QStringList({"mimetype", "encoding", "data", "notebook", "tags"})
+
 #define NOTE_DEFAULT_MIMETYPE "text/markdown"
 #define NOTE_DEFAULT_ENCODING "UTF-8"
 #define NOTE_DEFAULT_EXCERPT_LENGTH 26
@@ -52,7 +55,7 @@ public:
   /*
    * Default Data
    */
-  QVector<QString> defaultFields() const;
+  QVector<QString> defaultFieldKeys() const;
   QString          defaultTitle() const;
 
   /*

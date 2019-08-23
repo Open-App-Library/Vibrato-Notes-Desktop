@@ -11,7 +11,7 @@
 #define VibratoObjectMapIterator QMapIterator<QString, QVariant>
 
 #define VIBRATOOBJECT_DEFAULT_TITLE "Untitled"
-#define VIBRATOOBJECT_DEFAULT_FIELDS {"uuid", "title", "date_created", "date_modified", "encrypted"}
+#define VIBRATOOBJECT_DEFAULT_FIELDS QVector<QString>({"uuid", "title", "date_created", "date_modified", "encrypted"})
 #define VIBRATOOBJECT_DEFAULT_DATE_CREATED QDateTime::currentDateTime();
 #define VIBRATOOBJECT_DEFAULT_DATE_MODIFIED QDateTime::currentDateTime();
 #define VIBRATOOBJECT_DEFAULT_ENCRYPTED false
@@ -52,22 +52,22 @@ public:
     QString dateModifiedStrInformative() const; // ex. January 26, 1965 at 12:30pm EST
     void setDateModifiedExplicitly(QDateTime new_date);
 
-    bool encrypted();
+    bool encrypted() const;
     void setEncrypted(bool is_encrypted);
     void setEncryptedExplicitly(bool is_encrypted);
 
-    VibratoObjectMap fields();
-    QVector<QString> field_keys();
+    virtual VibratoObjectMap fields() const;
+    QVector<QString> fieldKeys();
 
     void assignFields(VibratoObjectMap fields);
-    void assignFieldsExplicitly(VibratoObjectMap fields);
+    virtual void assignFieldsExplicitly(VibratoObjectMap fields);
 
-    QVector<QString> defaultFields() const;
-    QUuid            defaultUuid() const;
-    QString          defaultTitle() const;
-    QDateTime        defaultDateCreated() const;
-    QDateTime        defaultDateModified() const;
-    bool             defaultEncrypted();
+    virtual QVector<QString> defaultFieldKeys() const;
+    virtual QUuid            defaultUuid() const;
+    virtual QString          defaultTitle() const;
+    virtual QDateTime        defaultDateCreated() const;
+    virtual QDateTime        defaultDateModified() const;
+    virtual bool             defaultEncrypted() const;
 
     /*
      * Sorting comparison functions for your convenience.

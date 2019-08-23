@@ -2,93 +2,10 @@
 #include <QDebug>
 #include "../sql/sqlmanager.h"
 
-Notebook::Notebook(SQLManager *sql_manager,
-                   QUuid uuid,
-                   QString title,
-                   QDateTime date_created,
-                   QDateTime date_modified,
-                   Notebook *parent,
-                   int row,
-                   bool encrypted) :
-  m_sql_manager(sql_manager),
-  m_uuid(uuid),
-  m_title(title),
-  m_date_created(date_created),
-  m_date_modified(date_modified),
-  m_parent(parent),
-  m_row(row),
-  m_encrypted(encrypted)
+Notebook::Notebook(VibratoObjectMap fields) :
+    VibratoObject (fields)
 {
-  connect(this, &Notebook::changed,
-          this, &Notebook::handleChange);
-}
-
-Notebook *Notebook::createBlankNotebook()
-{
-  return new Notebook(nullptr,
-                      QUuid::createUuid(),
-                      NOTEBOOK_DEFAULT_TITLE);
-}
-
-SQLManager *Notebook::sqlManager()
-{
-    return m_sql_manager;
-}
-
-void Notebook::setSQLManager(SQLManager *sql_manager)
-{
-    m_sql_manager = sql_manager;
-}
-
-QUuid Notebook::uuid() const
-{
-  return m_uuid;
-}
-
-void Notebook::setUUID(QUuid syncHash)
-{
-  if ( defaultNotebook() )
-    return;
-  m_uuid = syncHash;
-  emit UUIDChanged(this);
-}
-
-QString Notebook::title() const
-{
-  return m_title;
-}
-
-void Notebook::setTitle(const QString &title)
-{
-  QString cleanedTitle = title.trimmed();
-  // If Default Notebook or no change or title is empty, return.
-  if (defaultNotebook() ||
-      cleanedTitle == m_title ||
-      cleanedTitle.isEmpty())
-    return;
-  m_title = cleanedTitle;
-  emit titleChanged(this);
-  emit changed(this);
-}
-
-QDateTime Notebook::dateCreated() const
-{
-    return m_date_created;
-}
-
-void Notebook::setDateCreated(QDateTime dateCreated)
-{
-    m_date_created = dateCreated;
-}
-
-QDateTime Notebook::dateModified() const
-{
-  return m_date_modified;
-}
-
-void Notebook::setDateModified(QDateTime dateModified)
-{
-  m_date_modified = dateModified;
+    assignFieldsExplicitly(fields);
 }
 
 Notebook *Notebook::parent() const
@@ -98,17 +15,22 @@ Notebook *Notebook::parent() const
 
 void Notebook::setParent(Notebook *parent)
 {
-  if ( defaultNotebook() ) return;
+  if ( isDefaultNotebook() ) return;
 
   if (m_parent != nullptr)
-    m_parent->removeChild_primitive(this);
-  setParent_primitive(parent);
+    m_parent->removeChildExplicitly(this);
+  setParentExplicitly(parent);
   if (m_parent != nullptr)
-    m_parent->addChild_primitive(this);
+    m_parent->appendChildExplicitly(this);
 
   emit childrenChanged(parent);
   emit parentChanged(this);
   emit changed(this);
+}
+
+void Notebook::setParentExplicitly(Notebook *parent)
+{
+  m_parent = parent;
 }
 
 QVector<Notebook *> Notebook::children() const
@@ -132,20 +54,20 @@ QVector<Notebook *> Notebook::recurseChildren(Notebook* parent) const
 
 void Notebook::setChildren(const QVector<Notebook *> &children)
 {
-  if ( defaultNotebook() )
+  if ( isDefaultNotebook() )
     return;
   m_children = children;
   emit childrenChanged(this);
   emit changed(this);
 }
 
-void Notebook::addChild(Notebook *child)
+void Notebook::appendChild(Notebook *child)
 {
-  if ( defaultNotebook() ) return;
+  if ( isDefaultNotebook() ) return;
 
-  child->parent()->removeChild_primitive(child);
-  child->setParent_primitive(this);
-  addChild_primitive(child);
+  child->parent()->removeChildExplicitly(child);
+  child->setParentExplicitly(this);
+  appendChildExplicitly(child);
 
   emit parentChanged(child);
   emit childrenChanged(this);
@@ -154,26 +76,21 @@ void Notebook::addChild(Notebook *child)
 
 void Notebook::removeChild(Notebook *child)
 {
-  if ( defaultNotebook() )
+  if ( isDefaultNotebook() )
     return;
 
-  removeChild_primitive(child);
+  removeChildExplicitly(child);
 
   emit childrenChanged(this);
   emit changed(this);
 }
 
-void Notebook::setParent_primitive(Notebook *parent)
-{
-  m_parent = parent;
-}
-
-void Notebook::addChild_primitive(Notebook *child)
+void Notebook::appendChildExplicitly(Notebook *child)
 {
   m_children.append(child);
 }
 
-void Notebook::removeChild_primitive(Notebook *child)
+void Notebook::removeChildExplicitly(Notebook *child)
 {
   int index = m_children.indexOf(child);
   if (index > -1) m_children.removeAt(index);
@@ -188,36 +105,73 @@ void Notebook::setRow(int row)
 {
   if ( row == m_row ) return;
 
-  m_row = row;
+  setRowExplicitly(row);
   emit rowChanged(this);
   emit changed(this);
 }
 
-bool Notebook::encrypted() const
+void Notebook::setRowExplicitly(int row)
 {
-  return m_encrypted;
+    m_row = row;
 }
 
-void Notebook::setEncrypted(bool encrypted)
+bool Notebook::isDefaultNotebook() const
 {
-  if ( encrypted == m_encrypted ) return;
-
-  m_encrypted = encrypted;
-  emit encryptedChanged(this);
-  emit changed(this);
+  return uuid() == nullptr;
 }
 
-bool Notebook::defaultNotebook() const
+Notebook *Notebook::createBlankNotebook()
 {
-  // Check if a blank UUID
-  return m_uuid == nullptr;
+    return new Notebook(VibratoObjectMap());
 }
 
-void Notebook::requestParentWithUUID(QUuid parentSyncHash) {
-  emit requestedParentWithUUID(this, parentSyncHash);
+void Notebook::assignFieldsExplicitly(QMap<QString, QVariant> fields)
+{
+    VibratoObject::assignFieldsExplicitly(fields);
+
+    this->setRowExplicitly(
+                fields.contains("row") ?
+                    fields.value("row").toInt() : defaultRow());
+    this->setParentExplicitly(
+                fields.contains("parent") ?
+                    fields.value("parent").value<Notebook*>() : defaultParent());
+    this->setRowExplicitly(
+                fields.contains("row") ?
+                    fields.value("row").toInt() : defaultRow());
+
+
 }
 
-void Notebook::handleChange(Notebook *notebook)
+QMap<QString, QVariant> Notebook::fields() const
 {
-  notebook->setDateModified( QDateTime::currentDateTime() );
+    VibratoObjectMap fields = VibratoObject::fields();
+    fields["row"] = row();
+    fields["parent"] = QVariant::fromValue(parent());
+    fields["children"] = QVariant::fromValue(children());
+    return fields;
+}
+
+QVector<QString> Notebook::defaultFieldKeys() const
+{
+    return NOTEBOOK_DEFAULT_FIELDS;
+}
+
+Notebook *Notebook::defaultParent() const
+{
+    return NOTEBOOK_DEFAULT_PARENT;
+}
+
+QVector<Notebook *> Notebook::defaultChildren() const
+{
+    return NOTEBOOK_DEFAULT_CHILDREN;
+}
+
+int Notebook::defaultRow() const
+{
+    return NOTEBOOK_DEFAULT_ROW;
+}
+
+QString Notebook::defaultTitle() const
+{
+    return NOTEBOOK_DEFAULT_TITLE;
 }
