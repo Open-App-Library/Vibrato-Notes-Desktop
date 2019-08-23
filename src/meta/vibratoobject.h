@@ -34,18 +34,22 @@ public:
      * altered.
      */
 
-    const QString title();
+    QString title() const;
     void setTitle(QString new_title);
     void setTitleExplicitly(QString new_title);
 
-    const QUuid uuid();
+    QUuid uuid() const;
     void setUuidExplicitly(QUuid new_uuid);
 
-    const QDateTime dateCreated();
+    QDateTime dateCreated() const;
+    QString dateCreatedStr() const; // ex. January 26, 1965
+    QString dateCreatedStrInformative() const; // ex. January 26, 1965 at 12:30pm EST
     void setDateCreated(QDateTime new_date);
     void setDateCreatedExplicitly(QDateTime new_date);
 
-    const QDateTime dateModified();
+    QDateTime dateModified() const;
+    QString dateModifiedStr() const; // ex. 5 minutes ago
+    QString dateModifiedStrInformative() const; // ex. January 26, 1965 at 12:30pm EST
     void setDateModifiedExplicitly(QDateTime new_date);
 
     bool encrypted();
@@ -58,15 +62,26 @@ public:
     void assignFields(VibratoObjectMap fields);
     void assignFieldsExplicitly(VibratoObjectMap fields);
 
-    const QVector<QString> defaultFields();
-    const QUuid defaultUuid();
-    const QString defaultTitle();
-    const QDateTime defaultDateCreated();
-    const QDateTime defaultDateModified();
-    bool defaultEncrypted();
+    QVector<QString> defaultFields() const;
+    QUuid            defaultUuid() const;
+    QString          defaultTitle() const;
+    QDateTime        defaultDateCreated() const;
+    QDateTime        defaultDateModified() const;
+    bool             defaultEncrypted();
+
+    /*
+     * Sorting comparison functions for your convenience.
+     */
+    static bool byDateCreatedAsc(const VibratoObject *v1, const VibratoObject *v2);
+    static bool byDateCreatedDesc(const VibratoObject *v1, const VibratoObject *v2);
+    static bool byDateModifiedAsc(const VibratoObject *v1, const VibratoObject *v2);
+    static bool byDateModifiedDesc(const VibratoObject *v1, const VibratoObject *v2);
 
 signals:
-    void changed();
+    void changed(VibratoObject *obj);
+    void titleChanged(VibratoObject *obj);
+    void dateCreatedChanged(VibratoObject *obj);
+    void encryptedChanged(VibratoObject *obj);
 
 private slots:
     void handleChange();
@@ -77,6 +92,9 @@ private:
     QDateTime   m_date_created;
     QDateTime   m_date_modified;
     bool        m_encrypted;
+
+    QString informativeDate(QDateTime date) const;
+    static bool compareTwoDateTimes(QDateTime t1, QDateTime t2, char comparisonSymbol);
 
 };
 

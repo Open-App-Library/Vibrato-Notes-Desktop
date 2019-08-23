@@ -322,6 +322,22 @@ Note *SQLManager::fetchNote(QUuid uuid)
     return note;
 }
 
+QByteArray SQLManager::fetchNoteData(QUuid uuid)
+{
+    QSqlQuery query;
+    QString queryString = "select data from notes where uuid = :uuid";
+    query.prepare( queryString );
+    query.bindValue(":uuid", uuid.toString(QUuid::WithoutBraces));
+    query.exec();
+
+    if (!logSqlError(query.lastError()) )
+      return nullptr;
+
+    Map noteRow = row(query, {"data"});
+
+    return noteRow["data"].toByteArray();
+}
+
 Notebook *SQLManager::fetchNotebook(QUuid uuid)
 {
     Notebook *notebook = new Notebook(this);

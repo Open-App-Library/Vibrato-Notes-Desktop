@@ -65,6 +65,7 @@ public:
   // Gives you an object, fetched from the database,
   // to play with. Make sure to delete when you are done.
   Note *fetchNote(QUuid uuid);
+  QByteArray fetchNoteData(QUuid uuid);
   Notebook *fetchNotebook(QUuid uuid);
   Tag *fetchTag(QUuid uuid);
 

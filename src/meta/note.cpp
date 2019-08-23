@@ -10,188 +10,39 @@
 #include "../sql/sqlmanager.h"
 
 Note::Note(SQLManager *sql_manager,
-           QUuid uuid,
-           QString mimetype,
-           QString encoding) :
-    m_sql_manager(sql_manager),
-    m_uuid(uuid),
-    m_mime_type(mimetype),
-    m_encoding(encoding)
+           VibratoObjectMap fields) :
+    VibratoObject(fields),
+    m_sql_manager(sql_manager)
 {
-    connect(this, &Note::changed,
-            this, &Note::handleChange);
+
 }
 
-SQLManager *Note::sqlManager()
+QByteArray Note::data()
 {
-    return m_sql_manager;
+    QByteArray data = dataExplict();
+    // TODO: Handle based on encoding.
+    setExcerptExplicitly( QString::fromUtf8(data).left(NOTE_DEFAULT_EXCERPT_LENGTH) );
+    return data;
 }
 
-void Note::setSQLManager(SQLManager *sql_manager)
+QByteArray Note::dataExplict() const
 {
-    m_sql_manager = sql_manager;
-}
-
-QUuid Note::uuid() const
-{
-  return m_uuid;
-}
-
-void Note::setUUID(QUuid uuid)
-{
-  if (m_uuid == uuid)
-    return;
-  m_uuid = uuid;
-  emit changed( this, false );
-}
-
-QString Note::title() const
-{
-  return m_title;
-}
-
-void Note::setTitle(const QString title)
-{
-  QString titleCleaned = title.trimmed();
-  // If no changed to title or it is empty, return.
-  if (m_title == titleCleaned ||
-      title.isEmpty())
-    return;
-  m_title = titleCleaned;
-  emit changed( this );
-  emit titleChanged( this );
-}
-
-QByteArray Note::data() const
-{
-    Note foundNote(m_sql_manager);
+    return m_sql_manager->fetchNoteData(this->uuid());
 }
 
 void Note::setData(const QByteArray data)
 {
-  if (!QString::compare(m_data, data))
-    return;
-  m_data = data;
-  emit changed( this );
-  emit dataChanged( this );
-}
-
-bool Note::save()
-{
-    m_sql_manager->upda
-}
-
-bool Note::restore()
-{
 
 }
 
-bool Note::sql_updateFromDB()
+QString Note::excerpt() const
 {
-
+    return m_excerpt;
 }
 
-bool Note::sql_delete()
+void Note::setExcerptExplicitly(QString excerpt)
 {
-
-}
-
-QDateTime Note::dateCreated() const
-{
-  return m_date_created;
-}
-
-QString Note::dateCreatedStr() const
-{
-  return m_date_created.toString("MMMM d, yyyy");
-}
-
-QString Note::dateCreatedStrInformative() const
-{
-  return informativeDate( m_date_created );
-}
-
-void Note::setDateCreated(const QDateTime &date_created)
-{
-  if (!QString::compare(m_date_created.toString(), date_created.toString())) // If dates are same, exit
-    return;
-  m_date_created = date_created;
-  emit changed( this, false );
-  emit dateCreatedChanged( this );
-}
-
-
-QDateTime Note::dateModified() const
-{
-  return m_date_modified;
-}
-
-QString Note::dateModifiedStr()
-{
-
-#ifdef UNIT_TEST
-  QDateTime currentDateTime = QDateTime::fromString("2000-12-25T09:38:59Z", Qt::ISODate);
-#else
-  QDateTime currentDateTime = QDateTime::currentDateTime();
-#endif
-
-  // Time difference in seconds
-  int td_sec = static_cast<int>(currentDateTime.toSecsSinceEpoch() - m_date_modified.toSecsSinceEpoch());
-  int secs_in_minute = 60;
-  int secs_in_hour   = 3600;
-  int secs_in_year   = 31557600;
-
-  int amount = 0;
-  QString unit = ""; // years, months, hours, minutes,
-  int diviser = 1;
-
-  if (td_sec < secs_in_minute)
-    return "Just now";
-  else if ( td_sec >= secs_in_year ) {
-    unit = "year";
-    diviser = secs_in_year;
-  }
-  else if ( currentDateTime.date().month() != m_date_modified.date().month() ) {
-    int m = m_date_modified.date().month();
-    int months_since = 0;
-    while ( m != currentDateTime.date().month() ) {
-      months_since++;
-      if ( m == 12 )
-        m = 1;
-      else
-        m++;
-    }
-    unit = "month";
-    if ( months_since > 1 )
-      unit.append('s');
-    return QString("%1 %2 ago").arg(HelperIO::numberToString(months_since, true), unit);
-  }
-  else if ( td_sec >= secs_in_hour ) {
-    unit = "hour";
-    diviser = secs_in_hour;
-  }
-  else if ( td_sec >= secs_in_minute ) {
-    unit = "minute";
-    diviser = secs_in_minute;
-  }
-  amount = td_sec / diviser;
-  if ( amount > 1 )
-    unit.append('s');
-  return QString("%1 %2 ago").arg(HelperIO::numberToString(amount, true), unit);
-}
-
-QString Note::dateModifiedStrInformative()
-{
-  return informativeDate( m_date_modified );
-}
-
-void Note::setDateModified(const QDateTime &date_modified)
-{
-  if (!QString::compare(m_date_modified.toString(), date_modified.toString())) // If dates are same, exit
-    return;
-  m_date_modified = date_modified;
-  emit changed( this, false );
-  emit dateModifiedChanged( this );
+    m_excerpt = excerpt;
 }
 
 QUuid Note::notebook() const
@@ -199,25 +50,43 @@ QUuid Note::notebook() const
   return m_notebook;
 }
 
-void Note::setNotebook(QUuid uuid, bool updateDateModified)
+void Note::setNotebook(QUuid uuid)
 {
   if (m_notebook == uuid)
     return;
-  m_notebook = uuid;
-  emit changed( this, updateDateModified );
+  setNotebookExplicitly(uuid);
+  emit changed( this );
   emit notebookChanged( this );
+}
+
+void Note::setNotebookExplicitly(QUuid uuid)
+{
+    m_notebook = uuid;
 }
 
 QVector<QUuid> Note::tags() const
 {
-  return m_tags;
+    return m_tags;
 }
 
-void Note::setTags(const QVector<QUuid> &tags)
+QStringList Note::tagsStringList() const
 {
-  m_tags = tags;
-  emit changed( this );
-  emit tagsChanged( this );
+    QStringList list;
+    for ( int i =0; i < m_tags.length(); i++ )
+        list.append( m_tags.at(i).toString(QUuid::WithoutBraces) );
+    return list;
+}
+
+void Note::setTags(const QVector<QUuid> tags)
+{
+    setTagsExplicitly(tags);
+    emit changed( this );
+    emit tagsChanged( this );
+}
+
+void Note::setTagsExplicitly(const QVector<QUuid> tags)
+{
+    m_tags = tags;
 }
 
 bool Note::favorited() const
@@ -229,76 +98,38 @@ void Note::setFavorited(bool favorited)
 {
   if (m_favorited == favorited)
     return;
-  m_favorited = favorited;
-  emit changed( this, false );
+  setFavoritedExplicitly(favorited);
   emit favoritedChanged( this );
 }
 
-bool Note::encrypted() const
+void Note::setFavoritedExplicitly(bool favorited)
 {
-  return m_encrypted;
-}
-
-void Note::setEncrypted(bool encrypted)
-{
-  if (encrypted == m_encrypted)
-    return;
-  m_encrypted = encrypted;
-  emit changed(this, true);
-  emit encryptedChanged(this);
+    m_favorited = favorited;
 }
 
 bool Note::trashed() const {
   return m_trashed;
 }
 
-void Note::setTrashed(bool _trashed) {
-  if (_trashed == m_trashed)
+void Note::setTrashed(bool trashed) {
+  if (trashed == m_trashed)
     return;
-  m_trashed = _trashed;
-  emit changed(this, false);
+  setTrashedExplicitly(trashed);
+  emit changed(this);
   emit trashedChanged(this);
 }
 
-QString Note::informativeDate(QDateTime date) const
+void Note::setTrashedExplicitly(bool trashed)
 {
-  QString dateStr = date.toString("MMMM d, yyyy");
-  QString timeStr = date.toString("h:mA t");
-  return QString("%1 at %2").arg( dateStr, timeStr );
+    m_trashed = trashed;
 }
 
-bool compareTwoDateTimes(QDateTime t1, QDateTime t2, char comparisonSymbol) {
-  qint64 d1 = t1.toMSecsSinceEpoch();
-  qint64 d2 = t2.toMSecsSinceEpoch();
-  if ( comparisonSymbol == '>' && d1 > d2 ) {
-    return true;
-  } else if ( comparisonSymbol == '<' && d1 < d2 )
-    return true;
-  return false;
+QVector<QString> Note::defaultFields() const
+{
+    return NOTE_DEFAULT_FIELDS;
 }
 
-bool Note::byDateCreatedAsc(const Note *n1, const Note *n2)
+QString Note::defaultTitle() const
 {
-  return compareTwoDateTimes( n1->dateCreated(), n2->dateCreated(), '<' );
-}
-
-bool Note::byDateCreatedDesc(const Note *n1, const Note *n2)
-{
-  return compareTwoDateTimes( n1->dateCreated(), n2->dateCreated(), '>' );
-}
-
-bool Note::byDateModifiedAsc(const Note *n1, const Note *n2)
-{
-  return compareTwoDateTimes( n1->dateModified(), n2->dateModified(), '<' );
-}
-
-bool Note::byDateModifiedDesc(const Note *n1, const Note *n2)
-{
-  return compareTwoDateTimes( n1->dateModified(), n2->dateModified(), '>' );
-}
-
-void Note::handleChange(Note *note, bool updateDateModified)
-{
-  if ( updateDateModified )
-    note->setDateModified( QDateTime::currentDateTime() );
+    return NOTE_DEFAULT_TITLE;
 }
