@@ -11,9 +11,11 @@ SOURCES += $$PWD/main.cpp \
            $$PWD/../tag.cpp \
            $$PWD/../notebook.cpp \
            $$PWD/../note.cpp \
-           $$PWD/../vibratoobject.cpp
+           $$PWD/../vibratoobject.cpp \
+           $$PWD/../../sql/sqlmanager.cpp
 
 HEADERS += $$PWD/../tag.h \
            $$PWD/../notebook.h \
            $$PWD/../note.h \
-           $$PWD/../vibratoobject.h
+           $$PWD/../vibratoobject.h \
+           $$PWD/../../sql/sqlmanager.h

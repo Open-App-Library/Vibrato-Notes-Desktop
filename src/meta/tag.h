@@ -7,6 +7,7 @@ class SQLManager;
 #define TAG_DEFAULT_TITLE "Untitled Tag"
 #define TAG_DEFAULT_FIELDS VIBRATOOBJECT_DEFAULT_FIELDS + \
     QVector<QString>({"row"})
+#define TAG_DEFAULT_DB_FIELDS TAG_DEFAULT_FIELDS
 #define TAG_DEFAULT_ROW -255
 
 class Tag : public VibratoObject

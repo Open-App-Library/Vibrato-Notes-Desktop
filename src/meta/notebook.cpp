@@ -138,8 +138,6 @@ void Notebook::assignFieldsExplicitly(QMap<QString, QVariant> fields)
     this->setRowExplicitly(
                 fields.contains("row") ?
                     fields.value("row").toInt() : defaultRow());
-
-
 }
 
 QMap<QString, QVariant> Notebook::fields() const

@@ -7,11 +7,12 @@
 #include <QDateTime>
 #include <QUuid>
 
-#define VibratoObjectMap QMap<QString, QVariant>
-#define VibratoObjectMapIterator QMapIterator<QString, QVariant>
+typedef QMap<QString, QVariant> VibratoObjectMap;
+typedef QMapIterator<QString, QVariant> VibratoObjectMapIterator;
 
 #define VIBRATOOBJECT_DEFAULT_TITLE "Untitled"
 #define VIBRATOOBJECT_DEFAULT_FIELDS QVector<QString>({"uuid", "title", "date_created", "date_modified", "encrypted"})
+#define VIBRATOOBJECT_DEFAULT_DB_FIELDS VIBRATOOBJECT_DEFAULT_FIELDS
 #define VIBRATOOBJECT_DEFAULT_DATE_CREATED QDateTime::currentDateTime();
 #define VIBRATOOBJECT_DEFAULT_DATE_MODIFIED QDateTime::currentDateTime();
 #define VIBRATOOBJECT_DEFAULT_ENCRYPTED false

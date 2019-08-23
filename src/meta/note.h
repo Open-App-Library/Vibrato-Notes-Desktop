@@ -9,23 +9,25 @@
 
 class SQLManager;
 
-
 #define NOTE_DEFAULT_TITLE "Untitled Note"
 
 #define NOTE_DEFAULT_FIELDS VIBRATOOBJECT_DEFAULT_FIELDS + \
-    QStringList({"mimetype", "encoding", "data", "notebook", "tags"})
+    QVector<QString>({"mimetype", "encoding", "excerpt", "notebook", "tags"})
 
 #define NOTE_DEFAULT_MIMETYPE "text/markdown"
 #define NOTE_DEFAULT_ENCODING "UTF-8"
+#define NOTE_DEFAULT_EXCERPT "..."
 #define NOTE_DEFAULT_EXCERPT_LENGTH 26
+#define NOTE_DEFAULT_NOTEBOOK nullptr
+#define NOTE_DEFAULT_TAGS {}
+#define NOTE_ERROR_NOT_CONNECTED_TO_SQLITE "Vibrato SQL Error: Note object is not connected to a local SQLite3 database."
 
 class Note : public VibratoObject
 {
   Q_OBJECT
 
 public:
-  Note(SQLManager *sql_manager,
-       VibratoObjectMap fields = VibratoObjectMap());
+  Note(VibratoObjectMap fields = VibratoObjectMap());
 
   QString mimeType() const;
   void setMIMEType(QString mimetype);
@@ -52,11 +54,16 @@ public:
   void setTrashed(bool trashed);
   void setTrashedExplicitly(bool trashed);
 
-  /*
-   * Default Data
-   */
-  QVector<QString> defaultFieldKeys() const;
-  QString          defaultTitle() const;
+  void assignFieldsExplicitly(QMap<QString, QVariant> fields) override;
+  VibratoObjectMap fields() const override;
+
+  QVector<QString> defaultFieldKeys() const override;
+  QString          defaultTitle() const override;
+  QString          defaultMIMEType() const;
+  QString          defaultEncoding() const;
+  QString          defaultExcerpt() const;
+  QUuid            defaultNotebook() const;
+  QVector<QUuid>   defaultTags() const;
 
   /*
    * The content of the note will be fetched
@@ -65,15 +72,20 @@ public:
    * The excerpt is the only thing that is
    * stored in memory.
    */
-  QByteArray data();
-  QByteArray dataExplict() const;
+  QByteArray data() const;
   void    setData(const QByteArray data);
 
   QString excerpt() const;
   void setExcerptExplicitly(QString excerpt);
 
+  void setSQLManager(SQLManager *sql_manager);
+  SQLManager *sqlManager() const;
+
 
 signals:
+  void mimeTypeChanged(Note *note);
+  void encodingChanged(Note *note);
+  void excerptChanged(Note *note);
   void dataChanged(Note *note);
   void notebookChanged(Note *note);
   void tagsChanged(Note *note);
@@ -81,14 +93,15 @@ signals:
   void trashedChanged(Note *note);
 
 private:
-  SQLManager    *m_sql_manager;
-  QString        m_mime_type;
+  QString        m_mimetype;
   QString        m_encoding;
   QString        m_excerpt;
   QUuid          m_notebook;
   QVector<QUuid> m_tags;
   bool           m_favorited;
   bool           m_trashed;
+
+  SQLManager    *m_sql_manager = nullptr;
 };
 
 #endif // NOTE_H

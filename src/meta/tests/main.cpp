@@ -2,6 +2,7 @@
 #include <QMap>
 #include "../tag.h"
 #include "../notebook.h"
+#include "../note.h"
 
 void loopFields(VibratoObject *obj) {
     QVector<QString> fieldKeys = obj->fieldKeys();
@@ -34,5 +35,11 @@ int main() {
     qDebug("Notebook Example:");
     loopFields(nb);
     delete nb;
+
+    qDebug("=============================================");
+    Note *n = new Note(nullptr);
+    qDebug("Note Example:");
+    loopFields(n);
+    delete n;
 
 }
